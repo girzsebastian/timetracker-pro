@@ -18,6 +18,31 @@ npm install
 npm start          # http://localhost:5555
 ```
 
+## Docker local (recomandat pentru utilizare zilnică)
+
+Aplicația rulează în container pe **http://localhost:8888**, cu baza de date păstrată pe disc în `data/` (aceeași ca la rularea manuală — nu rula ambele simultan).
+
+```bash
+docker start timetracker     # pornește
+docker stop timetracker      # oprește
+docker logs timetracker      # loguri
+```
+
+Containerul repornește singur după restart de Mac (dacă Docker Desktop e deschis), mai puțin dacă l-ai oprit tu explicit.
+
+Prima creare (o singură dată, sau după modificări de cod):
+```bash
+docker build -t timetracker .
+docker rm -f timetracker 2>/dev/null
+docker run -d --name timetracker --restart unless-stopped \
+  -p 127.0.0.1:8888:5555 \
+  -v "$PWD/data:/app/data" \
+  -e OLLAMA_URL=http://host.docker.internal:11434 \
+  timetracker
+```
+
+Pentru hosting public există autentificare: setează `APP_PASSWORD` (și opțional `APP_USER`) — fără ele aplicația rulează deschis, ca local.
+
 ## AI local (gratuit)
 
 1. Instalează [Ollama](https://ollama.com) (macOS/Windows/Linux)
