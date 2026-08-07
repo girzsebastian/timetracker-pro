@@ -136,7 +136,7 @@
           <div class="form-row">
             <input type="text" id="pName" placeholder="Nume proiect" style="flex:1;min-width:160px">
             <select id="pClient"></select>
-            <input type="number" id="pHours" placeholder="buget ore/lună" style="width:140px" min="0" step="0.5" title="ore alocate proiectului pe lună (0 = fără buget)">
+            <input type="number" id="pRate" placeholder="tarif €/oră" style="width:120px" min="0" title="cost per oră pentru acest proiect; dacă lipsește, se folosește tariful clientului">
             <button type="button" class="sw-color" id="pColorTrig" data-colortrig data-ck="newproject" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare proiect"></button>
             <button class="btn" id="pAdd">Adaugă</button>
           </div>
@@ -210,6 +210,10 @@
           <div class="form-row"><select id="sModel" style="flex:1"></select><button class="btn" id="sSave">Salvează model</button><button class="btn-ghost" id="sRefresh">↻ Reîncarcă</button></div>
           <p class="hint" id="aiHint">Rulează <span class="kbd">ollama serve</span> și instalează un model: <span class="kbd">ollama pull qwen2.5:7b-instruct</span>. Local, fără costuri.</p>
         </div>
+        <div class="form-panel"><b>Google Calendar (import)</b>
+          <div class="form-row"><input type="text" id="sGcal" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" style="flex:1"><button class="btn" id="sGcalSave">Salvează</button></div>
+          <p class="hint">Google Calendar → Setări → calendarul tău → <b>Adresa secretă în format iCal</b> — copiază link-ul aici. Evenimentele apar în Calendar (doar citire) și pot fi transformate în înregistrări dintr-un click.</p>
+        </div>
         <div class="form-panel"><b>Date</b>
           <div class="form-row"><button class="btn-ghost" id="sExport">⬇ Backup JSON</button><a class="btn-ghost" href="/api/export.pdf" style="text-decoration:none">⬇ PDF (tot)</a></div>
           <p class="hint">Bază de date reală: <span class="kbd">data/timetracker.db</span> — backup = copiază fișierul.</p>
@@ -239,9 +243,14 @@
           </label>
           <label class="fld"><span>Taguri</span><input type="text" id="emTags" placeholder="separate prin virgulă" list="tagOptions" autocomplete="off"></label>
         </div>
+        <div class="fld-row">
+          <label class="fld" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="emPlanned" style="width:auto"><span style="margin:0">Planificat — nu intră la facturare până nu e realizat</span></label>
+          <label class="fld" id="emRecurWrap"><span>Repetă săptămânal</span><select id="emRecur"><option value="0">Nu se repetă</option><option value="4">4 săptămâni</option><option value="8">8 săptămâni</option><option value="12">12 săptămâni</option></select></label>
+        </div>
       </div>
       <div class="modal-foot">
         <button class="btn-danger" id="emDelete" style="display:none">Șterge</button>
+        <button class="btn" id="emDone" style="display:none;background:var(--green)">✓ Marchează ca lucrat</button>
         <span class="spacer"></span>
         <button class="btn-ghost" id="emCancel">Anulează</button>
         <button class="btn" id="emSave">Salvează</button>

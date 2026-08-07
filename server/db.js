@@ -56,6 +56,8 @@ if (!cols('clients').includes('color')) db.exec("ALTER TABLE clients ADD COLUMN 
 if (!cols('entries').includes('start_min')) db.exec('ALTER TABLE entries ADD COLUMN start_min INTEGER');
 if (!cols('clients').includes('rate')) db.exec('ALTER TABLE clients ADD COLUMN rate REAL DEFAULT 0');
 if (!cols('projects').includes('hours')) db.exec('ALTER TABLE projects ADD COLUMN hours REAL DEFAULT 0');
+if (!cols('projects').includes('rate')) db.exec('ALTER TABLE projects ADD COLUMN rate REAL DEFAULT 0');
+if (!cols('entries').includes('planned')) db.exec('ALTER TABLE entries ADD COLUMN planned INTEGER DEFAULT 0');
 
 // settings helpers
 export const getSetting = (k, def = null) => {

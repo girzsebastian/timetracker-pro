@@ -24,6 +24,8 @@ export function listEntries(filter = {}) {
   if (filter.from) { w.push('e.date>=?'); p.push(filter.from); }
   if (filter.to) { w.push('e.date<=?'); p.push(filter.to); }
   if (filter.text) { w.push('LOWER(e.desc) LIKE ?'); p.push('%' + norm(filter.text) + '%'); }
+  if (filter.planned === 'exclude') w.push('COALESCE(e.planned,0)=0');
+  if (filter.planned === 'only') w.push('COALESCE(e.planned,0)=1');
   const sql = 'SELECT * FROM entries e' + (w.length ? ' WHERE ' + w.join(' AND ') : '') + ' ORDER BY date DESC, created_at DESC';
   let rows = db.prepare(sql).all(...p).map(r => ({ ...r, tags: JSON.parse(r.tags || '[]') }));
   if (filter.tags?.length) { const want = filter.tags.map(norm); rows = rows.filter(r => r.tags.some(t => want.includes(norm(t)))); }
@@ -120,39 +122,51 @@ export const ACTIONS = {
     audit(source, 'update_person', { id });
     return { person: db.prepare('SELECT * FROM people WHERE id=?').get(id) };
   },
-  create_project({ name, clientId, clientName, color = '#6366f1', hours = 0 }, source = 'api') {
+  create_project({ name, clientId, clientName, color = '#6366f1', rate = 0 }, source = 'api') {
     if (!name?.trim()) throw new Error('Numele proiectului lipsește');
     const cid = clientId || resolveClient(clientName)?.id || null;
     const id = uid('pr');
-    db.prepare('INSERT INTO projects(id,name,client_id,color,hours) VALUES(?,?,?,?,?)').run(id, name.trim(), cid, color, +hours || 0);
+    db.prepare('INSERT INTO projects(id,name,client_id,color,rate) VALUES(?,?,?,?,?)').run(id, name.trim(), cid, color, +rate || 0);
     audit(source, 'create_project', { id, name });
     return { project: db.prepare('SELECT * FROM projects WHERE id=?').get(id) };
   },
-  update_project({ id, name, color, clientId, hours }, source = 'api') {
+  update_project({ id, name, color, clientId, rate }, source = 'api') {
     const p = db.prepare('SELECT * FROM projects WHERE id=?').get(id);
     if (!p) throw new Error('Proiect inexistent');
-    db.prepare('UPDATE projects SET name=?,color=?,client_id=?,hours=? WHERE id=?')
-      .run(name != null ? name.trim() : p.name, color != null ? color : p.color, clientId !== undefined ? (clientId || null) : p.client_id, hours != null ? +hours : p.hours, id);
+    db.prepare('UPDATE projects SET name=?,color=?,client_id=?,rate=? WHERE id=?')
+      .run(name != null ? name.trim() : p.name, color != null ? color : p.color, clientId !== undefined ? (clientId || null) : p.client_id, rate != null ? +rate : p.rate, id);
     audit(source, 'update_project', { id });
     return { project: db.prepare('SELECT * FROM projects WHERE id=?').get(id) };
   },
-  add_entry({ date, mins, hours, minutes, desc = '', projectId, personId, tags = [], startMin = null }, source = 'api') {
+  add_entry({ date, mins, hours, minutes, desc = '', projectId, personId, tags = [], startMin = null, planned = 0, recurWeeks = 0 }, source = 'api') {
     const m = mins != null ? +mins : (+hours || 0) * 60 + (+minutes || 0);
     if (!m) throw new Error('Durata lipsește');
-    const id = uid('e');
-    db.prepare('INSERT INTO entries(id,date,mins,desc,project_id,person_id,tags,start_min) VALUES(?,?,?,?,?,?,?,?)')
-      .run(id, date || new Date().toISOString().slice(0, 10), Math.round(m), desc, projectId || null, personId || null, JSON.stringify(tags || []), startMin != null ? Math.round(startMin) : null);
-    audit(source, 'add_entry', { id, mins: m });
-    return { entry: { ...db.prepare('SELECT * FROM entries WHERE id=?').get(id), tags } };
+    const baseDate = date || new Date().toISOString().slice(0, 10);
+    const ins = db.prepare('INSERT INTO entries(id,date,mins,desc,project_id,person_id,tags,start_min,planned) VALUES(?,?,?,?,?,?,?,?,?)');
+    const mk = (d) => {
+      const id = uid('e');
+      ins.run(id, d, Math.round(m), desc, projectId || null, personId || null, JSON.stringify(tags || []), startMin != null ? Math.round(startMin) : null, planned ? 1 : 0);
+      return id;
+    };
+    const id = mk(baseDate);
+    // weekly recurrence: materialize copies for the next N weeks (planned entries only)
+    const weeks = Math.min(52, Math.max(0, Math.round(+recurWeeks || 0)));
+    const extra = [];
+    for (let k = 1; k <= weeks; k++) {
+      const d = new Date(baseDate + 'T00:00:00'); d.setDate(d.getDate() + 7 * k);
+      extra.push(mk(d.toISOString().slice(0, 10)));
+    }
+    audit(source, 'add_entry', { id, mins: m, planned: planned ? 1 : 0, recur: weeks });
+    return { entry: { ...db.prepare('SELECT * FROM entries WHERE id=?').get(id), tags }, recurred: extra.length };
   },
-  update_entry({ id, date, mins, hours, minutes, desc, projectId, personId, tags, startMin }, source = 'api') {
+  update_entry({ id, date, mins, hours, minutes, desc, projectId, personId, tags, startMin, planned }, source = 'api') {
     const e = db.prepare('SELECT * FROM entries WHERE id=?').get(id);
     if (!e) throw new Error('Înregistrare inexistentă');
     const m = mins != null ? +mins
       : (hours != null || minutes != null) ? (+hours || 0) * 60 + (+minutes || 0)
       : e.mins;
     if (!m || m < 1) throw new Error('Durata trebuie să fie cel puțin 1 minut');
-    db.prepare('UPDATE entries SET date=?,mins=?,desc=?,project_id=?,person_id=?,tags=?,start_min=? WHERE id=?').run(
+    db.prepare('UPDATE entries SET date=?,mins=?,desc=?,project_id=?,person_id=?,tags=?,start_min=?,planned=? WHERE id=?').run(
       date || e.date,
       Math.round(m),
       desc != null ? desc : e.desc,
@@ -160,6 +174,7 @@ export const ACTIONS = {
       personId !== undefined ? (personId || null) : e.person_id,
       tags != null ? JSON.stringify(tags) : e.tags,
       startMin !== undefined ? (startMin != null && startMin !== '' ? Math.round(startMin) : null) : e.start_min,
+      planned !== undefined ? (planned ? 1 : 0) : (e.planned || 0),
       id
     );
     audit(source, 'update_entry', { id });

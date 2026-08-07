@@ -320,3 +320,16 @@ button.sw-color:hover{border-color:var(--accent)}
 
 #toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(16px);background:#0f151c;color:#fff;font-size:14px;font-weight:600;padding:12px 22px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:300}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ---------- planificate (entries viitoare, neintrate la facturare) ---------- */
+.cal-block.planned{opacity:.6;background-image:repeating-linear-gradient(45deg,transparent 0 5px,rgba(255,255,255,.16) 5px 10px);outline:1.5px dashed rgba(255,255,255,.65);outline-offset:-2px}
+.ad-chip.planned{opacity:.6;outline:1.5px dashed rgba(255,255,255,.65);outline-offset:-2px}
+.m-chip.planned{opacity:.6;border-left-style:dashed}
+.erow.planned{opacity:.65}
+.erow.planned .d1{font-style:italic}
+.pl-badge{font-size:9.5px;font-weight:700;letter-spacing:.4px;color:var(--amber);border:1px solid var(--amber);border-radius:4px;padding:1px 5px;margin-right:10px;flex:none}
+
+/* ---------- evenimente Google Calendar (read-only, importate prin iCal) ---------- */
+.gcal-ev{position:absolute;left:3px;right:3px;border-radius:5px;padding:3px 7px;overflow:hidden;font-size:10.5px;line-height:1.3;font-weight:600;color:var(--accent);border:1.5px solid var(--accent);background:rgba(47,155,240,.08);cursor:pointer;z-index:1;white-space:nowrap;text-overflow:ellipsis}
+.gcal-ev:hover{background:rgba(47,155,240,.18)}
+.ad-chip.gcal{background:rgba(47,155,240,.08);border:1.5px solid var(--accent);color:var(--accent)}

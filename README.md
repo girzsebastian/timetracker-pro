@@ -66,6 +66,17 @@ Exemple:
 ### Cu Wispr Flow
 Deschide consola (⌘K), pune cursorul în câmp, dictează cu Wispr — textul intră în câmp, apoi apeși „Interpretează" → „Dă-i drumul".
 
+## Planificare & Google Calendar
+
+- **Planificat** — bifezi „Planificat" la o înregistrare: apare hașurat în calendar, nu intră la facturare/rapoarte până nu apeși „✓ Marchează ca lucrat". Opțional se repetă săptămânal (4/8/12 săptămâni).
+- **Import Google Calendar** — în Setări pui „Adresa secretă în format iCal" a calendarului tău Google; evenimentele apar în Calendar (contur albastru, doar citire) și devin înregistrări dintr-un click.
+
+## Facturare
+
+Două modele per client, care pot coexista în portofoliu:
+- **Abonament**: cost €/lună + ore incluse + €/h peste pachet.
+- **Tarif orar** (fără abonament): orele lucrate × tarif. Tariful se setează pe client (implicit) și/sau pe proiect (are prioritate).
+
 ## Ce include
 
 - **Panou** — KPI-uri, clienți (ore vs. pachet), distribuție pe persoană

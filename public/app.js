@@ -9,6 +9,7 @@
   let calRef = startOfDay(new Date());
   let calEnts = [];
   let calKeepScroll = false;
+  let GCAL = []; // Google Calendar events for the visible window (read-only)
 
   const api = (p, o) => fetch('/api' + p, o).then(async r => { if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Eroare'); return r.json(); });
   const act = (name, body) => api('/action/' + name, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body || {}) });
@@ -39,15 +40,20 @@
   function debounce(fn, ms) { let h; return (...a) => { clearTimeout(h); h = setTimeout(() => fn(...a), ms); }; }
 
   // overage computation over a set of entries
-  // two billing models: subscription (cost + included hours + overage) OR hourly (rate × worked hours)
+  // two billing models: subscription (cost + included hours + overage) OR hourly.
+  // hourly: each entry is billed at the project's rate, falling back to the client's default rate.
   function clientBilling(c, entries) {
-    const pids = ST.projects.filter(p => p.client_id === c.id).map(p => p.id);
-    const mins = entries.filter(e => pids.includes(e.project_id)).reduce((s, e) => s + e.mins, 0);
+    const cprojects = ST.projects.filter(p => p.client_id === c.id);
+    const pids = cprojects.map(p => p.id);
+    const rel = entries.filter(e => pids.includes(e.project_id) && !e.planned);
+    const mins = rel.reduce((s, e) => s + e.mins, 0);
     const cap = (c.hours || 0) * 60;
-    const hourly = !(c.cost || 0) && !cap && (c.rate || 0) > 0;
-    const overMins = hourly ? 0 : Math.max(0, mins - cap);
+    const subscription = (c.cost || 0) > 0 || cap > 0;
+    const rateOf = pid => (cprojects.find(p => p.id === pid)?.rate || 0) || (c.rate || 0);
+    const overMins = subscription ? Math.max(0, mins - cap) : 0;
     const overCost = (overMins / 60) * (c.overage || 0);
-    const hourlyCost = hourly ? (mins / 60) * (c.rate || 0) : 0;
+    const hourlyCost = subscription ? 0 : rel.reduce((s, e) => s + (e.mins / 60) * rateOf(e.project_id), 0);
+    const hourly = !subscription && (hourlyCost > 0 || (c.rate || 0) > 0 || cprojects.some(p => (p.rate || 0) > 0));
     return { mins, cap, overMins, overCost, hourly, hourlyCost, variable: overCost + hourlyCost, total: (c.cost || 0) + overCost + hourlyCost };
   }
 
@@ -109,20 +115,21 @@
     ST.entries.forEach(e => { const wk = iso(mondayOf(new Date(e.date))); (byWeek[wk] = byWeek[wk] || []).push(e); });
     const weeks = Object.keys(byWeek).sort((a, b) => b.localeCompare(a));
     $('#entriesList').innerHTML = weeks.map(wk => {
-      const ents = byWeek[wk], wTot = ents.reduce((s, e) => s + e.mins, 0);
+      const ents = byWeek[wk], wTot = ents.reduce((s, e) => s + (e.planned ? 0 : e.mins), 0);
       const mon = new Date(wk), sun = addDays(mon, 6);
       const label = `${mon.getDate()} ${MON[mon.getMonth()].slice(0, 3)} – ${sun.getDate()} ${MON[sun.getMonth()].slice(0, 3)} ${sun.getFullYear()}`;
       const byDay = {}; ents.forEach(e => (byDay[e.date] = byDay[e.date] || []).push(e));
       const days = Object.keys(byDay).sort((a, b) => b.localeCompare(a));
       return `<div class="week-block"><div class="week-head"><b>${label}</b><span class="wt">Total săptămână<b>${fmtHM(wTot)}</b></span></div>
         ${days.map(date => {
-        const de = byDay[date].sort((a, b) => (b.start_min ?? 0) - (a.start_min ?? 0)), dTot = de.reduce((s, e) => s + e.mins, 0);
+        const de = byDay[date].sort((a, b) => (b.start_min ?? 0) - (a.start_min ?? 0)), dTot = de.reduce((s, e) => s + (e.planned ? 0 : e.mins), 0);
         const d = new Date(date);
         return `<div class="day-block"><div class="day-bar"><span class="dt">${d.toLocaleDateString('ro-RO', { weekday: 'short', day: 'numeric', month: 'short' })}</span><span style="display:flex;align-items:center;gap:4px"><span class="dtot">Total<b>${fmtHM(dTot)}</b></span><button class="day-add" data-add-day="${date}" title="Adaugă în ziua asta">+</button></span></div>
           ${de.map(e => {
           const pr = project(e.project_id);
           const range = e.start_min != null ? `${clock(e.start_min)} - ${clock(e.start_min + e.mins)}` : '';
-          return `<div class="erow" data-eid="${e.id}"><span class="e-dot" style="background:${pr?.color || '#556'}"></span>
+          return `<div class="erow ${e.planned ? 'planned' : ''}" data-eid="${e.id}"><span class="e-dot" style="background:${pr?.color || '#556'}"></span>
+            ${e.planned ? '<span class="pl-badge">PLAN</span>' : ''}
             <div class="e-desc"><div class="d1">${escp(e.desc || '(fără descriere)')}</div><div class="d2">${pr ? escp(pr.name) + ' · ' + escp(client(pr.client_id)?.name || '') : 'fără proiect'}</div></div>
             <div class="e-tags">${(e.tags || []).map(t => { const col = tagColor(t); return `<span class="tag"${col ? ` style="color:${col};border-color:${col}"` : ''}>${escp(t)}</span>`; }).join('')}</div>
             <span class="e-person">${escp(person(e.person_id)?.name || '')}</span>
@@ -188,7 +195,7 @@
   /* ---------- CRUD ---------- */
   const resetTrig = (el, c = '#2f9bf0') => { el.dataset.color = c; el.style.background = c; };
   $('#cAdd').onclick = async () => { const n = $('#cName').value.trim(); if (!n) return; await act('create_client', { name: n, cost: +$('#cCost').value || 0, hours: +$('#cHours').value || 0, overage: +$('#cOver').value || 0, rate: +$('#cRate').value || 0, color: $('#cColorTrig').dataset.color }); $('#cName').value = $('#cCost').value = $('#cHours').value = $('#cOver').value = $('#cRate').value = ''; resetTrig($('#cColorTrig')); toast('Client adăugat'); loadState(); };
-  $('#pAdd').onclick = async () => { const n = $('#pName').value.trim(); if (!n) return; await act('create_project', { name: n, clientId: $('#pClient').value, hours: +$('#pHours').value || 0, color: $('#pColorTrig').dataset.color }); $('#pName').value = $('#pHours').value = ''; resetTrig($('#pColorTrig')); toast('Proiect adăugat'); loadState(); };
+  $('#pAdd').onclick = async () => { const n = $('#pName').value.trim(); if (!n) return; await act('create_project', { name: n, clientId: $('#pClient').value, rate: +$('#pRate').value || 0, color: $('#pColorTrig').dataset.color }); $('#pName').value = $('#pRate').value = ''; resetTrig($('#pColorTrig')); toast('Proiect adăugat'); loadState(); };
   $('#eAdd').onclick = async () => { const n = $('#eName').value.trim(); if (!n) return; await act('create_person', { name: n }); $('#eName').value = ''; toast('Persoană adăugată'); loadState(); };
   $('#tgAdd').onclick = async () => { const n = $('#tgName').value.trim(); if (!n) return; await act('create_tag', { name: n, color: $('#tgColorTrig').dataset.color }); $('#tgName').value = ''; resetTrig($('#tgColorTrig')); toast('Tag adăugat'); loadState(); };
   document.addEventListener('click', async e => {
@@ -209,6 +216,8 @@
     if (rs) { const en = ST.entries.find(x => x.id === rs.dataset.restart); if (en) { await act('start_timer', { desc: en.desc, projectId: en.project_id, personId: en.person_id, tags: en.tags }); toast('Cronometru pornit'); loadState(); } return; }
     const row = e.target.closest('[data-eid]');
     if (row && !e.target.closest('button') && !e.target.closest('.cal-block')) { const id = row.dataset.eid; const en = ST.entries.find(x => x.id === id) || calEnts.find(x => x.id === id); if (en) { openEntryEdit(en); return; } }
+    const gc = e.target.closest('[data-gcal]');
+    if (gc) { const g = GCAL[+gc.dataset.gcal]; if (g) openEntryNew(g.date, { desc: g.summary, startMin: g.startMin, mins: g.mins || 60 }); return; }
     const addDay = e.target.closest('[data-add-day]');
     if (addDay) { openEntryNew(addDay.dataset.addDay); return; }
   });
@@ -223,25 +232,29 @@
   }
   function openEntryModal() { emFillSelects(); emVeil.classList.add('open'); setTimeout(() => $('#emDesc').focus(), 50); }
   function closeEntryModal() { emVeil.classList.remove('open'); emEditId = null; }
-  function openEntryNew(dateISO) {
+  function openEntryNew(dateISO, prefill = {}) {
     emEditId = null;
     $('#emTitle').textContent = 'Adaugă înregistrare';
-    $('#emDelete').style.display = 'none';
-    $('#emDesc').value = ''; $('#emTags').value = '';
+    $('#emDelete').style.display = 'none'; $('#emDone').style.display = 'none';
+    $('#emDesc').value = prefill.desc || ''; $('#emTags').value = '';
     $('#emDate').value = dateISO || iso(new Date());
-    $('#emStart').value = ''; $('#emHours').value = ''; $('#emMins').value = '';
+    $('#emStart').value = prefill.startMin != null ? clock(prefill.startMin) : '';
+    $('#emHours').value = prefill.mins ? Math.floor(prefill.mins / 60) : ''; $('#emMins').value = prefill.mins ? prefill.mins % 60 : '';
+    $('#emPlanned').checked = !!prefill.planned; $('#emRecur').value = '0'; $('#emRecurWrap').style.display = '';
     openEntryModal();
     $('#emProject').value = ''; $('#emPerson').value = '';
   }
   function openEntryEdit(en) {
     emEditId = en.id;
-    $('#emTitle').textContent = 'Editează înregistrarea';
+    $('#emTitle').textContent = en.planned ? 'Editează planificarea' : 'Editează înregistrarea';
     $('#emDelete').style.display = 'inline-flex';
+    $('#emDone').style.display = en.planned ? 'inline-flex' : 'none';
     $('#emDesc').value = en.desc || '';
     $('#emTags').value = (en.tags || []).join(', ');
     $('#emDate').value = en.date;
     $('#emStart').value = en.start_min != null ? clock(en.start_min) : '';
     $('#emHours').value = Math.floor(en.mins / 60); $('#emMins').value = en.mins % 60;
+    $('#emPlanned').checked = !!en.planned; $('#emRecur').value = '0'; $('#emRecurWrap').style.display = 'none';
     openEntryModal();
     $('#emProject').value = en.project_id || ''; $('#emPerson').value = en.person_id || '';
   }
@@ -254,13 +267,18 @@
     if (mins < 1) { toast('Pune o durată (ore/minute).'); return; }
     const st = $('#emStart').value; // "HH:MM" or ""
     const startMin = st ? (+st.slice(0, 2) * 60 + +st.slice(3, 5)) : null;
-    const payload = { date: $('#emDate').value, mins, desc: $('#emDesc').value.trim(), projectId: $('#emProject').value, personId: $('#emPerson').value, tags: parseTags($('#emTags').value), startMin };
+    const payload = { date: $('#emDate').value, mins, desc: $('#emDesc').value.trim(), projectId: $('#emProject').value, personId: $('#emPerson').value, tags: parseTags($('#emTags').value), startMin, planned: $('#emPlanned').checked ? 1 : 0 };
     try {
       if (emEditId) await act('update_entry', { id: emEditId, ...payload });
-      else await act('add_entry', payload);
-      toast(emEditId ? 'Înregistrare actualizată' : 'Înregistrare adăugată');
+      else { const r = await act('add_entry', { ...payload, recurWeeks: +$('#emRecur').value || 0 }); if (r.recurred) toast(`Adăugat + ${r.recurred} repetări`); }
+      if (emEditId || !+$('#emRecur').value) toast(emEditId ? 'Înregistrare actualizată' : 'Înregistrare adăugată');
       afterEntryChange();
     } catch (e) { toast('Eroare: ' + e.message); }
+  };
+  $('#emDone').onclick = async () => {
+    if (!emEditId) return;
+    try { await act('update_entry', { id: emEditId, planned: 0 }); toast('✓ Marcat ca lucrat'); afterEntryChange(); }
+    catch (e) { toast('Eroare: ' + e.message); }
   };
   $('#emDelete').onclick = async () => {
     if (!emEditId || !confirm('Ștergi această înregistrare?')) return;
@@ -273,8 +291,8 @@
   async function loadDashboard() {
     const wMon = mondayOf(new Date()), wSun = addDays(wMon, 6);
     const now = new Date(), mStart = iso(new Date(now.getFullYear(), now.getMonth(), 1)), mEnd = iso(new Date(now.getFullYear(), now.getMonth() + 1, 0));
-    const df = { from: iso(wMon), to: iso(wSun), clientId: dFilter.clientId, personId: dFilter.personId };
-    const [weekEnts, monthEnts] = await Promise.all([fetchEntries(df), fetchEntries({ from: mStart, to: mEnd })]);
+    const df = { from: iso(wMon), to: iso(wSun), clientId: dFilter.clientId, personId: dFilter.personId, planned: 'exclude' };
+    const [weekEnts, monthEnts] = await Promise.all([fetchEntries(df), fetchEntries({ from: mStart, to: mEnd, planned: 'exclude' })]);
 
     const total = weekEnts.reduce((s, e) => s + e.mins, 0);
     // top project / client this week
@@ -314,7 +332,7 @@
       const b = clientBilling(c, monthEnts), pct = b.cap ? Math.min(100, b.mins / b.cap * 100) : 0, over = b.overMins > 0;
       if (b.hourly) {
         return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev">${eur(b.total)} luna asta</span></div>
-          <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> × ${c.rate} €/h</div>
+          <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> ${c.rate ? '× ' + c.rate + ' €/h' : 'la tarif per proiect'}</div>
           <div class="pbar"><div style="width:${b.mins ? 100 : 0}%"></div></div><div class="cli-st">Tarif orar · fără abonament</div></div>`;
       }
       const st = !b.cap ? `<div class="cli-st">Fără pachet</div>`
@@ -371,8 +389,11 @@
       : `${start.getDate()} ${MON[start.getMonth()].slice(0, 3)} – ${end.getDate()} ${MON[end.getMonth()].slice(0, 3)} ${end.getFullYear()}`;
 
     const scroll = $('.cal-scroll'), prevScroll = scroll.scrollTop;
-    const ents = await fetchEntries({ from: iso(start), to: iso(end) });
-    calEnts = ents;
+    const [ents, gcal] = await Promise.all([
+      fetchEntries({ from: iso(start), to: iso(end) }),
+      api(`/gcal?from=${iso(start)}&to=${iso(end)}`).then(r => r.events || []).catch(() => []),
+    ]);
+    calEnts = ents; GCAL = gcal;
     const todayISO = iso(new Date());
     const byDay = {}, dayTot = {};
     for (let i = 0; i < nDays; i++) { const k = iso(addDays(start, i)); byDay[k] = []; dayTot[k] = 0; }
@@ -385,12 +406,14 @@
       return `<div class="cal-day ${is ? 'today' : ''}"><div class="cd-name">${DOWS[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()].slice(0, 3)}</div><div class="cd-tot">${fmtHM(dayTot[k])}<button class="day-add" data-add-day="${k}" title="Adaugă în ziua asta">+</button></div></div>`;
     }).join('');
 
-    // all-day strip (entries without a start time)
+    // all-day strip (entries without a start time + all-day Google events)
+    const gcalByDay = k => GCAL.filter(g => g.date === k);
     const allday = Array.from({ length: nDays }, (_, i) => byDay[iso(addDays(start, i))].filter(e => e.start_min == null));
-    const hasAllday = allday.some(a => a.length);
+    const alldayG = Array.from({ length: nDays }, (_, i) => gcalByDay(iso(addDays(start, i))).filter(g => g.allDay));
+    const hasAllday = allday.some(a => a.length) || alldayG.some(a => a.length);
     $('#calAllday').style.display = hasAllday ? 'flex' : 'none';
     $('#calAllday').classList.toggle('one', nDays === 1);
-    if (hasAllday) $('#calAllday').innerHTML = '<div class="cal-gut">toată ziua</div>' + allday.map(list => `<div class="ad-col">${list.map(e => { const pr = project(e.project_id); return `<div class="ad-chip" data-eid="${e.id}" style="background:${pr?.color || '#556'}" title="${escp(e.desc)}">${escp(e.desc || '—')} · ${fmtHM(e.mins)}</div>`; }).join('')}</div>`).join('');
+    if (hasAllday) $('#calAllday').innerHTML = '<div class="cal-gut">toată ziua</div>' + allday.map((list, i) => `<div class="ad-col">${list.map(e => { const pr = project(e.project_id); return `<div class="ad-chip ${e.planned ? 'planned' : ''}" data-eid="${e.id}" style="background:${pr?.color || '#556'}" title="${escp(e.desc)}">${e.planned ? '◌ ' : ''}${escp(e.desc || '—')} · ${fmtHM(e.mins)}</div>`; }).join('')}${alldayG[i].map(g => `<div class="ad-chip gcal" data-gcal="${GCAL.indexOf(g)}" title="Google Calendar — click pentru a transforma în înregistrare">⧉ ${escp(g.summary)}</div>`).join('')}</div>`).join('');
 
     // grid
     const gutter = `<div class="cal-gutter">${Array.from({ length: H1 - H0 + 1 }, (_, i) => `<div class="cal-hour"><span class="hl">${String(H0 + i).padStart(2, '0')}:00</span></div>`).join('')}</div>`;
@@ -401,9 +424,14 @@
         const pr = project(e.project_id);
         const top = ((e.start_min - H0 * 60) / 60) * PX;
         const h = Math.max(15, (e.mins / 60) * PX);
-        return `<div class="cal-block" data-eid="${e.id}" style="top:${top}px;height:${h}px;background:${pr?.color || '#556'}"><div class="cb-t">${escp(e.desc || '—')}</div><div class="cb-h">${clock(e.start_min)}–${clock(e.start_min + e.mins)}</div></div>`;
+        return `<div class="cal-block ${e.planned ? 'planned' : ''}" data-eid="${e.id}" style="top:${top}px;height:${h}px;background:${pr?.color || '#556'}"><div class="cb-t">${e.planned ? '◌ ' : ''}${escp(e.desc || '—')}</div><div class="cb-h">${clock(e.start_min)}–${clock(e.start_min + e.mins)}</div></div>`;
       }).join('');
-      return `<div class="cal-col" data-date="${k}">${Array.from({ length: H1 - H0 + 1 }, () => `<div class="cal-hour"></div>`).join('')}${blocks}${k === todayISO ? nowLineHtml() : ''}</div>`;
+      const gblocks = gcalByDay(k).filter(g => !g.allDay).map(g => {
+        const top = ((g.startMin - H0 * 60) / 60) * PX;
+        const h = Math.max(15, (g.mins / 60) * PX);
+        return `<div class="gcal-ev" data-gcal="${GCAL.indexOf(g)}" style="top:${top}px;height:${h}px" title="Google Calendar — click pentru a transforma în înregistrare">⧉ ${escp(g.summary)}</div>`;
+      }).join('');
+      return `<div class="cal-col" data-date="${k}">${Array.from({ length: H1 - H0 + 1 }, () => `<div class="cal-hour"></div>`).join('')}${gblocks}${blocks}${k === todayISO ? nowLineHtml() : ''}</div>`;
     }).join('');
     $('#calGrid').innerHTML = gutter + cols;
 
@@ -427,8 +455,8 @@
     for (let cur = new Date(gridStart); cur <= gridEnd; cur = addDays(cur, 1)) {
       const d = new Date(cur), k = iso(d);
       const list = (byDay[k] || []).slice().sort((a, b) => (a.start_min ?? 0) - (b.start_min ?? 0));
-      const tot = list.reduce((s, e) => s + e.mins, 0);
-      const chips = list.slice(0, 3).map(e => { const pr = project(e.project_id); return `<div class="m-chip" data-eid="${e.id}" style="border-left-color:${pr?.color || '#556'}" title="${escp(e.desc)}">${e.start_min != null ? '<b>' + clock(e.start_min) + '</b> ' : ''}${escp(e.desc || '—')}</div>`; }).join('');
+      const tot = list.reduce((s, e) => s + (e.planned ? 0 : e.mins), 0);
+      const chips = list.slice(0, 3).map(e => { const pr = project(e.project_id); return `<div class="m-chip ${e.planned ? 'planned' : ''}" data-eid="${e.id}" style="border-left-color:${pr?.color || '#556'}" title="${escp(e.desc)}">${e.planned ? '◌ ' : ''}${e.start_min != null ? '<b>' + clock(e.start_min) + '</b> ' : ''}${escp(e.desc || '—')}</div>`; }).join('');
       const more = list.length > 3 ? `<div class="m-more">+${list.length - 3} altele</div>` : '';
       cells.push(`<div class="mcell ${d.getMonth() === curMonth ? '' : 'out'} ${k === todayISO ? 'today' : ''}" data-add-day="${k}"><div class="mcell-top"><span class="mday">${d.getDate()}</span>${tot ? `<span class="mtot">${fmtHM(tot)}</span>` : ''}</div>${chips}${more}</div>`);
     }
@@ -535,20 +563,19 @@
   }
   function renderProjects() {
     const cliOpts = sel => `<option value="">— fără client —</option>` + ST.clients.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${escp(c.name)}</option>`).join('');
-    const now = new Date(), mStart = iso(new Date(now.getFullYear(), now.getMonth(), 1));
-    const monthMins = pid => ST.entries.filter(e => e.project_id === pid && e.date >= mStart).reduce((s, e) => s + e.mins, 0);
     $('#projectList').innerHTML = ST.projects.map(p => {
-      const used = monthMins(p.id), budget = (p.hours || 0) * 60, over = budget > 0 && used > budget;
-      const usage = budget ? `<div class="meta" style="${over ? 'color:var(--red);font-weight:600' : used > budget * 0.8 ? 'color:var(--amber)' : ''}">${fmtHMlong(used)} din ${p.hours}h luna asta${over ? ' ⚠ depășit' : ''}</div>` : '';
+      const cliRate = client(p.client_id)?.rate || 0;
+      const eff = (p.rate || 0) || cliRate;
+      const hint = !p.rate && cliRate ? `<div class="meta">moștenit de la client: ${cliRate} €/h</div>` : '';
       return `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="project" data-id="${p.id}" data-color="${p.color || '#2f9bf0'}" style="background:${p.color || '#2f9bf0'}" title="culoare proiect"></button>
-      <div style="min-width:0"><input class="name-edit" value="${escp(p.name)}" data-pname="${p.id}" title="click pentru a redenumi">${usage}</div>
+      <div style="min-width:0"><input class="name-edit" value="${escp(p.name)}" data-pname="${p.id}" title="click pentru a redenumi">${hint}</div>
       <div class="spacer"></div>
-      <label class="pill" style="cursor:pointer" title="ore alocate pe lună (0 = fără buget)">Buget <input type="number" value="${p.hours || 0}" data-phours="${p.id}" min="0" step="0.5" style="width:44px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> h</label>
+      <label class="pill" style="cursor:pointer" title="cost per oră pentru acest proiect; 0 = se folosește tariful clientului">Tarif <input type="number" value="${p.rate || 0}" data-prate="${p.id}" min="0" style="width:44px;background:transparent;border:none;color:${eff ? 'var(--green)' : 'var(--ink)'};font-weight:600;text-align:right"> €/h</label>
       <select class="pill-sel" data-pclient="${p.id}" title="client">${cliOpts(p.client_id)}</select>
       <button class="e-del" data-del="project:${p.id}">✕</button></div>`;
     }).join('') || '<div class="empty">Niciun proiect. Adaugă primul mai sus.</div>';
     $$('[data-pname]').forEach(inp => inp.addEventListener('change', async () => { if (!inp.value.trim()) { loadState(); return; } await act('update_project', { id: inp.dataset.pname, name: inp.value.trim() }); toast('Redenumit'); loadState(); }));
-    $$('[data-phours]').forEach(inp => inp.addEventListener('change', async () => { await act('update_project', { id: inp.dataset.phours, hours: +inp.value || 0 }); toast('Buget actualizat'); loadState(); }));
+    $$('[data-prate]').forEach(inp => inp.addEventListener('change', async () => { await act('update_project', { id: inp.dataset.prate, rate: +inp.value || 0 }); toast('Tarif actualizat'); loadState(); }));
     $$('[data-pclient]').forEach(sel => sel.addEventListener('change', async () => { await act('update_project', { id: sel.dataset.pclient, clientId: sel.value }); toast('Client actualizat'); loadState(); }));
   }
   function renderPeople() {
@@ -588,7 +615,13 @@
     $('#aiDot').className = 'ai-dot ' + (s.ollama ? 'on' : 'off'); $('#aiDot2').className = 'ai-dot ' + (s.ollama ? 'on' : 'off');
     $('#sModel').innerHTML = (s.models.length ? s.models : [s.model]).map(m => `<option value="${m}">${m}</option>`).join(''); $('#sModel').value = s.model;
     $('#aiHint').innerHTML = s.ollama ? `✓ Ollama conectat. Modele: ${s.models.join(', ') || '—'}` : 'Ollama nu rulează. Pornește <span class="kbd">ollama serve</span> apoi <span class="kbd">ollama pull qwen2.5:7b-instruct</span>.';
+    $('#sGcal').value = s.gcalUrl || '';
   }
+  $('#sGcalSave').onclick = async () => {
+    await api('/settings', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ gcalUrl: $('#sGcal').value.trim() }) });
+    toast($('#sGcal').value.trim() ? 'Google Calendar conectat' : 'Google Calendar deconectat');
+    if ($('#view-calendar').classList.contains('active')) loadCalendar();
+  };
   $('#sSave').onclick = async () => { await api('/settings', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ model: $('#sModel').value }) }); toast('Model salvat'); };
   $('#sRefresh').onclick = loadSettings;
   $('#sExport').onclick = async () => { const d = await api('/state'); const b = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'timetracker-backup.json'; a.click(); };

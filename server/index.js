@@ -8,6 +8,7 @@ import { ACTIONS, catalog, listEntries, snapshot, getTimers, recentAudit,
 import { ollamaUp, listModels, parseCommand, generateReportText } from './ollama.js';
 import { buildReportPdf } from './pdf.js';
 import { scheduleBackup, backupNow, listBackups, backupDir } from './backup.js';
+import { gcalEvents } from './gcal.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = Fastify({ logger: false });
@@ -43,6 +44,7 @@ function parseFilter(q = {}) {
     clientId: q.clientId || null, projectId: q.projectId || null, personId: q.personId || null,
     from: q.from || null, to: q.to || null, text: q.text || null,
     tags: q.tags ? String(q.tags).split(',').map(s => s.trim()).filter(Boolean) : [],
+    planned: q.planned || null,
   };
 }
 
@@ -59,8 +61,22 @@ app.get('/api/backups', async () => ({ dir: backupDir, backups: listBackups() })
 app.post('/api/backups', async () => ({ ok: true, file: backupNow('manual') }));
 
 /* ---------- settings ---------- */
-app.get('/api/settings', async () => ({ model: model(), ollama: await ollamaUp(), models: await listModels() }));
-app.post('/api/settings', async (req) => { if (req.body.model) setSetting('model', req.body.model); return { ok: true, model: model() }; });
+app.get('/api/settings', async () => ({ model: model(), ollama: await ollamaUp(), models: await listModels(), gcalUrl: getSetting('gcalUrl', '') }));
+app.post('/api/settings', async (req) => {
+  if (req.body.model) setSetting('model', req.body.model);
+  if (req.body.gcalUrl !== undefined) setSetting('gcalUrl', String(req.body.gcalUrl).trim());
+  return { ok: true, model: model() };
+});
+
+/* ---------- Google Calendar (import read-only prin link iCal secret) ---------- */
+app.get('/api/gcal', async (req, reply) => {
+  const url = getSetting('gcalUrl', '');
+  if (!url) return { events: [] };
+  const from = req.query.from || new Date().toISOString().slice(0, 10);
+  const to = req.query.to || from;
+  try { return { events: await gcalEvents(url, from, to) }; }
+  catch (e) { return reply.code(502).send({ error: 'Google Calendar: ' + e.message }); }
+});
 
 /* ---------- VOICE / TEXT COMMAND ---------- */
 // text -> local LLM -> resolved preview (no writes yet). Reads auto-flag; writes need confirm.
@@ -136,6 +152,7 @@ app.post('/api/command/execute', async (req, reply) => {
 app.post('/api/report', async (req, reply) => {
   if (!(await ollamaUp())) return reply.code(503).send({ error: 'Ollama nu rulează.' });
   const filter = parseFilter(req.body || {});
+  filter.planned = 'exclude'; // raportul acoperă doar timp lucrat
   const tip = req.body?.tip || 'intern';
   const entries = listEntries(filter);
   if (!entries.length) return reply.code(400).send({ error: 'Nicio înregistrare' });
@@ -167,6 +184,7 @@ Structurează cu titluri (##), rezumat la început, grupare pe teme, concluzii. 
 /* ---------- PDF ---------- */
 app.get('/api/export.pdf', async (req, reply) => {
   const filter = parseFilter(req.query);
+  filter.planned = 'exclude'; // PDF-ul acoperă doar timp lucrat
   let narrative = '';
   if (req.query.narrative === '1' && await ollamaUp()) {
     try {

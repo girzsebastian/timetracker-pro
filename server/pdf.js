@@ -36,17 +36,22 @@ export function buildReportPdf(filter = {}, narrative = '') {
   const eur = n => Math.round(n).toLocaleString('ro-RO') + ' €';
   let totExtra = 0, totBilled = 0;
   const clientRows = clients.map(c => {
-    const pids = projects.filter(p => p.client_id === c.id).map(p => p.id);
-    const mins = entries.filter(e => pids.includes(e.project_id)).reduce((s, e) => s + e.mins, 0);
+    const cprojects = projects.filter(p => p.client_id === c.id);
+    const pids = cprojects.map(p => p.id);
+    const rel = entries.filter(e => pids.includes(e.project_id));
+    const mins = rel.reduce((s, e) => s + e.mins, 0);
     const cap = (c.hours || 0) * 60;
-    const hourly = !(c.cost || 0) && !cap && (c.rate || 0) > 0;
-    const overMins = hourly ? 0 : Math.max(0, mins - cap);
+    const subscription = (c.cost || 0) > 0 || cap > 0;
+    // tariful proiectului are prioritate; altfel tariful implicit al clientului
+    const rateOf = pid => (cprojects.find(p => p.id === pid)?.rate || 0) || (c.rate || 0);
+    const overMins = subscription ? Math.max(0, mins - cap) : 0;
     const overCost = (overMins / 60) * (c.overage || 0);
-    const hourlyCost = hourly ? (mins / 60) * c.rate : 0;
+    const hourlyCost = subscription ? 0 : rel.reduce((s, e) => s + (e.mins / 60) * rateOf(e.project_id), 0);
+    const hourly = !subscription && (hourlyCost > 0 || (c.rate || 0) > 0 || cprojects.some(p => (p.rate || 0) > 0));
     const variable = overCost + hourlyCost;
     const billed = (c.cost || 0) + variable;
     totExtra += variable; totBilled += billed;
-    return [c.name, hourly ? c.rate + ' €/h' : (c.cost || 0) + ' €', cap ? fmtHM(cap) : '—', { text: fmtHM(mins), color: overMins ? RED : INK },
+    return [c.name, hourly ? (c.rate ? c.rate + ' €/h' : 'tarif/proiect') : (c.cost || 0) + ' €', cap ? fmtHM(cap) : '—', { text: fmtHM(mins), color: overMins ? RED : INK },
       { text: variable ? '+' + eur(variable) : '—', color: overCost ? RED : SUB, bold: !!variable },
       { text: eur(billed), bold: true }];
   });
