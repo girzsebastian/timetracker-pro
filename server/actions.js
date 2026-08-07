@@ -66,20 +66,20 @@ export function resolveProject(clientName, projectHint) {
 
 /* ---------- write actions (the registry) ---------- */
 export const ACTIONS = {
-  create_client({ name, cost = 0, hours = 0, overage = 0, color = '#2f9bf0' }, source = 'api') {
+  create_client({ name, cost = 0, hours = 0, overage = 0, rate = 0, color = '#2f9bf0' }, source = 'api') {
     if (!name?.trim()) throw new Error('Numele clientului lipsește');
     const dup = resolveClient(name);
     if (dup && norm(dup.name) === norm(name)) return { warning: 'exists', client: dup };
     const id = uid('c');
-    db.prepare('INSERT INTO clients(id,name,cost,hours,overage,color) VALUES(?,?,?,?,?,?)').run(id, name.trim(), +cost || 0, +hours || 0, +overage || 0, color || '#2f9bf0');
+    db.prepare('INSERT INTO clients(id,name,cost,hours,overage,rate,color) VALUES(?,?,?,?,?,?,?)').run(id, name.trim(), +cost || 0, +hours || 0, +overage || 0, +rate || 0, color || '#2f9bf0');
     audit(source, 'create_client', { id, name });
     return { client: db.prepare('SELECT * FROM clients WHERE id=?').get(id) };
   },
-  update_client({ id, name, cost, hours, overage, color }, source = 'api') {
+  update_client({ id, name, cost, hours, overage, rate, color }, source = 'api') {
     const c = db.prepare('SELECT * FROM clients WHERE id=?').get(id);
     if (!c) throw new Error('Client inexistent');
-    db.prepare('UPDATE clients SET name=?,cost=?,hours=?,overage=?,color=? WHERE id=?')
-      .run(name != null ? name.trim() : c.name, cost != null ? +cost : c.cost, hours != null ? +hours : c.hours, overage != null ? +overage : c.overage, color != null ? color : c.color, id);
+    db.prepare('UPDATE clients SET name=?,cost=?,hours=?,overage=?,rate=?,color=? WHERE id=?')
+      .run(name != null ? name.trim() : c.name, cost != null ? +cost : c.cost, hours != null ? +hours : c.hours, overage != null ? +overage : c.overage, rate != null ? +rate : c.rate, color != null ? color : c.color, id);
     audit(source, 'update_client', { id });
     return { client: db.prepare('SELECT * FROM clients WHERE id=?').get(id) };
   },
@@ -120,19 +120,19 @@ export const ACTIONS = {
     audit(source, 'update_person', { id });
     return { person: db.prepare('SELECT * FROM people WHERE id=?').get(id) };
   },
-  create_project({ name, clientId, clientName, color = '#6366f1' }, source = 'api') {
+  create_project({ name, clientId, clientName, color = '#6366f1', hours = 0 }, source = 'api') {
     if (!name?.trim()) throw new Error('Numele proiectului lipsește');
     const cid = clientId || resolveClient(clientName)?.id || null;
     const id = uid('pr');
-    db.prepare('INSERT INTO projects(id,name,client_id,color) VALUES(?,?,?,?)').run(id, name.trim(), cid, color);
+    db.prepare('INSERT INTO projects(id,name,client_id,color,hours) VALUES(?,?,?,?,?)').run(id, name.trim(), cid, color, +hours || 0);
     audit(source, 'create_project', { id, name });
     return { project: db.prepare('SELECT * FROM projects WHERE id=?').get(id) };
   },
-  update_project({ id, name, color, clientId }, source = 'api') {
+  update_project({ id, name, color, clientId, hours }, source = 'api') {
     const p = db.prepare('SELECT * FROM projects WHERE id=?').get(id);
     if (!p) throw new Error('Proiect inexistent');
-    db.prepare('UPDATE projects SET name=?,color=?,client_id=? WHERE id=?')
-      .run(name != null ? name.trim() : p.name, color != null ? color : p.color, clientId !== undefined ? (clientId || null) : p.client_id, id);
+    db.prepare('UPDATE projects SET name=?,color=?,client_id=?,hours=? WHERE id=?')
+      .run(name != null ? name.trim() : p.name, color != null ? color : p.color, clientId !== undefined ? (clientId || null) : p.client_id, hours != null ? +hours : p.hours, id);
     audit(source, 'update_project', { id });
     return { project: db.prepare('SELECT * FROM projects WHERE id=?').get(id) };
   },

@@ -39,12 +39,15 @@ export function buildReportPdf(filter = {}, narrative = '') {
     const pids = projects.filter(p => p.client_id === c.id).map(p => p.id);
     const mins = entries.filter(e => pids.includes(e.project_id)).reduce((s, e) => s + e.mins, 0);
     const cap = (c.hours || 0) * 60;
-    const overMins = Math.max(0, mins - cap);
+    const hourly = !(c.cost || 0) && !cap && (c.rate || 0) > 0;
+    const overMins = hourly ? 0 : Math.max(0, mins - cap);
     const overCost = (overMins / 60) * (c.overage || 0);
-    const billed = (c.cost || 0) + overCost;
-    totExtra += overCost; totBilled += billed;
-    return [c.name, (c.cost || 0) + ' €', cap ? fmtHM(cap) : '—', { text: fmtHM(mins), color: overMins ? RED : INK },
-      { text: overCost ? '+' + eur(overCost) : '—', color: overCost ? RED : SUB, bold: !!overCost },
+    const hourlyCost = hourly ? (mins / 60) * c.rate : 0;
+    const variable = overCost + hourlyCost;
+    const billed = (c.cost || 0) + variable;
+    totExtra += variable; totBilled += billed;
+    return [c.name, hourly ? c.rate + ' €/h' : (c.cost || 0) + ' €', cap ? fmtHM(cap) : '—', { text: fmtHM(mins), color: overMins ? RED : INK },
+      { text: variable ? '+' + eur(variable) : '—', color: overCost ? RED : SUB, bold: !!variable },
       { text: eur(billed), bold: true }];
   });
 
@@ -107,7 +110,7 @@ export function buildReportPdf(filter = {}, narrative = '') {
 
       { text: 'Clienți — ore, pachet & costuri extra', style: 'h2', margin: [0, 18, 0, 6] },
       { table: { headerRows: 1, widths: ['*', 60, 55, 55, 65, 65], body: [
-        ['Client', 'Abonament', 'Incluse', 'Lucrate', 'Extra', 'Total facturat'].map(t => ({ text: t, style: 'th' })),
+        ['Client', 'Abonament / Tarif', 'Incluse', 'Lucrate', 'Extra / Orar', 'Total facturat'].map(t => ({ text: t, style: 'th' })),
         ...clientRows,
         [{ text: 'TOTAL', bold: true, colSpan: 4, alignment: 'right' }, {}, {}, {}, { text: totExtra ? '+' + eur(totExtra) : '—', bold: true, color: totExtra ? RED : SUB }, { text: eur(totBilled), bold: true, color: GOLD }],
       ] }, layout: tableLayout() },

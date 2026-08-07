@@ -29,7 +29,7 @@ const COMMAND_SCHEMA = {
               clientName: { type: 'string' }, projectHint: { type: 'string' }, personName: { type: 'string' },
               projectName: { type: 'string' }, name: { type: 'string' },
               desc: { type: 'string' }, hours: { type: 'number' }, minutes: { type: 'number' },
-              cost: { type: 'number' }, includedHours: { type: 'number' },
+              cost: { type: 'number' }, includedHours: { type: 'number' }, rate: { type: 'number' },
               tags: { type: 'array', items: { type: 'string' } },
               from: { type: 'string' }, to: { type: 'string' }, text: { type: 'string' },
               view: { type: 'string' },

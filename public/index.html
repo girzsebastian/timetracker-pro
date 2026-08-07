@@ -118,6 +118,7 @@
             <input type="number" id="cCost" placeholder="abonament €/lună" style="width:150px" min="0">
             <input type="number" id="cHours" placeholder="ore incluse/lună" style="width:150px" min="0" step="0.5">
             <input type="number" id="cOver" placeholder="€/oră extra" style="width:130px" min="0" title="cost pe ora peste pachet">
+            <input type="number" id="cRate" placeholder="tarif €/oră" style="width:120px" min="0" title="pentru clienți fără abonament: se facturează orele lucrate × tarif">
             <button type="button" class="sw-color" id="cColorTrig" data-colortrig data-ck="newclient" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare client"></button>
             <button class="btn" id="cAdd">Adaugă</button>
           </div>
@@ -135,6 +136,7 @@
           <div class="form-row">
             <input type="text" id="pName" placeholder="Nume proiect" style="flex:1;min-width:160px">
             <select id="pClient"></select>
+            <input type="number" id="pHours" placeholder="buget ore/lună" style="width:140px" min="0" step="0.5" title="ore alocate proiectului pe lună (0 = fără buget)">
             <button type="button" class="sw-color" id="pColorTrig" data-colortrig data-ck="newproject" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare proiect"></button>
             <button class="btn" id="pAdd">Adaugă</button>
           </div>

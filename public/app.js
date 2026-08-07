@@ -39,13 +39,16 @@
   function debounce(fn, ms) { let h; return (...a) => { clearTimeout(h); h = setTimeout(() => fn(...a), ms); }; }
 
   // overage computation over a set of entries
+  // two billing models: subscription (cost + included hours + overage) OR hourly (rate × worked hours)
   function clientBilling(c, entries) {
     const pids = ST.projects.filter(p => p.client_id === c.id).map(p => p.id);
     const mins = entries.filter(e => pids.includes(e.project_id)).reduce((s, e) => s + e.mins, 0);
     const cap = (c.hours || 0) * 60;
-    const overMins = Math.max(0, mins - cap);
+    const hourly = !(c.cost || 0) && !cap && (c.rate || 0) > 0;
+    const overMins = hourly ? 0 : Math.max(0, mins - cap);
     const overCost = (overMins / 60) * (c.overage || 0);
-    return { mins, cap, overMins, overCost, total: (c.cost || 0) + overCost };
+    const hourlyCost = hourly ? (mins / 60) * (c.rate || 0) : 0;
+    return { mins, cap, overMins, overCost, hourly, hourlyCost, variable: overCost + hourlyCost, total: (c.cost || 0) + overCost + hourlyCost };
   }
 
   /* ---------- nav ---------- */
@@ -184,8 +187,8 @@
 
   /* ---------- CRUD ---------- */
   const resetTrig = (el, c = '#2f9bf0') => { el.dataset.color = c; el.style.background = c; };
-  $('#cAdd').onclick = async () => { const n = $('#cName').value.trim(); if (!n) return; await act('create_client', { name: n, cost: +$('#cCost').value || 0, hours: +$('#cHours').value || 0, overage: +$('#cOver').value || 0, color: $('#cColorTrig').dataset.color }); $('#cName').value = $('#cCost').value = $('#cHours').value = $('#cOver').value = ''; resetTrig($('#cColorTrig')); toast('Client adăugat'); loadState(); };
-  $('#pAdd').onclick = async () => { const n = $('#pName').value.trim(); if (!n) return; await act('create_project', { name: n, clientId: $('#pClient').value, color: $('#pColorTrig').dataset.color }); $('#pName').value = ''; resetTrig($('#pColorTrig')); toast('Proiect adăugat'); loadState(); };
+  $('#cAdd').onclick = async () => { const n = $('#cName').value.trim(); if (!n) return; await act('create_client', { name: n, cost: +$('#cCost').value || 0, hours: +$('#cHours').value || 0, overage: +$('#cOver').value || 0, rate: +$('#cRate').value || 0, color: $('#cColorTrig').dataset.color }); $('#cName').value = $('#cCost').value = $('#cHours').value = $('#cOver').value = $('#cRate').value = ''; resetTrig($('#cColorTrig')); toast('Client adăugat'); loadState(); };
+  $('#pAdd').onclick = async () => { const n = $('#pName').value.trim(); if (!n) return; await act('create_project', { name: n, clientId: $('#pClient').value, hours: +$('#pHours').value || 0, color: $('#pColorTrig').dataset.color }); $('#pName').value = $('#pHours').value = ''; resetTrig($('#pColorTrig')); toast('Proiect adăugat'); loadState(); };
   $('#eAdd').onclick = async () => { const n = $('#eName').value.trim(); if (!n) return; await act('create_person', { name: n }); $('#eName').value = ''; toast('Persoană adăugată'); loadState(); };
   $('#tgAdd').onclick = async () => { const n = $('#tgName').value.trim(); if (!n) return; await act('create_tag', { name: n, color: $('#tgColorTrig').dataset.color }); $('#tgName').value = ''; resetTrig($('#tgColorTrig')); toast('Tag adăugat'); loadState(); };
   document.addEventListener('click', async e => {
@@ -279,12 +282,12 @@
     const topPr = Object.entries(byPr).sort((a, b) => b[1] - a[1])[0];
     const byCl = {}; weekEnts.forEach(e => { const pr = project(e.project_id); if (pr) byCl[pr.client_id] = (byCl[pr.client_id] || 0) + e.mins; });
     const topCl = Object.entries(byCl).sort((a, b) => b[1] - a[1])[0];
-    const extraMonth = ST.clients.reduce((s, c) => s + clientBilling(c, monthEnts).overCost, 0);
+    const extraMonth = ST.clients.reduce((s, c) => s + clientBilling(c, monthEnts).variable, 0);
 
     $('#dashStats').innerHTML = `
       <div class="dstat"><small>Total timp (săptămâna)</small><b>${fmtHM(total)}</b></div>
       <div class="dstat"><small>Top proiect</small><b style="font-size:19px">${topPr ? escp(project(topPr[0])?.name || '—') : '—'}</b><div class="sub">${topPr ? fmtHM(topPr[1]) : ''}</div></div>
-      <div class="dstat"><small>Extra facturat (luna)</small><b style="color:var(--amber)">${eur(extraMonth)}</b><div class="sub">peste orele incluse</div></div>`;
+      <div class="dstat"><small>Extra facturat (luna)</small><b style="color:var(--amber)">${eur(extraMonth)}</b><div class="sub">ore extra + tarif orar</div></div>`;
 
     // bar chart: hours per weekday
     const perDay = Array(7).fill(0);
@@ -306,13 +309,18 @@
     const top = Object.entries(byDesc).sort((a, b) => b[1] - a[1]).slice(0, 8);
     $('#topActivities').innerHTML = top.map(([name, m], i) => `<div class="top-row"><span class="tr-dot" style="background:${['#2f9bf0', '#4bd08a', '#f0b429', '#e1b339', '#38c6e0', '#a78bfa', '#f16a6a', '#94a3b8'][i]}"></span><span class="tr-name">${escp(name)}</span><span class="tr-h">${fmtHM(m)}</span></div>`).join('') || '<div class="empty" style="padding:20px">—</div>';
 
-    // client package cards (this month) with overage
+    // client package cards (this month): subscription with overage, or hourly rate
     $('#clientCards').innerHTML = ST.clients.map(c => {
       const b = clientBilling(c, monthEnts), pct = b.cap ? Math.min(100, b.mins / b.cap * 100) : 0, over = b.overMins > 0;
+      if (b.hourly) {
+        return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev">${eur(b.total)} luna asta</span></div>
+          <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> × ${c.rate} €/h</div>
+          <div class="pbar"><div style="width:${b.mins ? 100 : 0}%"></div></div><div class="cli-st">Tarif orar · fără abonament</div></div>`;
+      }
       const st = !b.cap ? `<div class="cli-st">Fără pachet</div>`
         : over ? `<div class="cli-st over">⚠ +${fmtHMlong(b.overMins)} extra → ${eur(b.overCost)}</div>`
         : pct > 80 ? `<div class="cli-st warn">Aproape de limită</div>` : `<div class="cli-st ok">În pachet · ${fmtHMlong(b.cap - b.mins)} rămase</div>`;
-      return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev">${eur(c.total || c.cost || 0)}${over ? ' facturat' : '/lună'}</span></div>
+      return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev">${eur(b.total || c.cost || 0)}${over ? ' facturat' : '/lună'}</span></div>
         <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> ${b.cap ? 'din ' + fmtHMlong(b.cap) + ' incluse' : ''} ${c.overage ? '· ' + c.overage + ' €/h extra' : ''}</div>
         <div class="pbar ${over ? 'over' : ''}"><div style="width:${b.cap ? pct : (b.mins ? 100 : 0)}%"></div></div>${st}</div>`;
     }).join('') || '<div class="empty">Niciun client.</div>';
@@ -520,18 +528,27 @@
       <label class="pill" style="cursor:pointer">Abonament <input type="number" value="${c.cost || 0}" data-edit="cost:${c.id}" style="width:60px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> €</label>
       <label class="pill" style="cursor:pointer">Incluse <input type="number" value="${c.hours || 0}" data-edit="hours:${c.id}" style="width:44px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> h</label>
       <label class="pill" style="cursor:pointer">Extra <input type="number" value="${c.overage || 0}" data-edit="overage:${c.id}" style="width:44px;background:transparent;border:none;color:var(--amber);font-weight:600;text-align:right"> €/h</label>
+      <label class="pill" style="cursor:pointer" title="pentru clienți fără abonament: ore lucrate × tarif">Tarif <input type="number" value="${c.rate || 0}" data-edit="rate:${c.id}" style="width:44px;background:transparent;border:none;color:var(--green);font-weight:600;text-align:right"> €/h</label>
       <button class="e-del" data-del="client:${c.id}">✕</button></div>`).join('') || '<div class="empty">Niciun client. Adaugă primul mai sus.</div>';
     $$('[data-edit]').forEach(inp => inp.addEventListener('change', async () => { const [field, id] = inp.dataset.edit.split(':'); await act('update_client', { id, [field]: +inp.value || 0 }); toast('Actualizat'); loadState(); }));
     $$('[data-cname]').forEach(inp => inp.addEventListener('change', async () => { if (!inp.value.trim()) { loadState(); return; } await act('update_client', { id: inp.dataset.cname, name: inp.value.trim() }); toast('Redenumit'); loadState(); }));
   }
   function renderProjects() {
     const cliOpts = sel => `<option value="">— fără client —</option>` + ST.clients.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${escp(c.name)}</option>`).join('');
-    $('#projectList').innerHTML = ST.projects.map(p => `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="project" data-id="${p.id}" data-color="${p.color || '#2f9bf0'}" style="background:${p.color || '#2f9bf0'}" title="culoare proiect"></button>
-      <div style="min-width:0"><input class="name-edit" value="${escp(p.name)}" data-pname="${p.id}" title="click pentru a redenumi"></div>
+    const now = new Date(), mStart = iso(new Date(now.getFullYear(), now.getMonth(), 1));
+    const monthMins = pid => ST.entries.filter(e => e.project_id === pid && e.date >= mStart).reduce((s, e) => s + e.mins, 0);
+    $('#projectList').innerHTML = ST.projects.map(p => {
+      const used = monthMins(p.id), budget = (p.hours || 0) * 60, over = budget > 0 && used > budget;
+      const usage = budget ? `<div class="meta" style="${over ? 'color:var(--red);font-weight:600' : used > budget * 0.8 ? 'color:var(--amber)' : ''}">${fmtHMlong(used)} din ${p.hours}h luna asta${over ? ' ⚠ depășit' : ''}</div>` : '';
+      return `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="project" data-id="${p.id}" data-color="${p.color || '#2f9bf0'}" style="background:${p.color || '#2f9bf0'}" title="culoare proiect"></button>
+      <div style="min-width:0"><input class="name-edit" value="${escp(p.name)}" data-pname="${p.id}" title="click pentru a redenumi">${usage}</div>
       <div class="spacer"></div>
+      <label class="pill" style="cursor:pointer" title="ore alocate pe lună (0 = fără buget)">Buget <input type="number" value="${p.hours || 0}" data-phours="${p.id}" min="0" step="0.5" style="width:44px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> h</label>
       <select class="pill-sel" data-pclient="${p.id}" title="client">${cliOpts(p.client_id)}</select>
-      <button class="e-del" data-del="project:${p.id}">✕</button></div>`).join('') || '<div class="empty">Niciun proiect. Adaugă primul mai sus.</div>';
+      <button class="e-del" data-del="project:${p.id}">✕</button></div>`;
+    }).join('') || '<div class="empty">Niciun proiect. Adaugă primul mai sus.</div>';
     $$('[data-pname]').forEach(inp => inp.addEventListener('change', async () => { if (!inp.value.trim()) { loadState(); return; } await act('update_project', { id: inp.dataset.pname, name: inp.value.trim() }); toast('Redenumit'); loadState(); }));
+    $$('[data-phours]').forEach(inp => inp.addEventListener('change', async () => { await act('update_project', { id: inp.dataset.phours, hours: +inp.value || 0 }); toast('Buget actualizat'); loadState(); }));
     $$('[data-pclient]').forEach(sel => sel.addEventListener('change', async () => { await act('update_project', { id: sel.dataset.pclient, clientId: sel.value }); toast('Client actualizat'); loadState(); }));
   }
   function renderPeople() {

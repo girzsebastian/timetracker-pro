@@ -54,6 +54,8 @@ const cols = (t) => db.prepare(`PRAGMA table_info(${t})`).all().map(c => c.name)
 if (!cols('clients').includes('overage')) db.exec('ALTER TABLE clients ADD COLUMN overage REAL DEFAULT 0');
 if (!cols('clients').includes('color')) db.exec("ALTER TABLE clients ADD COLUMN color TEXT DEFAULT '#2f9bf0'");
 if (!cols('entries').includes('start_min')) db.exec('ALTER TABLE entries ADD COLUMN start_min INTEGER');
+if (!cols('clients').includes('rate')) db.exec('ALTER TABLE clients ADD COLUMN rate REAL DEFAULT 0');
+if (!cols('projects').includes('hours')) db.exec('ALTER TABLE projects ADD COLUMN hours REAL DEFAULT 0');
 
 // settings helpers
 export const getSetting = (k, def = null) => {
