@@ -40,6 +40,11 @@ CREATE TABLE IF NOT EXISTS timers (
   id TEXT PRIMARY KEY, desc TEXT, project_id TEXT, person_id TEXT,
   tags TEXT DEFAULT '[]', start INTEGER, created_at TEXT DEFAULT (datetime('now'))
 );
+CREATE TABLE IF NOT EXISTS web_activity (
+  date TEXT NOT NULL, domain TEXT NOT NULL, seconds INTEGER DEFAULT 0,
+  PRIMARY KEY (date, domain)
+);
+CREATE TABLE IF NOT EXISTS domain_cats (domain TEXT PRIMARY KEY, category TEXT);
 CREATE TABLE IF NOT EXISTS audit (
   id INTEGER PRIMARY KEY AUTOINCREMENT, ts TEXT DEFAULT (datetime('now')),
   source TEXT, action TEXT, detail TEXT
@@ -58,6 +63,7 @@ if (!cols('clients').includes('rate')) db.exec('ALTER TABLE clients ADD COLUMN r
 if (!cols('projects').includes('hours')) db.exec('ALTER TABLE projects ADD COLUMN hours REAL DEFAULT 0');
 if (!cols('projects').includes('rate')) db.exec('ALTER TABLE projects ADD COLUMN rate REAL DEFAULT 0');
 if (!cols('entries').includes('planned')) db.exec('ALTER TABLE entries ADD COLUMN planned INTEGER DEFAULT 0');
+if (!cols('clients').includes('personal')) db.exec('ALTER TABLE clients ADD COLUMN personal INTEGER DEFAULT 0');
 
 // settings helpers
 export const getSetting = (k, def = null) => {

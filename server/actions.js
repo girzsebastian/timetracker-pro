@@ -68,20 +68,20 @@ export function resolveProject(clientName, projectHint) {
 
 /* ---------- write actions (the registry) ---------- */
 export const ACTIONS = {
-  create_client({ name, cost = 0, hours = 0, overage = 0, rate = 0, color = '#2f9bf0' }, source = 'api') {
+  create_client({ name, cost = 0, hours = 0, overage = 0, rate = 0, color = '#2f9bf0', personal = 0 }, source = 'api') {
     if (!name?.trim()) throw new Error('Numele clientului lipsește');
     const dup = resolveClient(name);
     if (dup && norm(dup.name) === norm(name)) return { warning: 'exists', client: dup };
     const id = uid('c');
-    db.prepare('INSERT INTO clients(id,name,cost,hours,overage,rate,color) VALUES(?,?,?,?,?,?,?)').run(id, name.trim(), +cost || 0, +hours || 0, +overage || 0, +rate || 0, color || '#2f9bf0');
+    db.prepare('INSERT INTO clients(id,name,cost,hours,overage,rate,color,personal) VALUES(?,?,?,?,?,?,?,?)').run(id, name.trim(), +cost || 0, +hours || 0, +overage || 0, +rate || 0, color || '#2f9bf0', personal ? 1 : 0);
     audit(source, 'create_client', { id, name });
     return { client: db.prepare('SELECT * FROM clients WHERE id=?').get(id) };
   },
-  update_client({ id, name, cost, hours, overage, rate, color }, source = 'api') {
+  update_client({ id, name, cost, hours, overage, rate, color, personal }, source = 'api') {
     const c = db.prepare('SELECT * FROM clients WHERE id=?').get(id);
     if (!c) throw new Error('Client inexistent');
-    db.prepare('UPDATE clients SET name=?,cost=?,hours=?,overage=?,rate=?,color=? WHERE id=?')
-      .run(name != null ? name.trim() : c.name, cost != null ? +cost : c.cost, hours != null ? +hours : c.hours, overage != null ? +overage : c.overage, rate != null ? +rate : c.rate, color != null ? color : c.color, id);
+    db.prepare('UPDATE clients SET name=?,cost=?,hours=?,overage=?,rate=?,color=?,personal=? WHERE id=?')
+      .run(name != null ? name.trim() : c.name, cost != null ? +cost : c.cost, hours != null ? +hours : c.hours, overage != null ? +overage : c.overage, rate != null ? +rate : c.rate, color != null ? color : c.color, personal !== undefined ? (personal ? 1 : 0) : (c.personal || 0), id);
     audit(source, 'update_client', { id });
     return { client: db.prepare('SELECT * FROM clients WHERE id=?').get(id) };
   },

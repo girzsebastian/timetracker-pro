@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "TimeTracker Activity",
+  "version": "1.0",
+  "description": "Trimite timpul petrecut pe tab-ul activ către TimeTracker-ul tău local (localhost:8888). Nimic nu pleacă în cloud.",
+  "permissions": ["tabs", "alarms", "idle", "storage"],
+  "host_permissions": ["http://localhost:8888/*", "http://127.0.0.1:8888/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "TimeTracker Activity" }
+}

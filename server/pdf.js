@@ -35,7 +35,7 @@ export function buildReportPdf(filter = {}, narrative = '') {
   // per-client hours vs package + overage billing
   const eur = n => Math.round(n).toLocaleString('ro-RO') + ' €';
   let totExtra = 0, totBilled = 0;
-  const clientRows = clients.map(c => {
+  const clientRows = clients.filter(c => !c.personal).map(c => {
     const cprojects = projects.filter(p => p.client_id === c.id);
     const pids = cprojects.map(p => p.id);
     const rel = entries.filter(e => pids.includes(e.project_id));
@@ -62,9 +62,9 @@ export function buildReportPdf(filter = {}, narrative = '') {
     const pr = projects.find(p => p.id === pid);
     const c = pr ? clients.find(x => x.id === pr.client_id) : null;
     const sub = c && ((c.cost || 0) > 0 || (c.hours || 0) > 0);
-    const rate = pr ? ((pr.rate || 0) || (c?.rate || 0)) : 0;
+    const rate = pr && !c?.personal ? ((pr.rate || 0) || (c?.rate || 0)) : 0;
     const val = !sub && rate ? (m / 60) * rate : null;
-    return [pr?.name || '(fără proiect)', c?.name || '—', { text: fmtHM(m), alignment: 'right' },
+    return [pr?.name || '(fără proiect)', (c?.name || '—') + (c?.personal ? ' ☆' : ''), { text: fmtHM(m), alignment: 'right' },
       { text: val != null ? eur(val) : '—', alignment: 'right', color: val != null ? INK : SUB, bold: val != null }];
   });
 

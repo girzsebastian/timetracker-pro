@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TimeTracker Pro</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 <div id="app">
@@ -19,7 +19,8 @@
       <button class="nav-item" data-view="proiecte"><span class="ni">▣</span>Proiecte</button>
       <button class="nav-item" data-view="echipa"><span class="ni">⚑</span>Echipă</button>
       <button class="nav-item" data-view="taguri"><span class="ni">🏷</span>Taguri</button>
-      <button class="nav-item" data-view="raport"><span class="ni">✦</span>Raport AI</button>
+      <button class="nav-item" data-view="activitate"><span class="ni">◉</span>Activitate web</button>
+      <button class="nav-item" data-view="raport"><span class="ni">✦</span>Rapoarte</button>
       <button class="nav-item" data-view="jurnal"><span class="ni">↻</span>Jurnal comenzi</button>
       <button class="nav-item" data-view="setari"><span class="ni">⚙</span>Setări</button>
     </nav>
@@ -123,10 +124,11 @@
             <input type="number" id="cHours" placeholder="ore incluse/lună" style="width:150px" min="0" step="0.5">
             <input type="number" id="cOver" placeholder="€/oră extra" style="width:130px" min="0" title="cost pe ora peste pachet">
             <input type="number" id="cRate" placeholder="tarif €/oră" style="width:120px" min="0" title="pentru clienți fără abonament: se facturează orele lucrate × tarif">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);cursor:pointer;white-space:nowrap"><input type="checkbox" id="cPersonal" style="width:auto">Personal</label>
             <button type="button" class="sw-color" id="cColorTrig" data-colortrig data-ck="newclient" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare client"></button>
             <button class="btn" id="cAdd">Adaugă</button>
           </div>
-          <p class="hint">„€/oră extra" = cât factori pentru fiecare oră lucrată peste pachetul inclus.</p>
+          <p class="hint">„€/oră extra" = cât factori pentru fiecare oră lucrată peste pachetul inclus. „Personal" = fără facturare (fitness, învățare, proiecte proprii) — orele apar la Dezvoltare personală pe Panou.</p>
         </div>
         <div id="clientList"></div>
       </div>
@@ -207,6 +209,27 @@
         <div class="form-panel report-panel" id="reportOut" style="display:none">
           <div class="report-tools"><button class="btn-ghost" id="rCopy">Copiază</button></div>
           <div id="reportBody"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVITATE WEB -->
+    <section class="view" id="view-activitate">
+      <div class="page-head"><h1>Activitate web</h1></div>
+      <div class="view-inner">
+        <div class="filterbar" style="padding:0 0 14px">
+          <span class="fx">Perioadă</span>
+          <button class="btn-ghost av-preset active" data-days="0">Azi</button>
+          <button class="btn-ghost av-preset" data-days="7">7 zile</button>
+          <button class="btn-ghost av-preset" data-days="30">30 zile</button>
+        </div>
+        <div id="actSummary" class="rep-kpis"></div>
+        <div class="form-panel">
+          <div id="actList"><div class="empty">Nicio activitate încă. Instalează extensia de browser (vezi mai jos).</div></div>
+          <p class="hint">Timpul e contorizat de extensie doar pentru <b>tab-ul activ din fereastra focusată</b> (pauzele și inactivitatea nu se pun). Tu decizi categoria fiecărui domeniu — „Ignoră" îl ascunde din totaluri.</p>
+        </div>
+        <div class="form-panel"><b>Extensia de browser</b>
+          <p class="hint" style="margin-top:8px">Chrome / Brave / Edge: deschide <span class="kbd">chrome://extensions</span> → activează <b>Developer mode</b> → <b>Load unpacked</b> → alege folderul <span class="kbd">extension/</span> din proiect. Extensia trimite datele doar către aplicația ta locală (localhost:8888).</p>
         </div>
       </div>
     </section>
@@ -301,6 +324,6 @@
     <label class="cp-custom">Custom <input type="color" id="cpCustom"></label>
   </div>
 </div>
-<script src="app.js"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>

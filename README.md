@@ -71,6 +71,10 @@ Deschide consola (⌘K), pune cursorul în câmp, dictează cu Wispr — textul 
 - **Planificat** — bifezi „Planificat" la o înregistrare: apare hașurat în calendar, nu intră la facturare/rapoarte până nu apeși „✓ Marchează ca lucrat". Opțional se repetă săptămânal (4/8/12 săptămâni).
 - **Import Google Calendar** — în Setări pui „Adresa secretă în format iCal" a calendarului tău Google; evenimentele apar în Calendar (contur albastru, doar citire) și devin înregistrări dintr-un click.
 
+## Activitate web (extensie de browser)
+
+Extensia din `extension/` (Chrome/Brave/Edge: `chrome://extensions` → Developer mode → Load unpacked) contorizează timpul pe **tab-ul activ din fereastra focusată** (idle = pauză) și îl trimite doar către aplicația locală. În view-ul **Activitate web** cataloghezi fiecare domeniu (Muncă, Muzică, Ignoră…) — nimic nu e etichetat automat.
+
 ## Facturare
 
 Două modele per client, care pot coexista în portofoliu:

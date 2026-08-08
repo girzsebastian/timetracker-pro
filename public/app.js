@@ -47,6 +47,7 @@
     const pids = cprojects.map(p => p.id);
     const rel = entries.filter(e => pids.includes(e.project_id) && !e.planned);
     const mins = rel.reduce((s, e) => s + e.mins, 0);
+    if (c.personal) return { mins, cap: 0, overMins: 0, overCost: 0, hourly: false, hourlyCost: 0, variable: 0, total: 0, personal: true };
     const cap = (c.hours || 0) * 60;
     const subscription = (c.cost || 0) > 0 || cap > 0;
     const rateOf = pid => (cprojects.find(p => p.id === pid)?.rate || 0) || (c.rate || 0);
@@ -69,6 +70,7 @@
     if (v === 'jurnal') loadAudit();
     if (v === 'setari') loadSettings();
     if (v === 'raport') loadReportTables();
+    if (v === 'activitate') loadActivity();
   }));
   function navTo(view) { const b = $$('.nav-item').find(n => n.dataset.view === view); if (b) b.click(); }
 
@@ -106,8 +108,9 @@
   }
 
   function renderSide() {
-    const rev = ST.clients.reduce((s, c) => s + (c.cost || 0), 0);
-    $('#sideRevenue').innerHTML = `Venit recurent<b>${eur(rev)}</b>${ST.clients.length} clienți · ${ST.people.length} în echipă`;
+    const biz = ST.clients.filter(c => !c.personal);
+    const rev = biz.reduce((s, c) => s + (c.cost || 0), 0);
+    $('#sideRevenue').innerHTML = `Venit recurent<b>${eur(rev)}</b>${biz.length} clienți · ${ST.people.length} în echipă`;
   }
 
   function renderCronometru() {
@@ -195,7 +198,7 @@
 
   /* ---------- CRUD ---------- */
   const resetTrig = (el, c = '#2f9bf0') => { el.dataset.color = c; el.style.background = c; };
-  $('#cAdd').onclick = async () => { const n = $('#cName').value.trim(); if (!n) return; await act('create_client', { name: n, cost: +$('#cCost').value || 0, hours: +$('#cHours').value || 0, overage: +$('#cOver').value || 0, rate: +$('#cRate').value || 0, color: $('#cColorTrig').dataset.color }); $('#cName').value = $('#cCost').value = $('#cHours').value = $('#cOver').value = $('#cRate').value = ''; resetTrig($('#cColorTrig')); toast('Client adăugat'); loadState(); };
+  $('#cAdd').onclick = async () => { const n = $('#cName').value.trim(); if (!n) return; await act('create_client', { name: n, cost: +$('#cCost').value || 0, hours: +$('#cHours').value || 0, overage: +$('#cOver').value || 0, rate: +$('#cRate').value || 0, personal: $('#cPersonal').checked ? 1 : 0, color: $('#cColorTrig').dataset.color }); $('#cName').value = $('#cCost').value = $('#cHours').value = $('#cOver').value = $('#cRate').value = ''; $('#cPersonal').checked = false; resetTrig($('#cColorTrig')); toast('Client adăugat'); loadState(); };
   $('#pAdd').onclick = async () => { const n = $('#pName').value.trim(); if (!n) return; await act('create_project', { name: n, clientId: $('#pClient').value, rate: +$('#pRate').value || 0, color: $('#pColorTrig').dataset.color }); $('#pName').value = $('#pRate').value = ''; resetTrig($('#pColorTrig')); toast('Proiect adăugat'); loadState(); };
   $('#eAdd').onclick = async () => { const n = $('#eName').value.trim(); if (!n) return; await act('create_person', { name: n }); $('#eName').value = ''; toast('Persoană adăugată'); loadState(); };
   $('#tgAdd').onclick = async () => { const n = $('#tgName').value.trim(); if (!n) return; await act('create_tag', { name: n, color: $('#tgColorTrig').dataset.color }); $('#tgName').value = ''; resetTrig($('#tgColorTrig')); toast('Tag adăugat'); loadState(); };
@@ -336,6 +339,11 @@
     // client package cards (this month): subscription with overage, or hourly rate
     $('#clientCards').innerHTML = ST.clients.map(c => {
       const b = clientBilling(c, monthEnts), pct = b.cap ? Math.min(100, b.mins / b.cap * 100) : 0, over = b.overMins > 0;
+      if (b.personal) {
+        return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev" style="color:var(--ink3)">personal</span></div>
+          <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> luna asta</div>
+          <div class="pbar"><div style="width:${b.mins ? 100 : 0}%"></div></div><div class="cli-st">Fără facturare · dezvoltare personală</div></div>`;
+      }
       if (b.hourly) {
         return `<div class="cli-card" style="border-left:3px solid ${c.color || 'var(--accent)'}"><div class="cli-top"><b>${escp(c.name)}</b><span class="rev">${eur(b.total)} luna asta</span></div>
           <div class="cli-hrs"><em>${fmtHMlong(b.mins)}</em> ${c.rate ? '× ' + c.rate + ' €/h' : 'la tarif per proiect'}</div>
@@ -387,12 +395,22 @@
     const activeDays = new Set(m28.map(e => e.date)).size;
     const avg = activeDays ? Math.round(m28.reduce((s, e) => s + e.mins, 0) / activeDays) : 0;
 
+    // ore pe clienți personali (fitness, învățare, proiecte proprii) săptămâna asta
+    const persIds = ST.projects.filter(p => client(p.client_id)?.personal).map(p => p.id);
+    const persEnts = weekEnts.filter(e => persIds.includes(e.project_id));
+    const persMins = persEnts.reduce((s, e) => s + e.mins, 0);
+    const byPersProj = {}; persEnts.forEach(e => { const n = project(e.project_id)?.name || '—'; byPersProj[n] = (byPersProj[n] || 0) + e.mins; });
+    const persDetail = Object.entries(byPersProj).sort((a, b) => b[1] - a[1]).map(([n, m]) => `${escp(n)} <b>${fmtHMlong(m)}</b>`).join(' · ');
+    const persHtml = persIds.length
+      ? `<div class="pd-pers">☆ <b>${fmtHMlong(persMins)}</b> pe tine săptămâna asta${persDetail ? ' — ' + persDetail : ''}</div>`
+      : `<div class="pd-pers hint">☆ Vrei să urmărești și fitness, învățare, proiecte proprii? Creează un client bifat „Personal" (în Clienți) și pune-i proiecte — orele lui apar aici, fără facturare.</div>`;
+
     const pct = goal ? Math.min(100, weekMins / (goal * 60) * 100) : 0;
     const goalHtml = goal
       ? `<div class="pd-goal"><div class="pd-goal-t">${fmtHMlong(weekMins)} din ${goal}h obiectiv <b style="color:${pct >= 100 ? 'var(--green)' : 'var(--ink)'}">${Math.round(pct)}%</b></div><div class="pbar ${pct >= 100 ? '' : ''}"><div style="width:${pct}%"></div></div></div>`
       : `<div class="hint" style="margin:4px 0 10px">Setează un obiectiv de ore pe săptămână (sus, dreapta) și urmărește-l aici.</div>`;
 
-    el.innerHTML = goalHtml + `<div class="pd-grid">
+    el.innerHTML = goalHtml + persHtml + `<div class="pd-grid">
       <div class="pd-stat"><b>${streak}</b><small>zile la rând cu ore</small></div>
       <div class="pd-stat"><b style="color:${diff >= 0 ? 'var(--green)' : 'var(--amber)'}">${diff >= 0 ? '+' : '−'}${fmtHMlong(Math.abs(diff))}</b><small>vs. săpt. trecută (până azi)</small></div>
       <div class="pd-stat"><b>${fmtHMlong(avg)}</b><small>media pe zi activă (4 săpt.)</small></div>
@@ -661,30 +679,48 @@
 
   /* ---------- lists ---------- */
   function renderClients() {
-    $('#clientList').innerHTML = ST.clients.map(c => `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="client" data-id="${c.id}" data-color="${c.color || '#2f9bf0'}" style="background:${c.color || '#2f9bf0'}" title="culoare client"></button>
-      <div style="min-width:0"><input class="name-edit" value="${escp(c.name)}" data-cname="${c.id}" title="click pentru a redenumi"><div class="meta">${ST.projects.filter(p => p.client_id === c.id).length} proiecte</div></div>
-      <div class="spacer"></div>
+    const billingPills = c => `
       <label class="pill" style="cursor:pointer">Abonament <input type="number" value="${c.cost || 0}" data-edit="cost:${c.id}" style="width:60px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> €</label>
       <label class="pill" style="cursor:pointer">Incluse <input type="number" value="${c.hours || 0}" data-edit="hours:${c.id}" style="width:44px;background:transparent;border:none;color:var(--ink);font-weight:600;text-align:right"> h</label>
       <label class="pill" style="cursor:pointer">Extra <input type="number" value="${c.overage || 0}" data-edit="overage:${c.id}" style="width:44px;background:transparent;border:none;color:var(--amber);font-weight:600;text-align:right"> €/h</label>
-      <label class="pill" style="cursor:pointer" title="pentru clienți fără abonament: ore lucrate × tarif">Tarif <input type="number" value="${c.rate || 0}" data-edit="rate:${c.id}" style="width:44px;background:transparent;border:none;color:var(--green);font-weight:600;text-align:right"> €/h</label>
+      <label class="pill" style="cursor:pointer" title="pentru clienți fără abonament: ore lucrate × tarif">Tarif <input type="number" value="${c.rate || 0}" data-edit="rate:${c.id}" style="width:44px;background:transparent;border:none;color:var(--green);font-weight:600;text-align:right"> €/h</label>`;
+    $('#clientList').innerHTML = ST.clients.map(c => `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="client" data-id="${c.id}" data-color="${c.color || '#2f9bf0'}" style="background:${c.color || '#2f9bf0'}" title="culoare client"></button>
+      <div style="min-width:0"><input class="name-edit" value="${escp(c.name)}" data-cname="${c.id}" title="click pentru a redenumi"><div class="meta">${ST.projects.filter(p => p.client_id === c.id).length} proiecte${c.personal ? ' · fără facturare' : ''}</div></div>
+      <div class="spacer"></div>
+      ${c.personal ? '<span class="pill" style="color:var(--accent);border-color:var(--accent)">☆ Personal</span>' : billingPills(c)}
+      <button class="pill" data-cpers="${c.id}" title="${c.personal ? 'transformă în client facturabil' : 'marchează ca personal (fără facturare)'}" style="cursor:pointer">${c.personal ? '→ facturabil' : '→ personal'}</button>
       <button class="e-del" data-del="client:${c.id}">✕</button></div>`).join('') || '<div class="empty">Niciun client. Adaugă primul mai sus.</div>';
     $$('[data-edit]').forEach(inp => inp.addEventListener('change', async () => { const [field, id] = inp.dataset.edit.split(':'); await act('update_client', { id, [field]: +inp.value || 0 }); toast('Actualizat'); loadState(); }));
     $$('[data-cname]').forEach(inp => inp.addEventListener('change', async () => { if (!inp.value.trim()) { loadState(); return; } await act('update_client', { id: inp.dataset.cname, name: inp.value.trim() }); toast('Redenumit'); loadState(); }));
+    $$('[data-cpers]').forEach(b => b.addEventListener('click', async () => { const c = client(b.dataset.cpers); await act('update_client', { id: b.dataset.cpers, personal: c?.personal ? 0 : 1 }); toast(c?.personal ? 'Client facturabil' : 'Marcat ca personal'); loadState(); }));
   }
   function renderProjects() {
     const cliOpts = sel => `<option value="">— fără client —</option>` + ST.clients.map(c => `<option value="${c.id}" ${c.id === sel ? 'selected' : ''}>${escp(c.name)}</option>`).join('');
-    $('#projectList').innerHTML = ST.projects.map(p => {
-      const cliRate = client(p.client_id)?.rate || 0;
+    const row = p => {
+      const c = client(p.client_id);
+      const cliRate = c?.rate || 0;
       const eff = (p.rate || 0) || cliRate;
       const hint = !p.rate && cliRate ? `<div class="meta">moștenit de la client: ${cliRate} €/h</div>` : '';
+      const ratePill = c?.personal ? '' : `<label class="pill" style="cursor:pointer" title="cost per oră pentru acest proiect; 0 = se folosește tariful clientului">Tarif <input type="number" value="${p.rate || 0}" data-prate="${p.id}" min="0" style="width:44px;background:transparent;border:none;color:${eff ? 'var(--green)' : 'var(--ink)'};font-weight:600;text-align:right"> €/h</label>`;
       return `<div class="lrow"><button type="button" class="sw-color" data-colortrig data-ck="project" data-id="${p.id}" data-color="${p.color || '#2f9bf0'}" style="background:${p.color || '#2f9bf0'}" title="culoare proiect"></button>
       <div style="min-width:0"><input class="name-edit" value="${escp(p.name)}" data-pname="${p.id}" title="click pentru a redenumi">${hint}</div>
       <div class="spacer"></div>
-      <label class="pill" style="cursor:pointer" title="cost per oră pentru acest proiect; 0 = se folosește tariful clientului">Tarif <input type="number" value="${p.rate || 0}" data-prate="${p.id}" min="0" style="width:44px;background:transparent;border:none;color:${eff ? 'var(--green)' : 'var(--ink)'};font-weight:600;text-align:right"> €/h</label>
-      <select class="pill-sel" data-pclient="${p.id}" title="client">${cliOpts(p.client_id)}</select>
+      ${ratePill}
+      <select class="pill-sel" data-pclient="${p.id}" title="mută la alt client">${cliOpts(p.client_id)}</select>
       <button class="e-del" data-del="project:${p.id}">✕</button></div>`;
-    }).join('') || '<div class="empty">Niciun proiect. Adaugă primul mai sus.</div>';
+    };
+    // grouped per client: business clients first, then personal, then projects without a client
+    const groups = [];
+    const sortedClients = [...ST.clients].sort((a, b) => (a.personal || 0) - (b.personal || 0) || a.name.localeCompare(b.name, 'ro'));
+    for (const c of sortedClients) {
+      const prs = ST.projects.filter(p => p.client_id === c.id);
+      if (prs.length) groups.push({ c, prs });
+    }
+    const orphans = ST.projects.filter(p => !p.client_id || !client(p.client_id));
+    $('#projectList').innerHTML = groups.map(({ c, prs }) =>
+      `<div class="pg-head"><span class="pg-dot" style="background:${c.color || '#2f9bf0'}"></span><b>${escp(c.name)}</b>${c.personal ? '<span class="pg-badge">☆ personal</span>' : ''}<span class="pg-n">${prs.length} ${prs.length === 1 ? 'proiect' : 'proiecte'}</span></div>
+       <div class="pg-body">${prs.map(row).join('')}</div>`
+    ).join('') + (orphans.length ? `<div class="pg-head"><span class="pg-dot" style="background:#556"></span><b>Fără client</b><span class="pg-n">${orphans.length}</span></div><div class="pg-body">${orphans.map(row).join('')}</div>` : '') || '<div class="empty">Niciun proiect. Adaugă primul mai sus.</div>';
     $$('[data-pname]').forEach(inp => inp.addEventListener('change', async () => { if (!inp.value.trim()) { loadState(); return; } await act('update_project', { id: inp.dataset.pname, name: inp.value.trim() }); toast('Redenumit'); loadState(); }));
     $$('[data-prate]').forEach(inp => inp.addEventListener('change', async () => { await act('update_project', { id: inp.dataset.prate, rate: +inp.value || 0 }); toast('Tarif actualizat'); loadState(); }));
     $$('[data-pclient]').forEach(sel => sel.addEventListener('change', async () => { await act('update_project', { id: sel.dataset.pclient, clientId: sel.value }); toast('Client actualizat'); loadState(); }));
@@ -733,7 +769,7 @@
     // hourly value of one entry: project rate, else client rate — only for clients without subscription
     const valOf = e => {
       const pr = project(e.project_id); if (!pr) return null;
-      const c = client(pr.client_id); if (!c) return null;
+      const c = client(pr.client_id); if (!c || c.personal) return null;
       if ((c.cost || 0) > 0 || (c.hours || 0) > 0) return null;
       const rate = (pr.rate || 0) || (c.rate || 0);
       return rate ? (e.mins / 60) * rate : null;
@@ -782,6 +818,32 @@
   };
   $('#rPdf').onclick = () => { const p = new URLSearchParams(); const f = reportFilter(); Object.entries(f).forEach(([k, v]) => { if (k === 'tip') return; if (Array.isArray(v)) { if (v.length) p.set(k, v.join(',')); } else if (v) p.set(k, v); }); p.set('narrative', '1'); window.location = '/api/export.pdf?' + p.toString(); };
   $('#rCopy').onclick = () => { navigator.clipboard.writeText($('#reportBody').innerText); toast('Copiat'); };
+
+  /* ---------- ACTIVITATE WEB (extensia de browser) ---------- */
+  const ACT_CATS = ['Muncă', 'Învățare', 'Comunicare', 'Muzică', 'Social', 'Divertisment', 'Ignoră'];
+  let actDays = 0;
+  $$('.av-preset').forEach(b => b.onclick = () => { actDays = +b.dataset.days; $$('.av-preset').forEach(x => x.classList.toggle('active', x === b)); loadActivity(); });
+  const fmtSec = s => { const h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60); return h ? `${h}h ${m}m` : `${m}m`; };
+  async function loadActivity() {
+    const to = iso(new Date()), from = iso(addDays(new Date(), -actDays));
+    const { rows } = await api(`/activity?from=${from}&to=${to}`);
+    const list = $('#actList'), sum = $('#actSummary');
+    if (!rows.length) { sum.innerHTML = ''; list.innerHTML = '<div class="empty">Nicio activitate în perioada asta. Extensia trimite date doar când browserul e folosit activ.</div>'; return; }
+    const counted = rows.filter(r => r.category !== 'Ignoră');
+    const total = counted.reduce((s, r) => s + r.seconds, 0);
+    const byCat = {}; counted.forEach(r => { const c = r.category || '(necatalogat)'; byCat[c] = (byCat[c] || 0) + r.seconds; });
+    sum.innerHTML = `<div class="dstat"><small>Total activ</small><b>${fmtSec(total)}</b></div>` +
+      Object.entries(byCat).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([c, s]) => `<div class="dstat"><small>${escp(c)}</small><b style="font-size:20px">${fmtSec(s)}</b><div class="sub">${total ? Math.round(s / total * 100) : 0}%</div></div>`).join('');
+    const catOpts = sel => `<option value="">— alege —</option>` + ACT_CATS.map(c => `<option ${c === sel ? 'selected' : ''}>${c}</option>`).join('');
+    list.innerHTML = `<table class="rep-t"><thead><tr><th>Domeniu</th><th style="text-align:left">Categorie</th><th>Timp</th><th>%</th></tr></thead><tbody>` +
+      rows.map(r => `<tr class="${r.category === 'Ignoră' ? 'act-ignored' : ''}"><td>${escp(r.domain)}</td>
+        <td style="text-align:left"><select class="pill-sel" data-actcat="${escp(r.domain)}">${catOpts(r.category || '')}</select></td>
+        <td>${fmtSec(r.seconds)}</td><td>${total && r.category !== 'Ignoră' ? Math.round(r.seconds / total * 100) + '%' : '—'}</td></tr>`).join('') + '</tbody></table>';
+    $$('[data-actcat]').forEach(sel => sel.addEventListener('change', async () => {
+      await api('/activity/category', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ domain: sel.dataset.actcat, category: sel.value }) });
+      toast('Categorie salvată'); loadActivity();
+    }));
+  }
 
   async function loadAudit() { const rows = await api('/audit'); $('#auditList').innerHTML = rows.map(r => `<div class="audit-row"><span class="at">${r.ts.slice(11, 16)}</span><span class="av">${r.action}</span><span>${escp(r.source)}</span></div>`).join('') || '<div class="empty">Nicio acțiune.</div>'; }
 

@@ -69,6 +69,36 @@ app.post('/api/settings', async (req) => {
   return { ok: true, model: model() };
 });
 
+/* ---------- activitate browser (extensia trimite timp per domeniu, tab activ) ---------- */
+app.post('/api/activity/ingest', async (req, reply) => {
+  const items = Array.isArray(req.body?.items) ? req.body.items : [];
+  const up = db.prepare('INSERT INTO web_activity(date,domain,seconds) VALUES(?,?,?) ON CONFLICT(date,domain) DO UPDATE SET seconds=seconds+excluded.seconds');
+  let ok = 0;
+  for (const it of items) {
+    const d = String(it.domain || '').toLowerCase().slice(0, 200);
+    const s = Math.round(+it.seconds || 0);
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(it.date || '') ? it.date : new Date().toISOString().slice(0, 10);
+    if (!d || s <= 0 || s > 7200) continue;
+    up.run(date, d, s); ok++;
+  }
+  return { ok };
+});
+app.get('/api/activity', async (req) => {
+  const from = req.query.from || '0000', to = req.query.to || '9999';
+  const rows = db.prepare(`SELECT a.domain, SUM(a.seconds) seconds, c.category
+    FROM web_activity a LEFT JOIN domain_cats c ON c.domain=a.domain
+    WHERE a.date>=? AND a.date<=? GROUP BY a.domain ORDER BY seconds DESC`).all(from, to);
+  return { rows };
+});
+app.post('/api/activity/category', async (req) => {
+  const d = String(req.body?.domain || '').toLowerCase();
+  const cat = String(req.body?.category || '').trim();
+  if (!d) return { ok: false };
+  if (cat) db.prepare('INSERT INTO domain_cats(domain,category) VALUES(?,?) ON CONFLICT(domain) DO UPDATE SET category=excluded.category').run(d, cat);
+  else db.prepare('DELETE FROM domain_cats WHERE domain=?').run(d);
+  return { ok: true };
+});
+
 /* ---------- Google Calendar (import read-only prin link iCal secret) ---------- */
 app.get('/api/gcal', async (req, reply) => {
   const url = getSetting('gcalUrl', '');
