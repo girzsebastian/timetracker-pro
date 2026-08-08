@@ -174,20 +174,31 @@
 
     <!-- RAPORT AI -->
     <section class="view" id="view-raport">
-      <div class="page-head"><h1>Raport AI <span class="ai-dot off" id="aiDot2"></span></h1></div>
+      <div class="page-head"><h1>Rapoarte</h1></div>
       <div class="view-inner">
+        <div class="filterbar" style="padding:0 0 10px">
+          <span class="fx">Perioadă</span>
+          <button class="btn-ghost rp-preset" data-preset="saptamana">Săptămâna asta</button>
+          <button class="btn-ghost rp-preset" data-preset="saptamana-1">Săptămâna trecută</button>
+          <button class="btn-ghost rp-preset" data-preset="luna">Luna asta</button>
+          <button class="btn-ghost rp-preset" data-preset="luna-1">Luna trecută</button>
+          <button class="btn-ghost rp-preset" data-preset="tot">Tot</button>
+        </div>
         <div class="filterbar" style="padding:0 0 14px">
           <span class="fx">Filtre</span>
           <select id="rClient"></select><select id="rPerson"></select><select id="rTags"></select>
           <input type="date" id="rFrom"><input type="date" id="rTo">
+          <span class="spacer"></span>
+          <button class="btn-ghost" id="rPdf">⬇ PDF</button>
+          <button class="btn-ghost" id="rCsv">⬇ CSV</button>
         </div>
-        <div class="form-panel">
+        <div class="form-panel" id="repTables"><div class="empty">Se încarcă…</div></div>
+        <div class="form-panel"><b>Rezumat AI (opțional) <span class="ai-dot off" id="aiDot2"></span></b>
           <div class="form-row">
             <select id="rTip"><option value="client">Raport pentru client (extern)</option><option value="intern">Raport intern (echipă)</option></select>
             <button class="btn" id="rGen">✦ Generează</button>
-            <button class="btn-ghost" id="rPdf">⬇ Export PDF</button>
           </div>
-          <p class="hint">Rulează local prin Ollama, gratuit. PDF-ul include tot: KPI, clienți vs. pachet, costuri extra, jurnal.</p>
+          <p class="hint">Rulează local prin Ollama, gratuit. Folosește aceleași filtre de mai sus.</p>
         </div>
         <div class="form-panel report-panel" id="reportOut" style="display:none">
           <div class="report-tools"><button class="btn-ghost" id="rCopy">Copiază</button></div>

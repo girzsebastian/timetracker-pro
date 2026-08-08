@@ -56,6 +56,18 @@ export function buildReportPdf(filter = {}, narrative = '') {
       { text: eur(billed), bold: true }];
   });
 
+  // per-project (with value at the effective hourly rate for hourly-billed clients)
+  const byPrj = {}; entries.forEach(e => { const k = e.project_id || '-'; byPrj[k] = (byPrj[k] || 0) + e.mins; });
+  const projRows = Object.entries(byPrj).sort((a, b) => b[1] - a[1]).map(([pid, m]) => {
+    const pr = projects.find(p => p.id === pid);
+    const c = pr ? clients.find(x => x.id === pr.client_id) : null;
+    const sub = c && ((c.cost || 0) > 0 || (c.hours || 0) > 0);
+    const rate = pr ? ((pr.rate || 0) || (c?.rate || 0)) : 0;
+    const val = !sub && rate ? (m / 60) * rate : null;
+    return [pr?.name || '(fără proiect)', c?.name || '—', { text: fmtHM(m), alignment: 'right' },
+      { text: val != null ? eur(val) : '—', alignment: 'right', color: val != null ? INK : SUB, bold: val != null }];
+  });
+
   // per-person
   const byP = {}; entries.forEach(e => byP[e.person_id] = (byP[e.person_id] || 0) + e.mins);
   const personRows = people.map(p => [p.name, fmtHM(byP[p.id] || 0)]).filter(r => byP[r] !== undefined || true);
@@ -118,6 +130,12 @@ export function buildReportPdf(filter = {}, narrative = '') {
         ['Client', 'Abonament / Tarif', 'Incluse', 'Lucrate', 'Extra / Orar', 'Total facturat'].map(t => ({ text: t, style: 'th' })),
         ...clientRows,
         [{ text: 'TOTAL', bold: true, colSpan: 4, alignment: 'right' }, {}, {}, {}, { text: totExtra ? '+' + eur(totExtra) : '—', bold: true, color: totExtra ? RED : SUB }, { text: eur(totBilled), bold: true, color: GOLD }],
+      ] }, layout: tableLayout() },
+
+      { text: 'Proiecte — ore lucrate', style: 'h2', margin: [0, 18, 0, 6] },
+      { table: { headerRows: 1, widths: ['*', 130, 60, 70], body: [
+        ['Proiect', 'Client', 'Ore', 'Valoare (orar)'].map(t => ({ text: t, style: 'th' })),
+        ...projRows,
       ] }, layout: tableLayout() },
 
       { columns: [

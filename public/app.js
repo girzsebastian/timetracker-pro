@@ -68,6 +68,7 @@
     if (v === 'calendar') loadCalendar();
     if (v === 'jurnal') loadAudit();
     if (v === 'setari') loadSettings();
+    if (v === 'raport') loadReportTables();
   }));
   function navTo(view) { const b = $$('.nav-item').find(n => n.dataset.view === view); if (b) b.click(); }
 
@@ -594,8 +595,72 @@
   }
 
   /* ---------- report ---------- */
-  ['rClient', 'rPerson', 'rFrom', 'rTo'].forEach(id => $('#' + id)?.addEventListener('change', () => { }));
+  ['rClient', 'rPerson', 'rFrom', 'rTo', 'rTags'].forEach(id => $('#' + id)?.addEventListener('change', loadReportTables));
   function reportFilter() { return { clientId: $('#rClient').value, personId: $('#rPerson').value, from: $('#rFrom').value, to: $('#rTo').value, tags: $('#rTags').value ? [$('#rTags').value] : [], tip: $('#rTip').value }; }
+
+  // period presets: this/last week, this/last month, everything
+  $$('.rp-preset').forEach(b => b.onclick = () => {
+    const t = new Date(); let from, to;
+    const p = b.dataset.preset;
+    if (p === 'saptamana') { from = mondayOf(t); to = addDays(from, 6); }
+    else if (p === 'saptamana-1') { from = addDays(mondayOf(t), -7); to = addDays(from, 6); }
+    else if (p === 'luna') { from = new Date(t.getFullYear(), t.getMonth(), 1); to = new Date(t.getFullYear(), t.getMonth() + 1, 0); }
+    else if (p === 'luna-1') { from = new Date(t.getFullYear(), t.getMonth() - 1, 1); to = new Date(t.getFullYear(), t.getMonth(), 0); }
+    $$('.rp-preset').forEach(x => x.classList.toggle('active', x === b));
+    $('#rFrom').value = from ? iso(from) : ''; $('#rTo').value = to ? iso(to) : '';
+    loadReportTables();
+  });
+
+  function reportParams() { const f = reportFilter(); return { clientId: f.clientId, personId: f.personId, from: f.from, to: f.to, tags: f.tags.join(','), planned: 'exclude' }; }
+
+  // structured tables: per client / project / person / tag, with hourly value where applicable
+  async function loadReportTables() {
+    const el = $('#repTables'); if (!el) return;
+    const f = reportFilter();
+    const ents = await fetchEntries(reportParams());
+    if (!ents.length) { el.innerHTML = '<div class="empty">Nicio înregistrare pentru filtrul curent.</div>'; return; }
+    const total = ents.reduce((s, e) => s + e.mins, 0);
+    // hourly value of one entry: project rate, else client rate — only for clients without subscription
+    const valOf = e => {
+      const pr = project(e.project_id); if (!pr) return null;
+      const c = client(pr.client_id); if (!c) return null;
+      if ((c.cost || 0) > 0 || (c.hours || 0) > 0) return null;
+      const rate = (pr.rate || 0) || (c.rate || 0);
+      return rate ? (e.mins / 60) * rate : null;
+    };
+    const group = (keyFn, nameFn) => {
+      const m = {};
+      ents.forEach(e => { const k = keyFn(e) ?? '-'; const g = m[k] = m[k] || { mins: 0, val: 0, hasVal: false }; g.mins += e.mins; const v = valOf(e); if (v != null) { g.val += v; g.hasVal = true; } });
+      return Object.entries(m).map(([k, v]) => ({ name: nameFn(k), ...v })).sort((a, b) => b.mins - a.mins);
+    };
+    const byClient = group(e => project(e.project_id)?.client_id, k => k === '-' ? '(fără client)' : (client(k)?.name || '—'));
+    const byProject = group(e => e.project_id, k => k === '-' ? '(fără proiect)' : (project(k)?.name || '—') + ' · ' + (client(project(k)?.client_id)?.name || '—'));
+    const byPerson = group(e => e.person_id, k => k === '-' ? '(fără persoană)' : (person(k)?.name || '—'));
+    const byTagM = {}; ents.forEach(e => (e.tags || []).forEach(t => byTagM[t] = (byTagM[t] || 0) + e.mins));
+    const tagRows = Object.entries(byTagM).sort((a, b) => b[1] - a[1]).map(([t, m]) => ({ name: t, mins: m, hasVal: false, val: 0 }));
+    const totVal = ents.reduce((s, e) => s + (valOf(e) || 0), 0);
+    const tbl = (title, rows) => `<h3 class="rep-h">${title}</h3><table class="rep-t"><thead><tr><th></th><th>Ore</th><th>%</th><th>Valoare (orar)</th></tr></thead><tbody>${rows.map(r => `<tr><td>${escp(r.name)}</td><td>${fmtHM(r.mins)}</td><td>${Math.round(r.mins / total * 100)}%</td><td>${r.hasVal ? eur(r.val) : '—'}</td></tr>`).join('')}</tbody></table>`;
+    el.innerHTML = `<div class="rep-kpis">
+        <div class="dstat"><small>Total ore</small><b>${fmtHM(total)}</b></div>
+        <div class="dstat"><small>Înregistrări</small><b>${ents.length}</b></div>
+        <div class="dstat"><small>Valoare la tarif orar</small><b>${totVal ? eur(totVal) : '—'}</b></div>
+        <div class="dstat"><small>Perioadă</small><b style="font-size:15px">${f.from || 'început'} → ${f.to || 'azi'}</b></div>
+      </div>
+      ${tbl('Per client', byClient)}${tbl('Per proiect', byProject)}${tbl('Per persoană', byPerson)}${tagRows.length ? tbl('Per tag', tagRows) : ''}
+      <p class="hint">„Valoare (orar)" apare doar pentru clienții facturați la tarif orar; abonamentele se calculează lunar, în PDF și pe Panou.</p>`;
+  }
+
+  // CSV download of the filtered entries (Excel-friendly)
+  $('#rCsv').onclick = async () => {
+    const f = reportFilter();
+    const ents = await fetchEntries(reportParams());
+    const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+    const rows = [['Data', 'Început', 'Durată (min)', 'Durată (h:m)', 'Descriere', 'Proiect', 'Client', 'Persoană', 'Taguri'].join(',')];
+    ents.forEach(e => { const pr = project(e.project_id); rows.push([e.date, e.start_min != null ? clock(e.start_min) : '', e.mins, fmtHM(e.mins), esc(e.desc), esc(pr?.name || ''), esc(client(pr?.client_id)?.name || ''), esc(person(e.person_id)?.name || ''), esc((e.tags || []).join(', '))].join(',')); });
+    const blob = new Blob(['﻿' + rows.join('\n')], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `timetracker-${f.from || 'tot'}${f.to ? '_' + f.to : ''}.csv`; a.click();
+    toast('CSV descărcat');
+  };
   $('#rGen').onclick = async () => {
     const out = $('#reportOut'), body = $('#reportBody'); out.style.display = 'block'; body.innerHTML = '<div class="typing"><i></i><i></i><i></i></div>';
     try {
