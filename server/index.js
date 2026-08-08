@@ -65,6 +65,7 @@ app.get('/api/settings', async () => ({ model: model(), ollama: await ollamaUp()
 app.post('/api/settings', async (req) => {
   if (req.body.model) setSetting('model', req.body.model);
   if (req.body.gcalUrl !== undefined) setSetting('gcalUrl', String(req.body.gcalUrl).trim());
+  if (req.body.weeklyGoal !== undefined) setSetting('weeklyGoal', Math.max(0, +req.body.weeklyGoal || 0));
   return { ok: true, model: model() };
 });
 

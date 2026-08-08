@@ -293,7 +293,12 @@
     const wMon = mondayOf(new Date()), wSun = addDays(wMon, 6);
     const now = new Date(), mStart = iso(new Date(now.getFullYear(), now.getMonth(), 1)), mEnd = iso(new Date(now.getFullYear(), now.getMonth() + 1, 0));
     const df = { from: iso(wMon), to: iso(wSun), clientId: dFilter.clientId, personId: dFilter.personId, planned: 'exclude' };
-    const [weekEnts, monthEnts] = await Promise.all([fetchEntries(df), fetchEntries({ from: mStart, to: mEnd, planned: 'exclude' })]);
+    const [weekEnts, monthEnts, histEnts] = await Promise.all([
+      fetchEntries(df),
+      fetchEntries({ from: mStart, to: mEnd, planned: 'exclude' }),
+      fetchEntries({ from: iso(addDays(now, -56)), planned: 'exclude' }),
+    ]);
+    renderPersonal(weekEnts, histEnts, wMon);
 
     const total = weekEnts.reduce((s, e) => s + e.mins, 0);
     // top project / client this week
@@ -345,6 +350,62 @@
     }).join('') || '<div class="empty">Niciun client.</div>';
   }
 
+  /* ---------- DEZVOLTARE PERSONALĂ ---------- */
+  function renderPersonal(weekEnts, histEnts, wMon) {
+    const el = $('#persoPanel'); if (!el) return;
+    const goal = +(ST.settings?.weeklyGoal || 0);
+    const gi = $('#pdGoal'); if (gi && document.activeElement !== gi) gi.value = goal || '';
+    const weekMins = weekEnts.reduce((s, e) => s + e.mins, 0);
+
+    // streak: zile consecutive cu ore lucrate, numărând înapoi de azi (azi gol nu rupe seria)
+    const daysWith = new Set(histEnts.map(e => e.date));
+    let streak = 0; const today = iso(new Date());
+    for (let i = 0; i < 60; i++) {
+      const d = iso(addDays(new Date(), -i));
+      if (daysWith.has(d)) streak++;
+      else if (d !== today) break;
+    }
+
+    // săptămâna trecută (aceeași zi-limită ca azi, comparație corectă la mijloc de săptămână)
+    const lwMon = addDays(wMon, -7);
+    const dayIdx = Math.floor((startOfDay(new Date()) - wMon) / 86400000);
+    const lwCut = iso(addDays(lwMon, dayIdx));
+    const lastWeekSame = histEnts.filter(e => e.date >= iso(lwMon) && e.date <= lwCut).reduce((s, e) => s + e.mins, 0);
+    const diff = weekMins - lastWeekSame;
+
+    // sesiuni pe săptămâna curentă
+    const sessions = weekEnts.map(e => e.mins);
+    const maxSes = sessions.length ? Math.max(...sessions) : 0;
+    const deep = weekEnts.filter(e => e.mins >= 90).reduce((s, e) => s + e.mins, 0);
+    const deepPct = weekMins ? Math.round(deep / weekMins * 100) : 0;
+
+    // lucru târziu (începe după 22:00 sau se termină după 23:00) în ultimele 7 zile
+    const late = histEnts.filter(e => e.date >= iso(addDays(new Date(), -7)) && e.start_min != null && (e.start_min >= 22 * 60 || e.start_min + e.mins > 23 * 60)).length;
+
+    // medie pe zi activă, ultimele 4 săptămâni
+    const m28 = histEnts.filter(e => e.date >= iso(addDays(new Date(), -28)));
+    const activeDays = new Set(m28.map(e => e.date)).size;
+    const avg = activeDays ? Math.round(m28.reduce((s, e) => s + e.mins, 0) / activeDays) : 0;
+
+    const pct = goal ? Math.min(100, weekMins / (goal * 60) * 100) : 0;
+    const goalHtml = goal
+      ? `<div class="pd-goal"><div class="pd-goal-t">${fmtHMlong(weekMins)} din ${goal}h obiectiv <b style="color:${pct >= 100 ? 'var(--green)' : 'var(--ink)'}">${Math.round(pct)}%</b></div><div class="pbar ${pct >= 100 ? '' : ''}"><div style="width:${pct}%"></div></div></div>`
+      : `<div class="hint" style="margin:4px 0 10px">Setează un obiectiv de ore pe săptămână (sus, dreapta) și urmărește-l aici.</div>`;
+
+    el.innerHTML = goalHtml + `<div class="pd-grid">
+      <div class="pd-stat"><b>${streak}</b><small>zile la rând cu ore</small></div>
+      <div class="pd-stat"><b style="color:${diff >= 0 ? 'var(--green)' : 'var(--amber)'}">${diff >= 0 ? '+' : '−'}${fmtHMlong(Math.abs(diff))}</b><small>vs. săpt. trecută (până azi)</small></div>
+      <div class="pd-stat"><b>${fmtHMlong(avg)}</b><small>media pe zi activă (4 săpt.)</small></div>
+      <div class="pd-stat"><b>${deepPct}%</b><small>lucru profund (sesiuni ≥ 1h30)</small></div>
+      <div class="pd-stat"><b>${fmtHMlong(maxSes)}</b><small>cea mai lungă sesiune (săpt.)</small></div>
+      <div class="pd-stat"><b style="color:${late ? 'var(--amber)' : 'var(--green)'}">${late}</b><small>sesiuni târzii, după 22:00 (7 zile)</small></div>
+    </div>`;
+  }
+  $('#pdGoal')?.addEventListener('change', async () => {
+    await api('/settings', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ weeklyGoal: +$('#pdGoal').value || 0 }) });
+    toast('Obiectiv salvat'); await loadState(); loadDashboard();
+  });
+
   /* ---------- CALENDAR (Zi / Săptămână / Lună) ---------- */
   const H0 = 0, H1 = 23, PX = 48;            // full 24h grid, 48px per hour
   const DOWS_MON = ['Lun', 'Mar', 'Mie', 'Joi', 'Vin', 'Sâm', 'Dum'];
@@ -374,6 +435,22 @@
       $('#calHead').style.display = 'flex'; scroll.style.display = ''; monthEl.style.display = 'none';
       await renderTimeGrid();
     }
+  }
+
+  // overlapping blocks in a day column: each gets a lane, the cluster splits the width
+  function layoutLanes(items) {
+    const sorted = [...items].sort((a, b) => a.s - b.s || b.len - a.len);
+    let cluster = [], lanes = [], clusterEnd = -1;
+    const close = () => cluster.forEach(it => it.lanes = lanes.length);
+    for (const it of sorted) {
+      const end = it.s + it.len;
+      if (cluster.length && it.s >= clusterEnd) { close(); cluster = []; lanes = []; }
+      let li = lanes.findIndex(le => le <= it.s);
+      if (li < 0) { li = lanes.length; lanes.push(0); }
+      lanes[li] = end; it.lane = li;
+      cluster.push(it); clusterEnd = Math.max(clusterEnd, end);
+    }
+    close();
   }
 
   function nowLineHtml() {
@@ -420,19 +497,23 @@
     const gutter = `<div class="cal-gutter">${Array.from({ length: H1 - H0 + 1 }, (_, i) => `<div class="cal-hour"><span class="hl">${String(H0 + i).padStart(2, '0')}:00</span></div>`).join('')}</div>`;
     const cols = Array.from({ length: nDays }, (_, i) => {
       const d = addDays(start, i), k = iso(d);
-      const timed = byDay[k].filter(e => e.start_min != null);
-      const blocks = timed.map(e => {
-        const pr = project(e.project_id);
-        const top = ((e.start_min - H0 * 60) / 60) * PX;
+      const items = [
+        ...byDay[k].filter(e => e.start_min != null).map(e => ({ kind: 'entry', e, s: e.start_min, len: Math.max(20, e.mins) })),
+        ...gcalByDay(k).filter(g => !g.allDay).map(g => ({ kind: 'gcal', g, s: g.startMin, len: Math.max(20, g.mins) })),
+      ];
+      layoutLanes(items);
+      const blocks = items.map(it => {
+        const top = ((it.s - H0 * 60) / 60) * PX;
+        const lane = it.lanes > 1 ? `left:calc(${it.lane * 100 / it.lanes}% + 2px);width:calc(${100 / it.lanes}% - 4px);right:auto;` : '';
+        if (it.kind === 'gcal') {
+          const h = Math.max(15, (it.g.mins / 60) * PX);
+          return `<div class="gcal-ev" data-gcal="${GCAL.indexOf(it.g)}" style="top:${top}px;height:${h}px;${lane}">⧉ ${escp(it.g.summary)}</div>`;
+        }
+        const e = it.e, pr = project(e.project_id);
         const h = Math.max(15, (e.mins / 60) * PX);
-        return `<div class="cal-block ${e.planned ? 'planned' : ''}" data-eid="${e.id}" style="top:${top}px;height:${h}px;background:${pr?.color || '#556'}"><div class="cb-t">${e.planned ? '◌ ' : ''}${escp(e.desc || '—')}</div><div class="cb-h">${clock(e.start_min)}–${clock(e.start_min + e.mins)}</div></div>`;
+        return `<div class="cal-block ${e.planned ? 'planned' : ''}" data-eid="${e.id}" style="top:${top}px;height:${h}px;background:${pr?.color || '#556'};${lane}"><div class="cb-t">${e.planned ? '◌ ' : ''}${escp(e.desc || '—')}</div><div class="cb-h">${clock(e.start_min)}–${clock(e.start_min + e.mins)}</div></div>`;
       }).join('');
-      const gblocks = gcalByDay(k).filter(g => !g.allDay).map(g => {
-        const top = ((g.startMin - H0 * 60) / 60) * PX;
-        const h = Math.max(15, (g.mins / 60) * PX);
-        return `<div class="gcal-ev" data-gcal="${GCAL.indexOf(g)}" style="top:${top}px;height:${h}px" title="Google Calendar — click pentru a transforma în înregistrare">⧉ ${escp(g.summary)}</div>`;
-      }).join('');
-      return `<div class="cal-col" data-date="${k}">${Array.from({ length: H1 - H0 + 1 }, () => `<div class="cal-hour"></div>`).join('')}${gblocks}${blocks}${k === todayISO ? nowLineHtml() : ''}</div>`;
+      return `<div class="cal-col" data-date="${k}">${Array.from({ length: H1 - H0 + 1 }, () => `<div class="cal-hour"></div>`).join('')}${blocks}${k === todayISO ? nowLineHtml() : ''}</div>`;
     }).join('');
     $('#calGrid').innerHTML = gutter + cols;
 
@@ -506,6 +587,35 @@
   }
   grid.addEventListener('pointerup', endDrag);
   grid.addEventListener('pointercancel', () => { if (calDrag) { calDrag.block.classList.remove('dragging'); calDrag = null; loadCalendar(); } });
+
+  /* ---------- tooltip la hover în calendar ---------- */
+  const calTip = $('#calTip');
+  document.addEventListener('mousemove', e => {
+    if (!$('#view-calendar').classList.contains('active') || calDrag) { calTip.classList.remove('show'); return; }
+    const t = e.target.closest('.cal-block, .gcal-ev, .m-chip, .ad-chip');
+    if (!t) { calTip.classList.remove('show'); return; }
+    let html = '';
+    if (t.dataset.gcal !== undefined) {
+      const g = GCAL[+t.dataset.gcal];
+      if (g) html = `<b>⧉ ${escp(g.summary)}</b><div class="ct-sub">Google Calendar${g.allDay ? ' · toată ziua' : ` · ${clock(g.startMin)}–${clock(g.startMin + g.mins)} · ${fmtHMlong(g.mins)}`}</div><div class="ct-hint">Click → transformă în înregistrare</div>`;
+    } else {
+      const en = calEnts.find(x => x.id === t.dataset.eid) || ST.entries.find(x => x.id === t.dataset.eid);
+      if (en) {
+        const pr = project(en.project_id), pe = person(en.person_id);
+        html = `<b>${en.planned ? '◌ ' : ''}${escp(en.desc || '(fără descriere)')}</b>
+          <div class="ct-sub">${pr ? escp(pr.name) + ' · ' + escp(client(pr.client_id)?.name || '—') : 'fără proiect'}</div>
+          <div class="ct-row">${en.start_min != null ? clock(en.start_min) + '–' + clock(en.start_min + en.mins) + ' · ' : ''}${fmtHMlong(en.mins)}${pe ? ' · ' + escp(pe.name) : ''}${en.planned ? ' · <i>planificat</i>' : ''}</div>
+          ${(en.tags || []).length ? `<div class="ct-tags">${en.tags.map(tg => { const col = tagColor(tg); return `<span class="tag"${col ? ` style="color:${col};border-color:${col}"` : ''}>${escp(tg)}</span>`; }).join('')}</div>` : ''}`;
+      }
+    }
+    if (!html) { calTip.classList.remove('show'); return; }
+    calTip.innerHTML = html; calTip.classList.add('show');
+    const w = calTip.offsetWidth, h = calTip.offsetHeight;
+    let x = e.clientX + 14, y = e.clientY + 16;
+    if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+    if (y + h > innerHeight - 8) y = e.clientY - h - 16;
+    calTip.style.left = x + 'px'; calTip.style.top = y + 'px';
+  });
 
   // live current-time line
   setInterval(() => {

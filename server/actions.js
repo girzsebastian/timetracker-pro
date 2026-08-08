@@ -1,6 +1,6 @@
 // Central action registry — the ONLY place that writes data.
 // Both REST routes and the voice /api/command endpoint dispatch through here.
-import { db } from './db.js';
+import { db, getSetting } from './db.js';
 
 const uid = (p) => p + Math.random().toString(36).slice(2, 9);
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
@@ -32,7 +32,7 @@ export function listEntries(filter = {}) {
   return rows;
 }
 export function snapshot(filter) {
-  return { ...catalog(), entries: listEntries(filter), timers: getTimers(), settings: { model: db.prepare("SELECT value FROM settings WHERE key='model'").get()?.value ? JSON.parse(db.prepare("SELECT value FROM settings WHERE key='model'").get().value) : 'qwen2.5:7b-instruct' } };
+  return { ...catalog(), entries: listEntries(filter), timers: getTimers(), settings: { model: getSetting('model', 'qwen2.5:7b-instruct'), weeklyGoal: getSetting('weeklyGoal', 0) } };
 }
 // multiple concurrent timers
 export function getTimers() {
