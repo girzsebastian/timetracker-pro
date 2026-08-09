@@ -122,7 +122,7 @@ app.post('/api/command', async (req, reply) => {
 
   const resolved = [];
   for (const a of (plan.actions || [])) {
-    const r = resolveAction(a);
+    const r = resolveAction(a, text);
     resolved.push(r);
   }
   return { reply: plan.reply || '', resolved };
@@ -132,7 +132,7 @@ const WRITE = new Set(['start_timer', 'stop_timer', 'add_entry', 'create_client'
 const DESTRUCTIVE = new Set(['delete_entry', 'delete_client']);
 const READ = new Set(['set_filter', 'navigate', 'generate_report', 'export_pdf']);
 
-function resolveAction(a) {
+function resolveAction(a, sourceText = '') {
   const args = a.args || {};
   const out = { action: a.action, kind: READ.has(a.action) ? 'read' : DESTRUCTIVE.has(a.action) ? 'destructive' : 'write', resolved: {}, exec: {} };
   try {
@@ -140,8 +140,21 @@ function resolveAction(a) {
       const person = args.personName ? resolvePerson(args.personName) : null;
       const pr = resolveProject(args.clientName, args.projectHint || args.projectName);
       if (pr.ambiguous) { out.ambiguous = true; out.candidates = pr.candidates.map(p => ({ id: p.id, name: p.name })); }
-      const startMin = /^\d{1,2}:\d{2}$/.test(args.startTime || '') ? +args.startTime.split(':')[0] * 60 + +args.startTime.split(':')[1] : null;
-      const date = /^\d{4}-\d{2}-\d{2}$/.test(args.date || '') ? args.date : null;
+      const hm = s => /^\d{1,2}:\d{2}$/.test(s || '') ? +s.split(':')[0] * 60 + +s.split(':')[1] : null;
+      const startMin = hm(args.startTime);
+      const endMin = hm(args.endTime);
+      // durata din interval, calculată aici — modelele mici greșesc aritmetica
+      if (startMin != null && endMin != null) {
+        const mins = (endMin - startMin + 1440) % 1440 || null;
+        if (mins) { args.hours = Math.floor(mins / 60); args.minutes = mins % 60; }
+      }
+      let date = /^\d{4}-\d{2}-\d{2}$/.test(args.date || '') ? args.date : null;
+      // plasă de siguranță: dacă modelul a omis data dar fraza spune clar "ieri"/"alaltăieri"
+      if (!date) {
+        const t = sourceText.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+        const ago = /\balaltaieri\b/.test(t) ? 2 : /\bieri\b/.test(t) ? 1 : 0;
+        if (ago) date = new Date(Date.now() - ago * 86400000).toISOString().slice(0, 10);
+      }
       out.resolved = {
         client: pr.client?.name, project: pr.project?.name, person: person?.name,
         tags: args.tags || [], hours: args.hours, minutes: args.minutes, desc: args.desc,

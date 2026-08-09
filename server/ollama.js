@@ -2,7 +2,7 @@
 const OLLAMA = process.env.OLLAMA_URL || 'http://localhost:11434';
 
 export async function ollamaUp() {
-  try { const r = await fetch(OLLAMA + '/api/tags', { signal: AbortSignal.timeout(1500) }); return r.ok; }
+  try { const r = await fetch(OLLAMA + '/api/tags', { signal: AbortSignal.timeout(6000) }); return r.ok; }
   catch { return false; }
 }
 export async function listModels() {
@@ -31,7 +31,7 @@ const COMMAND_SCHEMA = {
               desc: { type: 'string' }, hours: { type: 'number' }, minutes: { type: 'number' },
               cost: { type: 'number' }, includedHours: { type: 'number' }, rate: { type: 'number' },
               tags: { type: 'array', items: { type: 'string' } },
-              date: { type: 'string' }, startTime: { type: 'string' },
+              date: { type: 'string' }, startTime: { type: 'string' }, endTime: { type: 'string' },
               from: { type: 'string' }, to: { type: 'string' }, text: { type: 'string' },
               view: { type: 'string' },
             },
@@ -51,17 +51,21 @@ Reguli:
 - NU inventa ID-uri. Folosește nume (clientName, personName, projectHint) — serverul le rezolvă.
 - Pentru "pornește/începe cronometru" -> start_timer. Pentru "oprește/stop" -> stop_timer.
 - Pentru "adaugă X ore la ..." -> add_entry cu hours/minutes.
-- add_entry: dacă se spune când a început ("de la 14", "am început la 9 jumate") -> startTime "HH:MM". Dacă e altă zi ("ieri", "luni", "pe 5 august") -> date "YYYY-MM-DD". "de la 14 la 16:30" înseamnă startTime "14:00" + hours 2, minutes 30.
+- add_entry: dacă se spune când a început ("de la 14", "am început la 9 jumate") -> startTime "HH:MM". Dacă spune și până când ("până la 11", "de la 14 la 16:30") -> endTime "HH:MM"; NU calcula tu durata, serverul o calculează din interval. Dacă e altă zi ("ieri", "luni", "pe 5 august") -> date "YYYY-MM-DD".
+- add_entry/start_timer: pune în desc CE a lucrat, cu cuvintele utilizatorului ("descriere X" -> desc "X"; "am reparat login-ul" -> desc "reparat login-ul"). desc nu e numele proiectului.
 - Pentru "filtrează pe ..." -> set_filter (clientName, personName, from, to, text, tags).
 - Pentru "raport" -> generate_report. Pentru "PDF/exportă" -> export_pdf. Pentru "du-te la / deschide" -> navigate cu view (panou|inregistrari|clienti|proiecte|echipa|raport|setari).
-- Datele: azi este {TODAY}. "luna asta" = de la {MONTH_START} până azi.
+- Datele: azi este {TODAY}. "luna asta" = de la {MONTH_START} până azi. "ieri" = {YESTERDAY}.
 - reply = confirmare scurtă în română a ce vei face.
+Exemplu — pentru "adaugă 2 ore jumate la Alvanda pe Development, ieri de la 14, descriere fix login" răspunzi:
+{"reply":"Adaug 2h 30m la Alvanda · Development, ieri de la 14:00: fix login.","actions":[{"action":"add_entry","args":{"clientName":"Alvanda","projectHint":"Development","desc":"fix login","hours":2,"minutes":30,"date":"{YESTERDAY}","startTime":"14:00"}}]}
 Răspunde DOAR cu JSON conform schemei.`;
 
 export async function parseCommand(text, ctx, model) {
   const today = new Date().toISOString().slice(0, 10);
   const monthStart = today.slice(0, 8) + '01';
-  const sys = SYS.replace('{TODAY}', today).replace('{MONTH_START}', monthStart);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const sys = SYS.replace('{TODAY}', today).replace('{MONTH_START}', monthStart).replaceAll('{YESTERDAY}', yesterday);
   const cat = `Clienți: ${ctx.clients.map(c => c.name).join(', ') || '—'}
 Proiecte: ${ctx.projects.map(p => p.name).join(', ') || '—'}
 Persoane: ${ctx.people.map(p => p.name).join(', ') || '—'}`;
@@ -69,7 +73,7 @@ Persoane: ${ctx.people.map(p => p.name).join(', ') || '—'}`;
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
-      model, stream: false, format: COMMAND_SCHEMA, options: { temperature: 0.1 },
+      model, stream: false, format: COMMAND_SCHEMA, options: { temperature: 0 },
       messages: [{ role: 'system', content: sys + '\n\nCatalog curent:\n' + cat }, { role: 'user', content: text }],
     }),
     signal: AbortSignal.timeout(60000),
