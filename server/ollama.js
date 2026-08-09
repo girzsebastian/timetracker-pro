@@ -31,6 +31,7 @@ const COMMAND_SCHEMA = {
               desc: { type: 'string' }, hours: { type: 'number' }, minutes: { type: 'number' },
               cost: { type: 'number' }, includedHours: { type: 'number' }, rate: { type: 'number' },
               tags: { type: 'array', items: { type: 'string' } },
+              date: { type: 'string' }, startTime: { type: 'string' },
               from: { type: 'string' }, to: { type: 'string' }, text: { type: 'string' },
               view: { type: 'string' },
             },
@@ -50,6 +51,7 @@ Reguli:
 - NU inventa ID-uri. Folosește nume (clientName, personName, projectHint) — serverul le rezolvă.
 - Pentru "pornește/începe cronometru" -> start_timer. Pentru "oprește/stop" -> stop_timer.
 - Pentru "adaugă X ore la ..." -> add_entry cu hours/minutes.
+- add_entry: dacă se spune când a început ("de la 14", "am început la 9 jumate") -> startTime "HH:MM". Dacă e altă zi ("ieri", "luni", "pe 5 august") -> date "YYYY-MM-DD". "de la 14 la 16:30" înseamnă startTime "14:00" + hours 2, minutes 30.
 - Pentru "filtrează pe ..." -> set_filter (clientName, personName, from, to, text, tags).
 - Pentru "raport" -> generate_report. Pentru "PDF/exportă" -> export_pdf. Pentru "du-te la / deschide" -> navigate cu view (panou|inregistrari|clienti|proiecte|echipa|raport|setari).
 - Datele: azi este {TODAY}. "luna asta" = de la {MONTH_START} până azi.

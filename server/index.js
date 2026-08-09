@@ -140,11 +140,14 @@ function resolveAction(a) {
       const person = args.personName ? resolvePerson(args.personName) : null;
       const pr = resolveProject(args.clientName, args.projectHint || args.projectName);
       if (pr.ambiguous) { out.ambiguous = true; out.candidates = pr.candidates.map(p => ({ id: p.id, name: p.name })); }
+      const startMin = /^\d{1,2}:\d{2}$/.test(args.startTime || '') ? +args.startTime.split(':')[0] * 60 + +args.startTime.split(':')[1] : null;
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(args.date || '') ? args.date : null;
       out.resolved = {
         client: pr.client?.name, project: pr.project?.name, person: person?.name,
         tags: args.tags || [], hours: args.hours, minutes: args.minutes, desc: args.desc,
+        ...(date ? { data: date } : {}), ...(startMin != null ? { început: args.startTime } : {}),
       };
-      out.exec = { desc: args.desc || (pr.project?.name || ''), projectId: pr.project?.id || null, personId: person?.id || null, tags: args.tags || [], hours: args.hours, minutes: args.minutes };
+      out.exec = { desc: args.desc || (pr.project?.name || ''), projectId: pr.project?.id || null, personId: person?.id || null, tags: args.tags || [], hours: args.hours, minutes: args.minutes, ...(date ? { date } : {}), ...(startMin != null ? { startMin } : {}) };
     } else if (a.action === 'stop_timer') {
       out.resolved = { active: getTimers().length };
     } else if (a.action === 'create_client') {
