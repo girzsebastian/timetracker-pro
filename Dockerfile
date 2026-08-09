@@ -1,5 +1,9 @@
 FROM node:22-slim
 
+# fus orar România — altfel containerul rulează pe UTC și cronometrul scrie orele cu -3h
+RUN apt-get update && apt-get install -y --no-install-recommends tzdata && rm -rf /var/lib/apt/lists/*
+ENV TZ=Europe/Bucharest
+
 WORKDIR /app
 
 COPY package.json package-lock.json ./
