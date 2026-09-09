@@ -11,6 +11,9 @@ RUN npm ci --omit=dev
 
 COPY server ./server
 COPY public ./public
+# shared/locales.json — toate textele, în toate limbile; serverul îl citește la
+# pornire și îl servește browserului ca /i18n.js. Fără el, aplicația nu pornește.
+COPY shared ./shared
 
 # Baza de date stă în /app/data — pe Coolify se montează un volum persistent aici
 RUN mkdir -p data
