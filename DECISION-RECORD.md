@@ -26,7 +26,7 @@ Spoken text → `POST /api/command {text, context}` where `context` carries the 
   "reply": "Pornesc cronometru pentru Ana pe Suport & modificări",
   "actions": [
     { "action": "start_timer",
-      "args": { "clientName": "Alvanda", "projectHint": "suport",
+      "args": { "clientName": "Acme Studio", "projectHint": "suport",
                 "personName": "Ana", "tags": ["bug"] } }
   ]
 }
@@ -44,11 +44,11 @@ Spoken text → `POST /api/command {text, context}` where `context` carries the 
 ## 3. Flagship "dă-i drumul" Demo Script
 
 1. Owner hits **Cmd+K**; console shows **Idle** with mic + hint.
-2. Owner taps mic (or dictates via Wispr): *"pornește cronometru pentru mentenanță la Alvanda, persoana Ana, tag bug"*. Console shows **Listening** with streaming interim transcript.
+2. Owner taps mic (or dictates via Wispr): *"pornește cronometru pentru mentenanță la Acme Studio, persoana Ana, tag bug"*. Console shows **Listening** with streaming interim transcript.
 3. **Thinking** dots; local qwen2.5:7b returns a grammar-constrained `start_timer` plan.
-4. Server resolves Alvanda + "mentenanță/suport" → **Suport & modificări**, Ana → **Ana Pop**. **Preview** chip renders the resolved client / project / person / tag.
+4. Server resolves Acme Studio + "mentenanță/suport" → **Suport & modificări**, Ana → **Ana Pop**. **Preview** chip renders the resolved client / project / person / tag.
 5. Owner says **"dă-i drumul"** → the persistent timer bar starts ticking, chip flips to **Executed**, toast + ro-RO TTS confirms, entry appears in the voice log.
-6. Second beat: *"filtrează pe Alvanda luna asta și exportă PDF"* → `set_filter` auto-fires (dashboard/entries update live), `export_pdf` streams a branded file that downloads hands-free. Fully offline, zero API cost, real DB writes.
+6. Second beat: *"filtrează pe Acme Studio luna asta și exportă PDF"* → `set_filter` auto-fires (dashboard/entries update live), `export_pdf` streams a branded file that downloads hands-free. Fully offline, zero API cost, real DB writes.
 
 ## 4. Build Checklist (by impact)
 

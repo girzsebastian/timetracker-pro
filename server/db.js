@@ -5,7 +5,9 @@ import { dirname, join } from 'path';
 import { mkdirSync } from 'fs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const dataDir = join(here, '..', 'data');
+// DATA_DIR lets you run a throwaway instance (demo, screenshots, tests) without
+// touching the real database. Defaults to ./data, so existing setups are unchanged.
+const dataDir = process.env.DATA_DIR || join(here, '..', 'data');
 mkdirSync(dataDir, { recursive: true });
 
 export const db = new Database(join(dataDir, 'timetracker.db'));
@@ -84,7 +86,7 @@ if (process.env.SEED_DEMO === '1' && db.prepare('SELECT COUNT(*) n FROM clients'
   const p1 = uid('p'), p2 = uid('p');
   insP.run(p1, 'Ana Pop'); insP.run(p2, 'Radu Ionescu');
   const c1 = uid('c'), c2 = uid('c'), c3 = uid('c');
-  insC.run(c1, 'Dr. Lupu Care', 400, 8, 45); insC.run(c2, 'Neuros App', 200, 5, 40); insC.run(c3, 'Alvanda', 600, 12, 50);
+  insC.run(c1, 'Clinica Vega', 400, 8, 45); insC.run(c2, 'Lumen App', 200, 5, 40); insC.run(c3, 'Acme Studio', 600, 12, 50);
   const pr1 = uid('pr'), pr2 = uid('pr'), pr3 = uid('pr');
   insPr.run(pr1, 'Mentenanță app', c1, '#e1b339'); insPr.run(pr2, 'Fix-uri lunare', c2, '#38c6e0'); insPr.run(pr3, 'Suport & modificări', c3, '#4bd08a');
   const day = n => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().slice(0, 10); };

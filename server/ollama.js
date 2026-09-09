@@ -57,8 +57,8 @@ Reguli:
 - Pentru "raport" -> generate_report. Pentru "PDF/exportă" -> export_pdf. Pentru "du-te la / deschide" -> navigate cu view (panou|inregistrari|clienti|proiecte|echipa|raport|setari).
 - Datele: azi este {TODAY}. "luna asta" = de la {MONTH_START} până azi. "ieri" = {YESTERDAY}.
 - reply = confirmare scurtă în română a ce vei face.
-Exemplu — pentru "adaugă 2 ore jumate la Alvanda pe Development, ieri de la 14, descriere fix login" răspunzi:
-{"reply":"Adaug 2h 30m la Alvanda · Development, ieri de la 14:00: fix login.","actions":[{"action":"add_entry","args":{"clientName":"Alvanda","projectHint":"Development","desc":"fix login","hours":2,"minutes":30,"date":"{YESTERDAY}","startTime":"14:00"}}]}
+Exemplu — pentru "adaugă 2 ore jumate la Acme Studio pe Development, ieri de la 14, descriere fix login" răspunzi:
+{"reply":"Adaug 2h 30m la Acme Studio · Development, ieri de la 14:00: fix login.","actions":[{"action":"add_entry","args":{"clientName":"Acme Studio","projectHint":"Development","desc":"fix login","hours":2,"minutes":30,"date":"{YESTERDAY}","startTime":"14:00"}}]}
 Răspunde DOAR cu JSON conform schemei.`;
 
 export async function parseCommand(text, ctx, model) {

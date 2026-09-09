@@ -1,39 +1,65 @@
 # TimeTracker Pro
 
-Time tracker self-hosted pentru firme de mentenanță software: **bază de date reală**, **AI local gratuit** (Ollama/Llama), **comandă vocală** („dă-i drumul" → vorbești → execută acțiuni), **filtre avansate** și **export PDF** cu tot.
+**A local, self-hosted Clockify replacement — built for people who work on several things at once.**
 
-Zero costuri recurente de AI — modelul rulează pe calculatorul tău. Merge cu **Wispr Flow** (dictezi în câmpul de comandă) sau cu recunoașterea vocală din browser.
+Run as many timers as you have contexts. One for the refactor, one for the bug you got pulled into, one for the review you're doing while the build runs. Each keeps its own project, person and tags, and each saves as its own entry when you stop it. Your data stays in a SQLite file on your machine, the AI runs locally through Ollama, and there is no account, no cloud and no subscription.
 
-## Pornire (un singur script)
+<p align="center">
+  <img src="docs/media/01-concurrent-timers.jpg" alt="Three timers running at once, each on its own project" width="820">
+</p>
 
-```bash
-cd time-tracker
-./start.sh
-```
-Scriptul instalează dependențele, pornește Ollama, descarcă modelul (o singură dată) și deschide `http://localhost:5555`.
+> [Citește în română](README.ro.md)
 
-Manual:
+---
+
+## Why
+
+Clockify, Toggl and Harvest all assume one timer, because they were designed for someone who does one task at a time and bills it. That is not how a lot of development work actually goes: you start something, an agent is generating in the background, you review a PR, a client pings you, you come back. By the end of the day you know you worked, but the tracker has one entry and a guess.
+
+TimeTracker Pro assumes the opposite. **Multiple concurrent timers are the default, not a workaround.** Start one per context, stop them as each context closes, and the day reconstructs itself accurately instead of from memory.
+
+The rest follows from the same idea: it should cost nothing to run, work without an internet connection, and never hold your data hostage. It is a Node process and one `.db` file.
+
+---
+
+## What you get
+
+| | |
+|---|---|
+| <img src="docs/media/02-dashboard.jpg" width="400"><br>**Dashboard** — hours per day, top project, billable overage | <img src="docs/media/03-clients-packages.jpg" width="400"><br>**Clients & packages** — retainer (€/month + included hours) or hourly rate |
+| <img src="docs/media/04-reports.jpg" width="400"><br>**Reports** — per client, project, person and tag; PDF and CSV export | <img src="docs/media/05-calendar.jpg" width="400"><br>**Calendar** — day / week / month, planned work, Google Calendar import |
+
+**Timers.** As many as you need, running at the same time. Each carries a description, project, person and tags, all editable while it runs — stop saves whatever is current. A persistent timer survives a browser refresh and a server restart.
+
+**Clients and billing.** Two models that can coexist: a retainer (€/month with included hours and an overage rate) or a plain hourly rate, set on the client and overridable per project. The dashboard shows hours consumed against each package.
+
+**Reports and PDF.** Filter by client, person, text, date range or tags — the filter drives the dashboard, the entry list, the report and the export together. The PDF is a branded document with KPIs, package usage, breakdowns per person and per tag, a full day-by-day log, and an optional AI-written summary.
+
+**Voice and text commands (⌘K).** Type or dictate *"start a timer for maintenance on Acme Studio, person Ana, tag bug"*. A local model parses it, shows you exactly what it resolved (which client, which project, which person), and you confirm before anything is written.
+
+<p align="center">
+  <img src="docs/media/06-voice-console.jpg" alt="The ⌘K command console" width="620">
+</p>
+
+Reads run immediately; **writes require visual confirmation and deletes require double confirmation.** The AI can only call the same action registry the REST API uses — it has no privileged path to the database.
+
+**Web activity (optional).** A browser extension in `extension/` counts time on the active tab of the focused window (idle pauses it) and sends it only to your local instance. You categorise each domain yourself; nothing is auto-labelled and nothing leaves your machine.
+
+**Planned work.** Mark an entry as planned and it shows hatched in the calendar without counting toward billing until you mark it done. Optionally repeats weekly.
+
+---
+
+## Running it
+
 ```bash
 npm install
-npm start          # http://localhost:5555
+npm start                     # http://localhost:5555
 ```
 
-## Docker local (recomandat pentru utilizare zilnică)
+Or in Docker, which is how it is meant to run day to day:
 
-Aplicația rulează în container pe **http://localhost:8888**, cu baza de date păstrată pe disc în `data/` (aceeași ca la rularea manuală — nu rula ambele simultan).
-
-```bash
-docker start timetracker     # pornește
-docker stop timetracker      # oprește
-docker logs timetracker      # loguri
-```
-
-Containerul repornește singur după restart de Mac (dacă Docker Desktop e deschis), mai puțin dacă l-ai oprit tu explicit.
-
-Prima creare (o singură dată, sau după modificări de cod):
 ```bash
 docker build -t timetracker .
-docker rm -f timetracker 2>/dev/null
 docker run -d --name timetracker --restart unless-stopped \
   -p 127.0.0.1:8888:5555 \
   -v "$PWD/data:/app/data" \
@@ -41,72 +67,54 @@ docker run -d --name timetracker --restart unless-stopped \
   timetracker
 ```
 
-Pentru hosting public există autentificare: setează `APP_PASSWORD` (și opțional `APP_USER`) — fără ele aplicația rulează deschis, ca local.
+Your database is the single file `data/timetracker.db` — **backup is copying that file.** The app also writes timestamped copies into `data/backups/`.
 
-## AI local (gratuit)
+To try it with demo data without touching a real database:
 
-1. Instalează [Ollama](https://ollama.com) (macOS/Windows/Linux)
-2. `ollama pull qwen2.5:7b-instruct` (~4-5GB, o singură dată)
-3. Gata — comenzile vocale și rapoartele rulează local, fără API key, fără costuri
-
-Aplicația funcționează și fără Ollama (tracking, filtre, PDF), doar partea de AI e inactivă. Modelul se alege din **Setări**.
-
-## „Dă-i drumul" — comandă vocală
-
-Apasă **⌘K** (sau butonul din dreapta-jos), apoi **vorbește sau scrie** o comandă. AI-ul local o interpretează, îți arată **exact ce a înțeles** (client / proiect / persoană rezolvate), tu confirmi cu **„Dă-i drumul"**, iar acțiunea se execută.
-
-Exemple:
-- „pornește cronometru pentru mentenanță la Alvanda, persoana Ana, tag bug"
-- „adaugă 2 ore la Neuros, descriere fix login"
-- „filtrează pe Dr. Lupu luna asta și exportă PDF"
-- „du-te la clienți" · „oprește cronometrul"
-
-**Siguranță:** citirile (filtrare, navigare) rulează direct; **scrierile** (adăugare, creare) cer confirmare vizuală; **ștergerile** cer confirmare dublă. AI-ul nu poate face nimic ce nu poate face și API-ul — totul trece prin același registry pe server.
-
-### Cu Wispr Flow
-Deschide consola (⌘K), pune cursorul în câmp, dictează cu Wispr — textul intră în câmp, apoi apeși „Interpretează" → „Dă-i drumul".
-
-## Planificare & Google Calendar
-
-- **Planificat** — bifezi „Planificat" la o înregistrare: apare hașurat în calendar, nu intră la facturare/rapoarte până nu apeși „✓ Marchează ca lucrat". Opțional se repetă săptămânal (4/8/12 săptămâni).
-- **Import Google Calendar** — în Setări pui „Adresa secretă în format iCal" a calendarului tău Google; evenimentele apar în Calendar (contur albastru, doar citire) și devin înregistrări dintr-un click.
-
-## Activitate web (extensie de browser)
-
-Extensia din `extension/` (Chrome/Brave/Edge: `chrome://extensions` → Developer mode → Load unpacked) contorizează timpul pe **tab-ul activ din fereastra focusată** (idle = pauză) și îl trimite doar către aplicația locală. În view-ul **Activitate web** cataloghezi fiecare domeniu (Muncă, Muzică, Ignoră…) — nimic nu e etichetat automat.
-
-## Facturare
-
-Două modele per client, care pot coexista în portofoliu:
-- **Abonament**: cost €/lună + ore incluse + €/h peste pachet.
-- **Tarif orar** (fără abonament): orele lucrate × tarif. Tariful se setează pe client (implicit) și/sau pe proiect (are prioritate).
-
-## Ce include
-
-- **Panou** — KPI-uri, clienți (ore vs. pachet), distribuție pe persoană
-- **Cronometru** persistent + adăugare manuală
-- **Clienți & Pachete** (abonament €/lună + ore incluse), **Proiecte**, **Echipă**
-- **Filtre partajate** (client, persoană, text, dată, taguri) care afectează panoul, înregistrările, raportul și PDF-ul
-- **Raport AI** — generat local, streaming, pentru client (extern) sau intern
-- **Export PDF** — document brandat cu tot: KPI, clienți vs. pachet, pe persoană, pe tag, jurnal complet pe zile, rezumat AI
-- **Jurnal comenzi** — audit al acțiunilor (UI / voce)
-
-## Arhitectură
-
-```
-time-tracker/
-├── server/
-│   ├── index.js     Fastify — servește UI + REST /api
-│   ├── db.js        SQLite (better-sqlite3, WAL) + seed
-│   ├── actions.js   registry central de acțiuni (singura sursă care scrie) + resolver fuzzy
-│   ├── ollama.js    AI local: parsare comenzi (JSON constrâns) + rapoarte streaming
-│   └── pdf.js       export PDF (pdfmake, font Roboto cu diacritice)
-├── public/          UI vanilla (index.html, app.js, style.css)
-├── data/            baza de date (timetracker.db) — backup = copiază fișierul
-├── start.sh         pornire într-un pas
-└── DECISION-RECORD.md  deciziile consiliului de agenți
+```bash
+DATA_DIR=/tmp/tt-demo SEED_DEMO=1 PORT=5599 npm start
 ```
 
-**Stack:** Node 20 + Fastify + better-sqlite3, UI vanilla, Ollama pentru AI local, pdfmake pentru PDF. Fără framework, fără cont cloud, fără costuri recurente.
+### Local AI (optional, free)
 
-Deciziile de arhitectură/design/UX au fost votate de un consiliu de 12 agenți AI — vezi [DECISION-RECORD.md](./DECISION-RECORD.md).
+1. Install [Ollama](https://ollama.com)
+2. `ollama pull qwen2.5:7b-instruct` (~4–5 GB, once)
+3. Pick the model in **Settings**
+
+Everything except the AI features works without it. No API key is ever needed — the model runs on your machine, so commands and reports cost nothing and never leave it.
+
+### Exposing it
+
+For local use there is no auth, by design. If you host it somewhere reachable, set `APP_PASSWORD` (and optionally `APP_USER`) and it will require a login.
+
+---
+
+## How it is built
+
+```
+server/
+  index.js    Fastify — serves the UI and the REST API
+  db.js       SQLite (better-sqlite3, WAL) + schema + optional demo seed
+  actions.js  central action registry — the only thing that writes — plus a fuzzy resolver
+  ollama.js   local AI: constrained-JSON command parsing, streaming reports
+  pdf.js      PDF export (pdfmake, Roboto with diacritics)
+public/       vanilla UI — no framework, no build step
+extension/    browser extension for web activity
+data/         your database (gitignored)
+```
+
+**Stack:** Node 20, Fastify, better-sqlite3, vanilla JS, Ollama, pdfmake. No framework, no build step, no cloud account.
+
+The single most important rule: **every write goes through `actions.js`.** The REST API, the UI and the AI all call the same registry, which is why the AI cannot do anything the API cannot, and why every action lands in the audit log.
+
+The interface language is Romanian. Architecture and UX decisions were argued out by a council of AI agents — the record is in [DECISION-RECORD.md](./DECISION-RECORD.md).
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome. Useful directions: English UI strings alongside the Romanian ones, other local model backends, and importers from Clockify/Toggl exports.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
