@@ -1,0 +1,2168 @@
+{
+  "_meta": {
+    "note": "Single source of truth for every user-facing string: browser UI, PDF export, server errors and AI prompts. The server serves it to the browser as /i18n.js and imports it directly for PDF/errors. Add a language by adding its code here and to `langs`.",
+    "langs": {
+      "ro": "Română",
+      "en": "English",
+      "es": "Español",
+      "de": "Deutsch",
+      "fr": "Français"
+    },
+    "locales": {
+      "ro": "ro-RO",
+      "en": "en-GB",
+      "es": "es-ES",
+      "de": "de-DE",
+      "fr": "fr-FR"
+    }
+  },
+  "nav.cronometru": {
+    "ro": "Cronometru",
+    "en": "Timer",
+    "es": "Cronómetro",
+    "de": "Timer",
+    "fr": "Chrono"
+  },
+  "nav.calendar": {
+    "ro": "Calendar",
+    "en": "Calendar",
+    "es": "Calendario",
+    "de": "Kalender",
+    "fr": "Agenda"
+  },
+  "nav.panou": {
+    "ro": "Panou",
+    "en": "Dashboard",
+    "es": "Panel",
+    "de": "Übersicht",
+    "fr": "Tableau de bord"
+  },
+  "nav.clienti": {
+    "ro": "Clienți & Pachete",
+    "en": "Clients & packages",
+    "es": "Clientes y paquetes",
+    "de": "Kunden & Pakete",
+    "fr": "Clients et forfaits"
+  },
+  "nav.proiecte": {
+    "ro": "Proiecte",
+    "en": "Projects",
+    "es": "Proyectos",
+    "de": "Projekte",
+    "fr": "Projets"
+  },
+  "nav.echipa": {
+    "ro": "Echipă",
+    "en": "Team",
+    "es": "Equipo",
+    "de": "Team",
+    "fr": "Équipe"
+  },
+  "nav.taguri": {
+    "ro": "Taguri",
+    "en": "Tags",
+    "es": "Etiquetas",
+    "de": "Tags",
+    "fr": "Étiquettes"
+  },
+  "nav.activitate": {
+    "ro": "Activitate web",
+    "en": "Web activity",
+    "es": "Actividad web",
+    "de": "Web-Aktivität",
+    "fr": "Activité web"
+  },
+  "nav.raport": {
+    "ro": "Rapoarte",
+    "en": "Reports",
+    "es": "Informes",
+    "de": "Berichte",
+    "fr": "Rapports"
+  },
+  "nav.jurnal": {
+    "ro": "Jurnal comenzi",
+    "en": "Command log",
+    "es": "Registro de comandos",
+    "de": "Befehlsprotokoll",
+    "fr": "Journal des commandes"
+  },
+  "nav.setari": {
+    "ro": "Setări",
+    "en": "Settings",
+    "es": "Ajustes",
+    "de": "Einstellungen",
+    "fr": "Paramètres"
+  },
+  "timer.desc": {
+    "ro": "La ce lucrezi?",
+    "en": "What are you working on?",
+    "es": "¿En qué trabajas?",
+    "de": "Woran arbeitest du?",
+    "fr": "Sur quoi travaillez-vous ?"
+  },
+  "timer.tags": {
+    "ro": "taguri",
+    "en": "tags",
+    "es": "etiquetas",
+    "de": "Tags",
+    "fr": "étiquettes"
+  },
+  "timer.start": {
+    "ro": "START",
+    "en": "START",
+    "es": "INICIAR",
+    "de": "START",
+    "fr": "DÉMARRER"
+  },
+  "timer.stop": {
+    "ro": "STOP",
+    "en": "STOP",
+    "es": "PARAR",
+    "de": "STOPP",
+    "fr": "ARRÊTER"
+  },
+  "timer.active_one": {
+    "ro": "cronometru activ",
+    "en": "timer running",
+    "es": "cronómetro activo",
+    "de": "laufender Timer",
+    "fr": "chrono en cours"
+  },
+  "timer.active_many": {
+    "ro": "cronometre active",
+    "en": "timers running",
+    "es": "cronómetros activos",
+    "de": "laufende Timer",
+    "fr": "chronos en cours"
+  },
+  "timer.active_hint": {
+    "ro": "se salvează ce e aici când dai STOP",
+    "en": "what is here is saved when you press STOP",
+    "es": "se guarda lo que hay aquí al pulsar PARAR",
+    "de": "was hier steht, wird beim STOPP gespeichert",
+    "fr": "ce qui est ici est enregistré quand vous arrêtez"
+  },
+  "timer.discard": {
+    "ro": "Renunță (nu salvează)",
+    "en": "Discard (do not save)",
+    "es": "Descartar (sin guardar)",
+    "de": "Verwerfen (nicht speichern)",
+    "fr": "Abandonner (sans enregistrer)"
+  },
+  "timer.discard_ask": {
+    "ro": "Renunți la acest cronometru? Timpul nu se salvează.",
+    "en": "Discard this timer? The time will not be saved.",
+    "es": "¿Descartar este cronómetro? El tiempo no se guardará.",
+    "de": "Diesen Timer verwerfen? Die Zeit wird nicht gespeichert.",
+    "fr": "Abandonner ce chrono ? Le temps ne sera pas enregistré."
+  },
+  "timer.discarded": {
+    "ro": "Renunțat",
+    "en": "Discarded",
+    "es": "Descartado",
+    "de": "Verworfen",
+    "fr": "Abandonné"
+  },
+  "timer.restart": {
+    "ro": "Repornește",
+    "en": "Restart",
+    "es": "Reiniciar",
+    "de": "Neu starten",
+    "fr": "Relancer"
+  },
+  "timer.saved": {
+    "ro": "Înregistrare salvată",
+    "en": "Entry saved",
+    "es": "Registro guardado",
+    "de": "Eintrag gespeichert",
+    "fr": "Entrée enregistrée"
+  },
+  "filter.label": {
+    "ro": "Filtre",
+    "en": "Filters",
+    "es": "Filtros",
+    "de": "Filter",
+    "fr": "Filtres"
+  },
+  "filter.search": {
+    "ro": "caută",
+    "en": "search",
+    "es": "buscar",
+    "de": "suchen",
+    "fr": "rechercher"
+  },
+  "filter.from": {
+    "ro": "de la",
+    "en": "from",
+    "es": "desde",
+    "de": "von",
+    "fr": "du"
+  },
+  "filter.to": {
+    "ro": "până la",
+    "en": "to",
+    "es": "hasta",
+    "de": "bis",
+    "fr": "au"
+  },
+  "filter.clear": {
+    "ro": "✕ Curăță",
+    "en": "✕ Clear",
+    "es": "✕ Limpiar",
+    "de": "✕ Zurücksetzen",
+    "fr": "✕ Effacer"
+  },
+  "filter.add_manual": {
+    "ro": "+ Adaugă manual",
+    "en": "+ Add manually",
+    "es": "+ Añadir manual",
+    "de": "+ Manuell hinzufügen",
+    "fr": "+ Ajouter manuellement"
+  },
+  "filter.all_clients": {
+    "ro": "Toți clienții",
+    "en": "All clients",
+    "es": "Todos los clientes",
+    "de": "Alle Kunden",
+    "fr": "Tous les clients"
+  },
+  "filter.all_team": {
+    "ro": "Toată echipa",
+    "en": "Whole team",
+    "es": "Todo el equipo",
+    "de": "Ganzes Team",
+    "fr": "Toute l'équipe"
+  },
+  "filter.all_projects": {
+    "ro": "Toate proiectele",
+    "en": "All projects",
+    "es": "Todos los proyectos",
+    "de": "Alle Projekte",
+    "fr": "Tous les projets"
+  },
+  "filter.all_tags": {
+    "ro": "Toate tagurile",
+    "en": "All tags",
+    "es": "Todas las etiquetas",
+    "de": "Alle Tags",
+    "fr": "Toutes les étiquettes"
+  },
+  "filter.all": {
+    "ro": "Toți",
+    "en": "Everyone",
+    "es": "Todos",
+    "de": "Alle",
+    "fr": "Tous"
+  },
+  "filter.no_entries": {
+    "ro": "Nicio înregistrare pentru filtrul curent.",
+    "en": "No entries for the current filter.",
+    "es": "No hay registros para el filtro actual.",
+    "de": "Keine Einträge für den aktuellen Filter.",
+    "fr": "Aucune entrée pour le filtre actuel."
+  },
+  "cal.day": {
+    "ro": "Zi",
+    "en": "Day",
+    "es": "Día",
+    "de": "Tag",
+    "fr": "Jour"
+  },
+  "cal.week": {
+    "ro": "Săptămână",
+    "en": "Week",
+    "es": "Semana",
+    "de": "Woche",
+    "fr": "Semaine"
+  },
+  "cal.month": {
+    "ro": "Lună",
+    "en": "Month",
+    "es": "Mes",
+    "de": "Monat",
+    "fr": "Mois"
+  },
+  "cal.today": {
+    "ro": "Azi",
+    "en": "Today",
+    "es": "Hoy",
+    "de": "Heute",
+    "fr": "Aujourd'hui"
+  },
+  "cal.allday": {
+    "ro": "toată ziua",
+    "en": "all day",
+    "es": "todo el día",
+    "de": "ganztägig",
+    "fr": "toute la journée"
+  },
+  "cal.add_day": {
+    "ro": "Adaugă în ziua asta",
+    "en": "Add on this day",
+    "es": "Añadir en este día",
+    "de": "An diesem Tag hinzufügen",
+    "fr": "Ajouter ce jour-là"
+  },
+  "cal.gcal_tip": {
+    "ro": "Google Calendar — click pentru a transforma în înregistrare",
+    "en": "Google Calendar — click to turn into an entry",
+    "es": "Google Calendar — haz clic para convertir en registro",
+    "de": "Google Kalender — klicken, um daraus einen Eintrag zu machen",
+    "fr": "Google Agenda — cliquez pour en faire une entrée"
+  },
+  "cal.gcal_hint": {
+    "ro": "Click → transformă în înregistrare",
+    "en": "Click → turn into an entry",
+    "es": "Clic → convertir en registro",
+    "de": "Klick → in Eintrag umwandeln",
+    "fr": "Clic → convertir en entrée"
+  },
+  "dash.hours_per_day": {
+    "ro": "Ore pe zi",
+    "en": "Hours per day",
+    "es": "Horas por día",
+    "de": "Stunden pro Tag",
+    "fr": "Heures par jour"
+  },
+  "dash.top": {
+    "ro": "Cele mai lucrate",
+    "en": "Most worked on",
+    "es": "Lo más trabajado",
+    "de": "Am meisten bearbeitet",
+    "fr": "Le plus travaillé"
+  },
+  "dash.personal": {
+    "ro": "Dezvoltare personală",
+    "en": "Personal development",
+    "es": "Desarrollo personal",
+    "de": "Persönliche Entwicklung",
+    "fr": "Développement personnel"
+  },
+  "dash.goal": {
+    "ro": "Obiectiv:",
+    "en": "Goal:",
+    "es": "Objetivo:",
+    "de": "Ziel:",
+    "fr": "Objectif :"
+  },
+  "dash.per_week": {
+    "ro": "h/săpt",
+    "en": "h/week",
+    "es": "h/sem",
+    "de": "Std./Woche",
+    "fr": "h/sem"
+  },
+  "dash.clients_head": {
+    "ro": "Clienți — ore & costuri extra",
+    "en": "Clients — hours & overage",
+    "es": "Clientes — horas y exceso",
+    "de": "Kunden — Stunden & Mehrkosten",
+    "fr": "Clients — heures et dépassement"
+  },
+  "dash.empty_week": {
+    "ro": "Nicio activitate în această săptămână",
+    "en": "No activity this week",
+    "es": "Sin actividad esta semana",
+    "de": "Keine Aktivität diese Woche",
+    "fr": "Aucune activité cette semaine"
+  },
+  "dash.personal_week": {
+    "ro": "pe tine săptămâna asta",
+    "en": "on yourself this week",
+    "es": "en ti mismo esta semana",
+    "de": "für dich diese Woche",
+    "fr": "pour vous cette semaine"
+  },
+  "dash.personal_hint": {
+    "ro": "Vrei să urmărești și fitness, învățare, proiecte proprii? Creează un client bifat „Personal” (în Clienți) și pune-i proiecte — orele lui apar aici, fără facturare.",
+    "en": "Want to track fitness, learning or your own projects too? Create a client ticked “Personal” (in Clients) and give it projects — its hours show up here, outside billing.",
+    "es": "¿Quieres registrar también deporte, aprendizaje o proyectos propios? Crea un cliente marcado como «Personal» (en Clientes) y añádele proyectos: sus horas aparecen aquí, sin facturación.",
+    "de": "Willst du auch Sport, Lernen oder eigene Projekte erfassen? Lege einen Kunden mit Häkchen „Persönlich“ an (unter Kunden) und gib ihm Projekte — seine Stunden erscheinen hier, ohne Abrechnung.",
+    "fr": "Vous voulez aussi suivre le sport, l'apprentissage ou vos projets ? Créez un client coché « Personnel » (dans Clients) et donnez-lui des projets — ses heures apparaissent ici, hors facturation."
+  },
+  "dash.goal_hint": {
+    "ro": "Setează un obiectiv de ore pe săptămână (sus, dreapta) și urmărește-l aici.",
+    "en": "Set a weekly hours goal (top right) and track it here.",
+    "es": "Fija un objetivo de horas semanales (arriba a la derecha) y síguelo aquí.",
+    "de": "Setze ein Wochenziel in Stunden (oben rechts) und verfolge es hier.",
+    "fr": "Définissez un objectif d'heures hebdomadaire (en haut à droite) et suivez-le ici."
+  },
+  "dash.revenue": {
+    "ro": "Venit recurent",
+    "en": "Recurring revenue",
+    "es": "Ingresos recurrentes",
+    "de": "Wiederkehrender Umsatz",
+    "fr": "Revenu récurrent"
+  },
+  "dash.clients_n": {
+    "ro": "clienți",
+    "en": "clients",
+    "es": "clientes",
+    "de": "Kunden",
+    "fr": "clients"
+  },
+  "dash.in_team": {
+    "ro": "în echipă",
+    "en": "in the team",
+    "es": "en el equipo",
+    "de": "im Team",
+    "fr": "dans l'équipe"
+  },
+  "clients.new": {
+    "ro": "Client nou",
+    "en": "New client",
+    "es": "Nuevo cliente",
+    "de": "Neuer Kunde",
+    "fr": "Nouveau client"
+  },
+  "clients.name": {
+    "ro": "Nume client",
+    "en": "Client name",
+    "es": "Nombre del cliente",
+    "de": "Kundenname",
+    "fr": "Nom du client"
+  },
+  "clients.cost": {
+    "ro": "abonament €/lună",
+    "en": "retainer €/month",
+    "es": "cuota €/mes",
+    "de": "Pauschale €/Monat",
+    "fr": "forfait €/mois"
+  },
+  "clients.hours": {
+    "ro": "ore incluse/lună",
+    "en": "included hours/month",
+    "es": "horas incluidas/mes",
+    "de": "inkl. Stunden/Monat",
+    "fr": "heures incluses/mois"
+  },
+  "clients.over": {
+    "ro": "€/oră extra",
+    "en": "€/extra hour",
+    "es": "€/hora extra",
+    "de": "€/Mehrstunde",
+    "fr": "€/heure supp."
+  },
+  "clients.over_tip": {
+    "ro": "cost pe ora peste pachet",
+    "en": "rate for each hour beyond the package",
+    "es": "coste por hora por encima del paquete",
+    "de": "Satz für jede Stunde über dem Paket",
+    "fr": "tarif pour chaque heure au-delà du forfait"
+  },
+  "clients.rate": {
+    "ro": "tarif €/oră",
+    "en": "rate €/hour",
+    "es": "tarifa €/hora",
+    "de": "Satz €/Stunde",
+    "fr": "tarif €/heure"
+  },
+  "clients.rate_tip": {
+    "ro": "pentru clienți fără abonament: se facturează orele lucrate × tarif",
+    "en": "for clients without a retainer: hours worked × rate",
+    "es": "para clientes sin cuota: horas trabajadas × tarifa",
+    "de": "für Kunden ohne Pauschale: geleistete Stunden × Satz",
+    "fr": "pour les clients sans forfait : heures travaillées × tarif"
+  },
+  "clients.personal": {
+    "ro": "Personal",
+    "en": "Personal",
+    "es": "Personal",
+    "de": "Persönlich",
+    "fr": "Personnel"
+  },
+  "clients.color_tip": {
+    "ro": "culoare client",
+    "en": "client colour",
+    "es": "color del cliente",
+    "de": "Kundenfarbe",
+    "fr": "couleur du client"
+  },
+  "clients.hint": {
+    "ro": "„€/oră extra” = cât factori pentru fiecare oră lucrată peste pachetul inclus. „Personal” = fără facturare (fitness, învățare, proiecte proprii) — orele apar la Dezvoltare personală pe Panou.",
+    "en": "“€/extra hour” = what you bill for every hour beyond the included package. “Personal” = not billed (fitness, learning, your own projects) — those hours show under Personal development on the Dashboard.",
+    "es": "«€/hora extra» = lo que facturas por cada hora por encima del paquete incluido. «Personal» = sin facturar (deporte, aprendizaje, proyectos propios): esas horas aparecen en Desarrollo personal del Panel.",
+    "de": "„€/Mehrstunde“ = was du für jede Stunde über dem Paket berechnest. „Persönlich“ = ohne Abrechnung (Sport, Lernen, eigene Projekte) — diese Stunden erscheinen in der Übersicht unter Persönliche Entwicklung.",
+    "fr": "« €/heure supp. » = ce que vous facturez pour chaque heure au-delà du forfait inclus. « Personnel » = non facturé (sport, apprentissage, projets perso) — ces heures apparaissent dans Développement personnel du tableau de bord."
+  },
+  "clients.no_billing": {
+    "ro": " · fără facturare",
+    "en": " · not billed",
+    "es": " · sin facturar",
+    "de": " · ohne Abrechnung",
+    "fr": " · non facturé"
+  },
+  "clients.make_personal": {
+    "ro": "marchează ca personal (fără facturare)",
+    "en": "mark as personal (not billed)",
+    "es": "marcar como personal (sin facturar)",
+    "de": "als persönlich markieren (ohne Abrechnung)",
+    "fr": "marquer comme personnel (non facturé)"
+  },
+  "clients.make_billable": {
+    "ro": "transformă în client facturabil",
+    "en": "turn into a billable client",
+    "es": "convertir en cliente facturable",
+    "de": "in abrechenbaren Kunden umwandeln",
+    "fr": "convertir en client facturable"
+  },
+  "clients.billable": {
+    "ro": "Client facturabil",
+    "en": "Billable client",
+    "es": "Cliente facturable",
+    "de": "Abrechenbarer Kunde",
+    "fr": "Client facturable"
+  },
+  "clients.updated": {
+    "ro": "Client actualizat",
+    "en": "Client updated",
+    "es": "Cliente actualizado",
+    "de": "Kunde aktualisiert",
+    "fr": "Client mis à jour"
+  },
+  "clients.no_client": {
+    "ro": "— fără client —",
+    "en": "— no client —",
+    "es": "— sin cliente —",
+    "de": "— kein Kunde —",
+    "fr": "— sans client —"
+  },
+  "clients.per_month": {
+    "ro": "/lună",
+    "en": "/month",
+    "es": "/mes",
+    "de": "/Monat",
+    "fr": "/mois"
+  },
+  "projects.new": {
+    "ro": "Proiect nou",
+    "en": "New project",
+    "es": "Nuevo proyecto",
+    "de": "Neues Projekt",
+    "fr": "Nouveau projet"
+  },
+  "projects.name": {
+    "ro": "Nume proiect",
+    "en": "Project name",
+    "es": "Nombre del proyecto",
+    "de": "Projektname",
+    "fr": "Nom du projet"
+  },
+  "projects.rate_tip": {
+    "ro": "cost per oră pentru acest proiect; dacă lipsește, se folosește tariful clientului",
+    "en": "hourly rate for this project; if empty, the client's rate is used",
+    "es": "tarifa por hora de este proyecto; si falta, se usa la del cliente",
+    "de": "Stundensatz für dieses Projekt; fehlt er, gilt der Kundensatz",
+    "fr": "tarif horaire de ce projet ; s'il manque, celui du client s'applique"
+  },
+  "projects.rate_tip2": {
+    "ro": "cost per oră pentru acest proiect; 0 = se folosește tariful clientului",
+    "en": "hourly rate for this project; 0 = use the client's rate",
+    "es": "tarifa por hora de este proyecto; 0 = usar la del cliente",
+    "de": "Stundensatz für dieses Projekt; 0 = Kundensatz verwenden",
+    "fr": "tarif horaire de ce projet ; 0 = utiliser celui du client"
+  },
+  "projects.color_tip": {
+    "ro": "culoare proiect",
+    "en": "project colour",
+    "es": "color del proyecto",
+    "de": "Projektfarbe",
+    "fr": "couleur du projet"
+  },
+  "projects.inherited": {
+    "ro": "moștenit de la client:",
+    "en": "inherited from client:",
+    "es": "heredado del cliente:",
+    "de": "vom Kunden übernommen:",
+    "fr": "hérité du client :"
+  },
+  "projects.move": {
+    "ro": "mută la alt client",
+    "en": "move to another client",
+    "es": "mover a otro cliente",
+    "de": "zu anderem Kunden verschieben",
+    "fr": "déplacer vers un autre client"
+  },
+  "projects.no_project": {
+    "ro": "— fără proiect —",
+    "en": "— no project —",
+    "es": "— sin proyecto —",
+    "de": "— kein Projekt —",
+    "fr": "— sans projet —"
+  },
+  "projects.none_desc": {
+    "ro": "(fără descriere)",
+    "en": "(no description)",
+    "es": "(sin descripción)",
+    "de": "(ohne Beschreibung)",
+    "fr": "(sans description)"
+  },
+  "projects.hours_head": {
+    "ro": "Proiecte — ore lucrate",
+    "en": "Projects — hours worked",
+    "es": "Proyectos — horas trabajadas",
+    "de": "Projekte — geleistete Stunden",
+    "fr": "Projets — heures travaillées"
+  },
+  "projects.no_project_paren": {
+    "ro": "(fără proiect)",
+    "en": "(no project)",
+    "es": "(sin proyecto)",
+    "de": "(ohne Projekt)",
+    "fr": "(sans projet)"
+  },
+  "team.new": {
+    "ro": "Persoană nouă",
+    "en": "New person",
+    "es": "Nueva persona",
+    "de": "Neue Person",
+    "fr": "Nouvelle personne"
+  },
+  "team.name": {
+    "ro": "Nume",
+    "en": "Name",
+    "es": "Nombre",
+    "de": "Name",
+    "fr": "Nom"
+  },
+  "tags.new": {
+    "ro": "Tag nou",
+    "en": "New tag",
+    "es": "Nueva etiqueta",
+    "de": "Neuer Tag",
+    "fr": "Nouvelle étiquette"
+  },
+  "tags.name": {
+    "ro": "Nume tag (ex: bug, research, urgent)",
+    "en": "Tag name (e.g. bug, research, urgent)",
+    "es": "Nombre de etiqueta (p. ej. bug, research, urgente)",
+    "de": "Tag-Name (z. B. bug, research, dringend)",
+    "fr": "Nom de l'étiquette (ex. bug, research, urgent)"
+  },
+  "tags.color_tip": {
+    "ro": "culoare tag",
+    "en": "tag colour",
+    "es": "color de la etiqueta",
+    "de": "Tag-Farbe",
+    "fr": "couleur de l'étiquette"
+  },
+  "tags.hint": {
+    "ro": "Tagurile create aici apar ca sugestii peste tot (cronometru, editare) și le poți folosi ca să filtrezi rapoartele.",
+    "en": "Tags created here show up as suggestions everywhere (timer, editing) and you can filter reports by them.",
+    "es": "Las etiquetas creadas aquí aparecen como sugerencias en todas partes (cronómetro, edición) y sirven para filtrar informes.",
+    "de": "Hier angelegte Tags erscheinen überall als Vorschläge (Timer, Bearbeiten) und du kannst Berichte danach filtern.",
+    "fr": "Les étiquettes créées ici apparaissent comme suggestions partout (chrono, édition) et permettent de filtrer les rapports."
+  },
+  "report.period": {
+    "ro": "Perioadă",
+    "en": "Period",
+    "es": "Periodo",
+    "de": "Zeitraum",
+    "fr": "Période"
+  },
+  "report.this_week": {
+    "ro": "Săptămâna asta",
+    "en": "This week",
+    "es": "Esta semana",
+    "de": "Diese Woche",
+    "fr": "Cette semaine"
+  },
+  "report.last_week": {
+    "ro": "Săptămâna trecută",
+    "en": "Last week",
+    "es": "Semana pasada",
+    "de": "Letzte Woche",
+    "fr": "Semaine dernière"
+  },
+  "report.this_month": {
+    "ro": "Luna asta",
+    "en": "This month",
+    "es": "Este mes",
+    "de": "Dieser Monat",
+    "fr": "Ce mois-ci"
+  },
+  "report.last_month": {
+    "ro": "Luna trecută",
+    "en": "Last month",
+    "es": "Mes pasado",
+    "de": "Letzter Monat",
+    "fr": "Mois dernier"
+  },
+  "report.all": {
+    "ro": "Tot",
+    "en": "All",
+    "es": "Todo",
+    "de": "Alles",
+    "fr": "Tout"
+  },
+  "report.loading": {
+    "ro": "Se încarcă…",
+    "en": "Loading…",
+    "es": "Cargando…",
+    "de": "Wird geladen…",
+    "fr": "Chargement…"
+  },
+  "report.ai_summary": {
+    "ro": "Rezumat AI (opțional)",
+    "en": "AI summary (optional)",
+    "es": "Resumen con IA (opcional)",
+    "de": "KI-Zusammenfassung (optional)",
+    "fr": "Résumé IA (facultatif)"
+  },
+  "report.for_client": {
+    "ro": "Raport pentru client (extern)",
+    "en": "Report for the client (external)",
+    "es": "Informe para el cliente (externo)",
+    "de": "Bericht für den Kunden (extern)",
+    "fr": "Rapport pour le client (externe)"
+  },
+  "report.internal": {
+    "ro": "Raport intern (echipă)",
+    "en": "Internal report (team)",
+    "es": "Informe interno (equipo)",
+    "de": "Interner Bericht (Team)",
+    "fr": "Rapport interne (équipe)"
+  },
+  "report.generate": {
+    "ro": "✦ Generează",
+    "en": "✦ Generate",
+    "es": "✦ Generar",
+    "de": "✦ Erzeugen",
+    "fr": "✦ Générer"
+  },
+  "report.ai_hint": {
+    "ro": "Rulează local prin Ollama, gratuit. Folosește aceleași filtre de mai sus.",
+    "en": "Runs locally through Ollama, free. Uses the same filters as above.",
+    "es": "Se ejecuta localmente con Ollama, gratis. Usa los mismos filtros de arriba.",
+    "de": "Läuft lokal über Ollama, kostenlos. Nutzt dieselben Filter wie oben.",
+    "fr": "S'exécute localement via Ollama, gratuitement. Utilise les mêmes filtres que ci-dessus."
+  },
+  "report.copy": {
+    "ro": "Copiază",
+    "en": "Copy",
+    "es": "Copiar",
+    "de": "Kopieren",
+    "fr": "Copier"
+  },
+  "report.per_person": {
+    "ro": "Per persoană",
+    "en": "Per person",
+    "es": "Por persona",
+    "de": "Pro Person",
+    "fr": "Par personne"
+  },
+  "report.csv_done": {
+    "ro": "CSV descărcat",
+    "en": "CSV downloaded",
+    "es": "CSV descargado",
+    "de": "CSV heruntergeladen",
+    "fr": "CSV téléchargé"
+  },
+  "report.check_ollama": {
+    "ro": "Verifică Ollama în Setări.",
+    "en": "Check Ollama in Settings.",
+    "es": "Revisa Ollama en Ajustes.",
+    "de": "Prüfe Ollama in den Einstellungen.",
+    "fr": "Vérifiez Ollama dans les Paramètres."
+  },
+  "activity.today": {
+    "ro": "Azi",
+    "en": "Today",
+    "es": "Hoy",
+    "de": "Heute",
+    "fr": "Aujourd'hui"
+  },
+  "activity.7days": {
+    "ro": "7 zile",
+    "en": "7 days",
+    "es": "7 días",
+    "de": "7 Tage",
+    "fr": "7 jours"
+  },
+  "activity.30days": {
+    "ro": "30 zile",
+    "en": "30 days",
+    "es": "30 días",
+    "de": "30 Tage",
+    "fr": "30 jours"
+  },
+  "activity.total": {
+    "ro": "Total activ",
+    "en": "Total active",
+    "es": "Total activo",
+    "de": "Gesamt aktiv",
+    "fr": "Total actif"
+  },
+  "activity.empty": {
+    "ro": "Nicio activitate încă. Instalează extensia de browser (vezi mai jos).",
+    "en": "No activity yet. Install the browser extension (see below).",
+    "es": "Sin actividad todavía. Instala la extensión del navegador (ver abajo).",
+    "de": "Noch keine Aktivität. Installiere die Browser-Erweiterung (siehe unten).",
+    "fr": "Aucune activité pour l'instant. Installez l'extension du navigateur (voir ci-dessous)."
+  },
+  "activity.hint": {
+    "ro": "Timpul e contorizat de extensie doar pentru <b>tab-ul activ din fereastra focusată</b> (pauzele și inactivitatea nu se pun). Tu decizi categoria fiecărui domeniu — „Ignoră” îl ascunde din totaluri.",
+    "en": "The extension counts time only for the <b>active tab of the focused window</b> (breaks and idle do not count). You decide each domain's category — “Ignore” hides it from the totals.",
+    "es": "La extensión cuenta el tiempo solo del <b>pestaña activa de la ventana enfocada</b> (las pausas y la inactividad no cuentan). Tú decides la categoría de cada dominio: «Ignorar» lo oculta de los totales.",
+    "de": "Die Erweiterung zählt nur die Zeit des <b>aktiven Tabs im fokussierten Fenster</b> (Pausen und Leerlauf zählen nicht). Du legst die Kategorie jeder Domain fest — „Ignorieren“ blendet sie aus den Summen aus.",
+    "fr": "L'extension ne compte que le temps de l'<b>onglet actif de la fenêtre au premier plan</b> (pauses et inactivité exclues). Vous choisissez la catégorie de chaque domaine — « Ignorer » le retire des totaux."
+  },
+  "activity.ext_title": {
+    "ro": "Extensia de browser",
+    "en": "The browser extension",
+    "es": "La extensión del navegador",
+    "de": "Die Browser-Erweiterung",
+    "fr": "L'extension du navigateur"
+  },
+  "activity.ext_hint": {
+    "ro": "Chrome / Brave / Edge: deschide <span class=\"kbd\">chrome://extensions</span> → activează <b>Developer mode</b> → <b>Load unpacked</b> → alege folderul <span class=\"kbd\">extension/</span> din proiect. Extensia trimite datele doar către aplicația ta locală (localhost:8888).",
+    "en": "Chrome / Brave / Edge: open <span class=\"kbd\">chrome://extensions</span> → enable <b>Developer mode</b> → <b>Load unpacked</b> → pick the <span class=\"kbd\">extension/</span> folder from the project. The extension sends data only to your local app (localhost:8888).",
+    "es": "Chrome / Brave / Edge: abre <span class=\"kbd\">chrome://extensions</span> → activa <b>Developer mode</b> → <b>Load unpacked</b> → elige la carpeta <span class=\"kbd\">extension/</span> del proyecto. La extensión envía datos solo a tu app local (localhost:8888).",
+    "de": "Chrome / Brave / Edge: öffne <span class=\"kbd\">chrome://extensions</span> → aktiviere <b>Developer mode</b> → <b>Load unpacked</b> → wähle den Ordner <span class=\"kbd\">extension/</span> aus dem Projekt. Die Erweiterung sendet Daten nur an deine lokale App (localhost:8888).",
+    "fr": "Chrome / Brave / Edge : ouvrez <span class=\"kbd\">chrome://extensions</span> → activez <b>Developer mode</b> → <b>Load unpacked</b> → choisissez le dossier <span class=\"kbd\">extension/</span> du projet. L'extension n'envoie les données qu'à votre application locale (localhost:8888)."
+  },
+  "activity.cat.work": {
+    "ro": "Muncă",
+    "en": "Work",
+    "es": "Trabajo",
+    "de": "Arbeit",
+    "fr": "Travail"
+  },
+  "activity.cat.learn": {
+    "ro": "Învățare",
+    "en": "Learning",
+    "es": "Aprendizaje",
+    "de": "Lernen",
+    "fr": "Apprentissage"
+  },
+  "activity.cat.music": {
+    "ro": "Muzică",
+    "en": "Music",
+    "es": "Música",
+    "de": "Musik",
+    "fr": "Musique"
+  },
+  "activity.cat.ignore": {
+    "ro": "Ignoră",
+    "en": "Ignore",
+    "es": "Ignorar",
+    "de": "Ignorieren",
+    "fr": "Ignorer"
+  },
+  "activity.cat_saved": {
+    "ro": "Categorie salvată",
+    "en": "Category saved",
+    "es": "Categoría guardada",
+    "de": "Kategorie gespeichert",
+    "fr": "Catégorie enregistrée"
+  },
+  "settings.ai": {
+    "ro": "AI local (Ollama)",
+    "en": "Local AI (Ollama)",
+    "es": "IA local (Ollama)",
+    "de": "Lokale KI (Ollama)",
+    "fr": "IA locale (Ollama)"
+  },
+  "settings.save_model": {
+    "ro": "Salvează model",
+    "en": "Save model",
+    "es": "Guardar modelo",
+    "de": "Modell speichern",
+    "fr": "Enregistrer le modèle"
+  },
+  "settings.reload": {
+    "ro": "↻ Reîncarcă",
+    "en": "↻ Reload",
+    "es": "↻ Recargar",
+    "de": "↻ Neu laden",
+    "fr": "↻ Recharger"
+  },
+  "settings.ai_hint": {
+    "ro": "Rulează <span class=\"kbd\">ollama serve</span> și instalează un model: <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>. Local, fără costuri.",
+    "en": "Run <span class=\"kbd\">ollama serve</span> and install a model: <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>. Local, no cost.",
+    "es": "Ejecuta <span class=\"kbd\">ollama serve</span> e instala un modelo: <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>. Local, sin coste.",
+    "de": "Starte <span class=\"kbd\">ollama serve</span> und installiere ein Modell: <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>. Lokal, kostenlos.",
+    "fr": "Lancez <span class=\"kbd\">ollama serve</span> et installez un modèle : <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>. En local, sans frais."
+  },
+  "settings.language": {
+    "ro": "Limbă",
+    "en": "Language",
+    "es": "Idioma",
+    "de": "Sprache",
+    "fr": "Langue"
+  },
+  "settings.lang_hint": {
+    "ro": "Schimbă limba interfeței, a exportului PDF, a mesajelor de eroare și a comenzilor AI. Se aplică imediat, pentru toată instanța.",
+    "en": "Changes the language of the interface, the PDF export, the error messages and the AI commands. Applies immediately, for the whole instance.",
+    "es": "Cambia el idioma de la interfaz, la exportación PDF, los mensajes de error y los comandos de IA. Se aplica de inmediato, para toda la instancia.",
+    "de": "Ändert die Sprache der Oberfläche, des PDF-Exports, der Fehlermeldungen und der KI-Befehle. Gilt sofort für die gesamte Instanz.",
+    "fr": "Change la langue de l'interface, de l'export PDF, des messages d'erreur et des commandes IA. S'applique immédiatement, à toute l'instance."
+  },
+  "settings.lang_saved": {
+    "ro": "Limbă schimbată",
+    "en": "Language changed",
+    "es": "Idioma cambiado",
+    "de": "Sprache geändert",
+    "fr": "Langue modifiée"
+  },
+  "settings.gcal": {
+    "ro": "Google Calendar (import)",
+    "en": "Google Calendar (import)",
+    "es": "Google Calendar (importar)",
+    "de": "Google Kalender (Import)",
+    "fr": "Google Agenda (import)"
+  },
+  "settings.save": {
+    "ro": "Salvează",
+    "en": "Save",
+    "es": "Guardar",
+    "de": "Speichern",
+    "fr": "Enregistrer"
+  },
+  "settings.gcal_hint": {
+    "ro": "Google Calendar → Setări → calendarul tău → <b>Adresa secretă în format iCal</b> — copiază link-ul aici. Evenimentele apar în Calendar (doar citire) și pot fi transformate în înregistrări dintr-un click.",
+    "en": "Google Calendar → Settings → your calendar → <b>Secret address in iCal format</b> — paste the link here. Events appear in the Calendar (read-only) and can be turned into entries in one click.",
+    "es": "Google Calendar → Configuración → tu calendario → <b>Dirección secreta en formato iCal</b>: pega el enlace aquí. Los eventos aparecen en el Calendario (solo lectura) y se convierten en registros con un clic.",
+    "de": "Google Kalender → Einstellungen → dein Kalender → <b>Geheime Adresse im iCal-Format</b> — Link hier einfügen. Termine erscheinen im Kalender (nur lesend) und lassen sich mit einem Klick in Einträge umwandeln.",
+    "fr": "Google Agenda → Paramètres → votre agenda → <b>Adresse secrète au format iCal</b> — collez le lien ici. Les événements apparaissent dans l'Agenda (lecture seule) et se convertissent en entrées en un clic."
+  },
+  "settings.data": {
+    "ro": "Date",
+    "en": "Data",
+    "es": "Datos",
+    "de": "Daten",
+    "fr": "Données"
+  },
+  "settings.backup": {
+    "ro": "⬇ Backup JSON",
+    "en": "⬇ JSON backup",
+    "es": "⬇ Copia JSON",
+    "de": "⬇ JSON-Backup",
+    "fr": "⬇ Sauvegarde JSON"
+  },
+  "settings.pdf_all": {
+    "ro": "⬇ PDF (tot)",
+    "en": "⬇ PDF (everything)",
+    "es": "⬇ PDF (todo)",
+    "de": "⬇ PDF (alles)",
+    "fr": "⬇ PDF (tout)"
+  },
+  "settings.data_hint": {
+    "ro": "Bază de date reală: <span class=\"kbd\">data/timetracker.db</span> — backup = copiază fișierul.",
+    "en": "Real database: <span class=\"kbd\">data/timetracker.db</span> — backup = copy that file.",
+    "es": "Base de datos real: <span class=\"kbd\">data/timetracker.db</span> — copia de seguridad = copia ese archivo.",
+    "de": "Echte Datenbank: <span class=\"kbd\">data/timetracker.db</span> — Backup = diese Datei kopieren.",
+    "fr": "Base de données réelle : <span class=\"kbd\">data/timetracker.db</span> — sauvegarde = copiez ce fichier."
+  },
+  "modal.add": {
+    "ro": "Adaugă înregistrare",
+    "en": "Add entry",
+    "es": "Añadir registro",
+    "de": "Eintrag hinzufügen",
+    "fr": "Ajouter une entrée"
+  },
+  "modal.edit": {
+    "ro": "Editează înregistrarea",
+    "en": "Edit entry",
+    "es": "Editar registro",
+    "de": "Eintrag bearbeiten",
+    "fr": "Modifier l'entrée"
+  },
+  "modal.edit_planned": {
+    "ro": "Editează planificarea",
+    "en": "Edit planned work",
+    "es": "Editar planificación",
+    "de": "Planung bearbeiten",
+    "fr": "Modifier la planification"
+  },
+  "modal.desc": {
+    "ro": "Descriere",
+    "en": "Description",
+    "es": "Descripción",
+    "de": "Beschreibung",
+    "fr": "Description"
+  },
+  "modal.desc_ph": {
+    "ro": "La ce ai lucrat?",
+    "en": "What did you work on?",
+    "es": "¿En qué trabajaste?",
+    "de": "Woran hast du gearbeitet?",
+    "fr": "Sur quoi avez-vous travaillé ?"
+  },
+  "modal.date": {
+    "ro": "Data",
+    "en": "Date",
+    "es": "Fecha",
+    "de": "Datum",
+    "fr": "Date"
+  },
+  "modal.start": {
+    "ro": "Ora început",
+    "en": "Start time",
+    "es": "Hora de inicio",
+    "de": "Startzeit",
+    "fr": "Heure de début"
+  },
+  "modal.optional": {
+    "ro": "(opțional)",
+    "en": "(optional)",
+    "es": "(opcional)",
+    "de": "(optional)",
+    "fr": "(facultatif)"
+  },
+  "modal.duration": {
+    "ro": "Durată",
+    "en": "Duration",
+    "es": "Duración",
+    "de": "Dauer",
+    "fr": "Durée"
+  },
+  "modal.tags_ph": {
+    "ro": "separate prin virgulă",
+    "en": "comma separated",
+    "es": "separadas por comas",
+    "de": "durch Komma getrennt",
+    "fr": "séparées par des virgules"
+  },
+  "modal.planned": {
+    "ro": "Planificat — nu intră la facturare până nu e realizat",
+    "en": "Planned — not billed until it is marked done",
+    "es": "Planificado — no se factura hasta marcarlo como hecho",
+    "de": "Geplant — wird erst nach Erledigung abgerechnet",
+    "fr": "Planifié — non facturé tant que ce n'est pas fait"
+  },
+  "modal.recur": {
+    "ro": "Repetă săptămânal",
+    "en": "Repeat weekly",
+    "es": "Repetir semanalmente",
+    "de": "Wöchentlich wiederholen",
+    "fr": "Répéter chaque semaine"
+  },
+  "modal.recur_no": {
+    "ro": "Nu se repetă",
+    "en": "Does not repeat",
+    "es": "No se repite",
+    "de": "Keine Wiederholung",
+    "fr": "Ne se répète pas"
+  },
+  "modal.recur_n": {
+    "ro": "{n} săptămâni",
+    "en": "{n} weeks",
+    "es": "{n} semanas",
+    "de": "{n} Wochen",
+    "fr": "{n} semaines"
+  },
+  "modal.mark_done": {
+    "ro": "✓ Marchează ca lucrat",
+    "en": "✓ Mark as done",
+    "es": "✓ Marcar como hecho",
+    "de": "✓ Als erledigt markieren",
+    "fr": "✓ Marquer comme fait"
+  },
+  "modal.need_duration": {
+    "ro": "Pune o durată (ore/minute).",
+    "en": "Set a duration (hours/minutes).",
+    "es": "Indica una duración (horas/minutos).",
+    "de": "Gib eine Dauer an (Stunden/Minuten).",
+    "fr": "Indiquez une durée (heures/minutes)."
+  },
+  "modal.added": {
+    "ro": "Înregistrare adăugată",
+    "en": "Entry added",
+    "es": "Registro añadido",
+    "de": "Eintrag hinzugefügt",
+    "fr": "Entrée ajoutée"
+  },
+  "modal.added_recur": {
+    "ro": "Adăugat + {n} repetări",
+    "en": "Added + {n} repeats",
+    "es": "Añadido + {n} repeticiones",
+    "de": "Hinzugefügt + {n} Wiederholungen",
+    "fr": "Ajouté + {n} répétitions"
+  },
+  "modal.updated": {
+    "ro": "Înregistrare actualizată",
+    "en": "Entry updated",
+    "es": "Registro actualizado",
+    "de": "Eintrag aktualisiert",
+    "fr": "Entrée mise à jour"
+  },
+  "modal.delete_ask": {
+    "ro": "Ștergi această înregistrare?",
+    "en": "Delete this entry?",
+    "es": "¿Eliminar este registro?",
+    "de": "Diesen Eintrag löschen?",
+    "fr": "Supprimer cette entrée ?"
+  },
+  "common.client": {
+    "ro": "Client",
+    "en": "Client",
+    "es": "Cliente",
+    "de": "Kunde",
+    "fr": "Client"
+  },
+  "common.project": {
+    "ro": "Proiect",
+    "en": "Project",
+    "es": "Proyecto",
+    "de": "Projekt",
+    "fr": "Projet"
+  },
+  "common.person": {
+    "ro": "Persoană",
+    "en": "Person",
+    "es": "Persona",
+    "de": "Person",
+    "fr": "Personne"
+  },
+  "common.add": {
+    "ro": "Adaugă",
+    "en": "Add",
+    "es": "Añadir",
+    "de": "Hinzufügen",
+    "fr": "Ajouter"
+  },
+  "common.save": {
+    "ro": "Salvează",
+    "en": "Save",
+    "es": "Guardar",
+    "de": "Speichern",
+    "fr": "Enregistrer"
+  },
+  "common.cancel": {
+    "ro": "Anulează",
+    "en": "Cancel",
+    "es": "Cancelar",
+    "de": "Abbrechen",
+    "fr": "Annuler"
+  },
+  "common.delete": {
+    "ro": "Șterge",
+    "en": "Delete",
+    "es": "Eliminar",
+    "de": "Löschen",
+    "fr": "Supprimer"
+  },
+  "common.deleted": {
+    "ro": "Șters",
+    "en": "Deleted",
+    "es": "Eliminado",
+    "de": "Gelöscht",
+    "fr": "Supprimé"
+  },
+  "common.confirm": {
+    "ro": "Confirmă",
+    "en": "Confirm",
+    "es": "Confirmar",
+    "de": "Bestätigen",
+    "fr": "Confirmer"
+  },
+  "common.error": {
+    "ro": "Eroare",
+    "en": "Error",
+    "es": "Error",
+    "de": "Fehler",
+    "fr": "Erreur"
+  },
+  "common.color_updated": {
+    "ro": "Culoare actualizată",
+    "en": "Colour updated",
+    "es": "Color actualizado",
+    "de": "Farbe aktualisiert",
+    "fr": "Couleur mise à jour"
+  },
+  "common.start_col": {
+    "ro": "Început",
+    "en": "Start",
+    "es": "Inicio",
+    "de": "Beginn",
+    "fr": "Début"
+  },
+  "common.dur_min": {
+    "ro": "Durată (min)",
+    "en": "Duration (min)",
+    "es": "Duración (min)",
+    "de": "Dauer (Min.)",
+    "fr": "Durée (min)"
+  },
+  "common.dur_hm": {
+    "ro": "Durată (h:m)",
+    "en": "Duration (h:m)",
+    "es": "Duración (h:m)",
+    "de": "Dauer (Std:Min)",
+    "fr": "Durée (h:m)"
+  },
+  "common.beginning": {
+    "ro": "început",
+    "en": "the beginning",
+    "es": "el principio",
+    "de": "Beginn",
+    "fr": "le début"
+  },
+  "common.today_lc": {
+    "ro": "azi",
+    "en": "today",
+    "es": "hoy",
+    "de": "heute",
+    "fr": "aujourd'hui"
+  },
+  "cmd.launch": {
+    "ro": "🎙 Dă-i drumul",
+    "en": "🎙 Go ahead",
+    "es": "🎙 Adelante",
+    "de": "🎙 Los geht's",
+    "fr": "🎙 C'est parti"
+  },
+  "cmd.placeholder": {
+    "ro": "Spune sau scrie o comandă…",
+    "en": "Say or type a command…",
+    "es": "Di o escribe un comando…",
+    "de": "Sprich oder tippe einen Befehl…",
+    "fr": "Dictez ou tapez une commande…"
+  },
+  "cmd.interpret": {
+    "ro": "Interpretează",
+    "en": "Interpret",
+    "es": "Interpretar",
+    "de": "Auswerten",
+    "fr": "Interpréter"
+  },
+  "cmd.close": {
+    "ro": "Închide (Esc)",
+    "en": "Close (Esc)",
+    "es": "Cerrar (Esc)",
+    "de": "Schließen (Esc)",
+    "fr": "Fermer (Échap)"
+  },
+  "cmd.examples": {
+    "ro": "Exemple:",
+    "en": "Examples:",
+    "es": "Ejemplos:",
+    "de": "Beispiele:",
+    "fr": "Exemples :"
+  },
+  "cmd.ex1": {
+    "ro": "pornește cronometru pentru mentenanță la Acme Studio, persoana Ana, tag bug",
+    "en": "start a timer for maintenance on Acme Studio, person Ana, tag bug",
+    "es": "inicia un cronómetro para mantenimiento en Acme Studio, persona Ana, etiqueta bug",
+    "de": "starte einen Timer für Wartung bei Acme Studio, Person Ana, Tag bug",
+    "fr": "démarre un chrono pour la maintenance chez Acme Studio, personne Ana, étiquette bug"
+  },
+  "cmd.ex2": {
+    "ro": "adaugă 2 ore la Lumen, fix login",
+    "en": "add 2 hours to Lumen, fix login",
+    "es": "añade 2 horas a Lumen, arreglar login",
+    "de": "füge 2 Stunden zu Lumen hinzu, Login-Fix",
+    "fr": "ajoute 2 heures à Lumen, correction du login"
+  },
+  "cmd.ex3": {
+    "ro": "filtrează pe Clinica Vega luna asta",
+    "en": "filter on Clinica Vega this month",
+    "es": "filtra por Clinica Vega este mes",
+    "de": "filtere nach Clinica Vega diesen Monat",
+    "fr": "filtre sur Clinica Vega ce mois-ci"
+  },
+  "cmd.ex4": {
+    "ro": "exportă PDF",
+    "en": "export PDF",
+    "es": "exporta PDF",
+    "de": "exportiere PDF",
+    "fr": "exporte le PDF"
+  },
+  "cmd.ex5": {
+    "ro": "du-te la calendar",
+    "en": "go to the calendar",
+    "es": "ve al calendario",
+    "de": "geh zum Kalender",
+    "fr": "va au calendrier"
+  },
+  "cmd.none": {
+    "ro": "Nu am identificat nicio acțiune. Reformulează.",
+    "en": "I could not identify any action. Try rephrasing.",
+    "es": "No he identificado ninguna acción. Reformula.",
+    "de": "Ich konnte keine Aktion erkennen. Formuliere es anders.",
+    "fr": "Je n'ai identifié aucune action. Reformulez."
+  },
+  "cmd.review": {
+    "ro": "Verifică, apoi „Dă-i drumul”.",
+    "en": "Check it, then press “Go ahead”.",
+    "es": "Revísalo y pulsa «Adelante».",
+    "de": "Prüfen, dann „Los geht's“ drücken.",
+    "fr": "Vérifiez, puis « C'est parti »."
+  },
+  "cmd.no_voice": {
+    "ro": "Vocea nu e disponibilă aici. Folosește Wispr Flow sau scrie.",
+    "en": "Voice is not available here. Use Wispr Flow or type.",
+    "es": "La voz no está disponible aquí. Usa Wispr Flow o escribe.",
+    "de": "Sprache ist hier nicht verfügbar. Nutze Wispr Flow oder tippe.",
+    "fr": "La voix n'est pas disponible ici. Utilisez Wispr Flow ou tapez."
+  },
+  "cmd.act.start_timer": {
+    "ro": "Pornește cronometru",
+    "en": "Start timer",
+    "es": "Iniciar cronómetro",
+    "de": "Timer starten",
+    "fr": "Démarrer le chrono"
+  },
+  "cmd.act.stop_timer": {
+    "ro": "Oprește cronometru",
+    "en": "Stop timer",
+    "es": "Parar cronómetro",
+    "de": "Timer stoppen",
+    "fr": "Arrêter le chrono"
+  },
+  "cmd.act.add_entry": {
+    "ro": "Adaugă înregistrare",
+    "en": "Add entry",
+    "es": "Añadir registro",
+    "de": "Eintrag hinzufügen",
+    "fr": "Ajouter une entrée"
+  },
+  "cmd.act.create_client": {
+    "ro": "Client nou",
+    "en": "New client",
+    "es": "Nuevo cliente",
+    "de": "Neuer Kunde",
+    "fr": "Nouveau client"
+  },
+  "cmd.act.create_project": {
+    "ro": "Proiect nou",
+    "en": "New project",
+    "es": "Nuevo proyecto",
+    "de": "Neues Projekt",
+    "fr": "Nouveau projet"
+  },
+  "cmd.act.create_person": {
+    "ro": "Persoană nouă",
+    "en": "New person",
+    "es": "Nueva persona",
+    "de": "Neue Person",
+    "fr": "Nouvelle personne"
+  },
+  "cmd.act.set_filter": {
+    "ro": "Filtrează",
+    "en": "Filter",
+    "es": "Filtrar",
+    "de": "Filtern",
+    "fr": "Filtrer"
+  },
+  "cmd.act.navigate": {
+    "ro": "Navighează",
+    "en": "Navigate",
+    "es": "Navegar",
+    "de": "Navigieren",
+    "fr": "Naviguer"
+  },
+  "cmd.act.generate_report": {
+    "ro": "Generează raport",
+    "en": "Generate report",
+    "es": "Generar informe",
+    "de": "Bericht erzeugen",
+    "fr": "Générer le rapport"
+  },
+  "cmd.act.export_pdf": {
+    "ro": "Exportă PDF",
+    "en": "Export PDF",
+    "es": "Exportar PDF",
+    "de": "PDF exportieren",
+    "fr": "Exporter en PDF"
+  },
+  "cmd.act.delete_entry": {
+    "ro": "Șterge înregistrare",
+    "en": "Delete entry",
+    "es": "Eliminar registro",
+    "de": "Eintrag löschen",
+    "fr": "Supprimer l'entrée"
+  },
+  "cmd.act.delete_client": {
+    "ro": "Șterge client",
+    "en": "Delete client",
+    "es": "Eliminar cliente",
+    "de": "Kunde löschen",
+    "fr": "Supprimer le client"
+  },
+  "err.no_client": {
+    "ro": "Client inexistent",
+    "en": "No such client",
+    "es": "El cliente no existe",
+    "de": "Kunde existiert nicht",
+    "fr": "Client inexistant"
+  },
+  "err.no_timer": {
+    "ro": "Cronometru inexistent",
+    "en": "No such timer",
+    "es": "El cronómetro no existe",
+    "de": "Timer existiert nicht",
+    "fr": "Chrono inexistant"
+  },
+  "err.no_duration": {
+    "ro": "Durata lipsește",
+    "en": "Duration is missing",
+    "es": "Falta la duración",
+    "de": "Dauer fehlt",
+    "fr": "La durée est manquante"
+  },
+  "err.duration_min": {
+    "ro": "Durata trebuie să fie cel puțin 1 minut",
+    "en": "Duration must be at least 1 minute",
+    "es": "La duración debe ser de al menos 1 minuto",
+    "de": "Die Dauer muss mindestens 1 Minute betragen",
+    "fr": "La durée doit être d'au moins 1 minute"
+  },
+  "err.no_entry": {
+    "ro": "Înregistrare inexistentă",
+    "en": "No such entry",
+    "es": "El registro no existe",
+    "de": "Eintrag existiert nicht",
+    "fr": "Entrée inexistante"
+  },
+  "err.no_client_name": {
+    "ro": "Numele clientului lipsește",
+    "en": "The client name is missing",
+    "es": "Falta el nombre del cliente",
+    "de": "Der Kundenname fehlt",
+    "fr": "Le nom du client est manquant"
+  },
+  "err.no_name": {
+    "ro": "Numele lipsește",
+    "en": "The name is missing",
+    "es": "Falta el nombre",
+    "de": "Der Name fehlt",
+    "fr": "Le nom est manquant"
+  },
+  "err.no_project_name": {
+    "ro": "Numele proiectului lipsește",
+    "en": "The project name is missing",
+    "es": "Falta el nombre del proyecto",
+    "de": "Der Projektname fehlt",
+    "fr": "Le nom du projet est manquant"
+  },
+  "err.no_tag_name": {
+    "ro": "Numele tagului lipsește",
+    "en": "The tag name is missing",
+    "es": "Falta el nombre de la etiqueta",
+    "de": "Der Tag-Name fehlt",
+    "fr": "Le nom de l'étiquette est manquant"
+  },
+  "err.no_person": {
+    "ro": "Persoană inexistentă",
+    "en": "No such person",
+    "es": "La persona no existe",
+    "de": "Person existiert nicht",
+    "fr": "Personne inexistante"
+  },
+  "err.no_project": {
+    "ro": "Proiect inexistent",
+    "en": "No such project",
+    "es": "El proyecto no existe",
+    "de": "Projekt existiert nicht",
+    "fr": "Projet inexistant"
+  },
+  "err.no_tag": {
+    "ro": "Tag inexistent",
+    "en": "No such tag",
+    "es": "La etiqueta no existe",
+    "de": "Tag existiert nicht",
+    "fr": "Étiquette inexistante"
+  },
+  "err.ollama_down": {
+    "ro": "Ollama nu rulează.",
+    "en": "Ollama is not running.",
+    "es": "Ollama no está en ejecución.",
+    "de": "Ollama läuft nicht.",
+    "fr": "Ollama n'est pas en cours d'exécution."
+  },
+  "err.no_entries": {
+    "ro": "Nicio înregistrare",
+    "en": "No entries",
+    "es": "Sin registros",
+    "de": "Keine Einträge",
+    "fr": "Aucune entrée"
+  },
+  "pdf.title": {
+    "ro": "Raport de activitate",
+    "en": "Activity report",
+    "es": "Informe de actividad",
+    "de": "Tätigkeitsbericht",
+    "fr": "Rapport d'activité"
+  },
+  "pdf.period": {
+    "ro": "Perioadă: ",
+    "en": "Period: ",
+    "es": "Periodo: ",
+    "de": "Zeitraum: ",
+    "fr": "Période : "
+  },
+  "pdf.client": {
+    "ro": "Client: ",
+    "en": "Client: ",
+    "es": "Cliente: ",
+    "de": "Kunde: ",
+    "fr": "Client : "
+  },
+  "pdf.person": {
+    "ro": "Persoană: ",
+    "en": "Person: ",
+    "es": "Persona: ",
+    "de": "Person: ",
+    "fr": "Personne : "
+  },
+  "pdf.total_worked": {
+    "ro": "Total lucrat",
+    "en": "Total worked",
+    "es": "Total trabajado",
+    "de": "Gesamt gearbeitet",
+    "fr": "Total travaillé"
+  },
+  "pdf.total_billed": {
+    "ro": "Total facturat",
+    "en": "Total billed",
+    "es": "Total facturado",
+    "de": "Gesamt abgerechnet",
+    "fr": "Total facturé"
+  },
+  "pdf.mrr": {
+    "ro": "Venit recurent/lună",
+    "en": "Recurring revenue/month",
+    "es": "Ingresos recurrentes/mes",
+    "de": "Wiederkehrender Umsatz/Monat",
+    "fr": "Revenu récurrent/mois"
+  },
+  "pdf.entries": {
+    "ro": "Înregistrări",
+    "en": "Entries",
+    "es": "Registros",
+    "de": "Einträge",
+    "fr": "Entrées"
+  },
+  "pdf.clients_head": {
+    "ro": "Clienți — ore, pachet & costuri extra",
+    "en": "Clients — hours, package & overage",
+    "es": "Clientes — horas, paquete y exceso",
+    "de": "Kunden — Stunden, Paket & Mehrkosten",
+    "fr": "Clients — heures, forfait et dépassement"
+  },
+  "pdf.per_person": {
+    "ro": "Pe persoană",
+    "en": "Per person",
+    "es": "Por persona",
+    "de": "Pro Person",
+    "fr": "Par personne"
+  },
+  "pdf.log": {
+    "ro": "Jurnal complet",
+    "en": "Full log",
+    "es": "Registro completo",
+    "de": "Vollständiges Protokoll",
+    "fr": "Journal complet"
+  },
+  "pdf.empty": {
+    "ro": "Nicio înregistrare pentru filtrul selectat.",
+    "en": "No entries for the selected filter.",
+    "es": "No hay registros para el filtro seleccionado.",
+    "de": "Keine Einträge für den gewählten Filter.",
+    "fr": "Aucune entrée pour le filtre sélectionné."
+  },
+  "ai.sys": {
+    "ro": "Ești asistentul unei aplicații de pontaj (time tracker).\nTransformi o comandă în limba română într-un plan de acțiuni JSON.\n- reply = confirmare scurtă în română a ce vei face.",
+    "en": "You are the assistant of a time-tracking app.\nYou turn an English command into a JSON action plan.\n- reply = a short confirmation in English of what you will do.",
+    "es": "Eres el asistente de una aplicación de control de tiempo.\nConviertes un comando en español en un plan de acciones JSON.\n- reply = una confirmación breve en español de lo que vas a hacer.",
+    "de": "Du bist der Assistent einer Zeiterfassungs-App.\nDu wandelst einen deutschen Befehl in einen JSON-Aktionsplan um.\n- reply = eine kurze Bestätigung auf Deutsch, was du tun wirst.",
+    "fr": "Tu es l'assistant d'une application de suivi du temps.\nTu transformes une commande en français en un plan d'actions JSON.\n- reply = une confirmation courte en français de ce que tu vas faire."
+  },
+  "ai.verbs": {
+    "ro": "- Pentru „pornește/începe cronometru” -> start_timer. Pentru „oprește/stop” -> stop_timer.\n- Pentru „adaugă X ore la ...” -> add_entry cu hours/minutes.\n- Pentru „filtrează pe ...” -> set_filter. Pentru „raport” -> generate_report. Pentru „PDF/exportă” -> export_pdf. Pentru „du-te la / deschide” -> navigate.",
+    "en": "- For “start a timer” -> start_timer. For “stop” -> stop_timer.\n- For “add X hours to ...” -> add_entry with hours/minutes.\n- For “filter on ...” -> set_filter. For “report” -> generate_report. For “PDF/export” -> export_pdf. For “go to / open” -> navigate.",
+    "es": "- Para «inicia/arranca el cronómetro» -> start_timer. Para «para/detén» -> stop_timer.\n- Para «añade X horas a ...» -> add_entry con hours/minutes.\n- Para «filtra por ...» -> set_filter. Para «informe» -> generate_report. Para «PDF/exporta» -> export_pdf. Para «ve a / abre» -> navigate.",
+    "de": "- Für „starte den Timer“ -> start_timer. Für „stopp/beende“ -> stop_timer.\n- Für „füge X Stunden zu ... hinzu“ -> add_entry mit hours/minutes.\n- Für „filtere nach ...“ -> set_filter. Für „Bericht“ -> generate_report. Für „PDF/exportiere“ -> export_pdf. Für „geh zu / öffne“ -> navigate.",
+    "fr": "- Pour « démarre le chrono » -> start_timer. Pour « arrête » -> stop_timer.\n- Pour « ajoute X heures à ... » -> add_entry avec hours/minutes.\n- Pour « filtre sur ... » -> set_filter. Pour « rapport » -> generate_report. Pour « PDF/exporte » -> export_pdf. Pour « va à / ouvre » -> navigate."
+  },
+  "ai.time": {
+    "ro": "- add_entry: dacă se spune când a început („de la 14”) -> startTime „HH:MM”. Dacă spune și până când -> endTime „HH:MM”; NU calcula tu durata. Dacă e altă zi („ieri”, „luni”) -> date „YYYY-MM-DD”.\n- Datele: azi este {TODAY}. „luna asta” = de la {MONTH_START} până azi. „ieri” = {YESTERDAY}.",
+    "en": "- add_entry: if a start is given (“from 2pm”) -> startTime “HH:MM”. If an end is given too -> endTime “HH:MM”; do NOT compute the duration yourself. If it is another day (“yesterday”, “Monday”) -> date “YYYY-MM-DD”.\n- Dates: today is {TODAY}. “this month” = from {MONTH_START} until today. “yesterday” = {YESTERDAY}.",
+    "es": "- add_entry: si se indica el inicio («desde las 14») -> startTime «HH:MM». Si también el final -> endTime «HH:MM»; NO calcules tú la duración. Si es otro día («ayer», «el lunes») -> date «YYYY-MM-DD».\n- Fechas: hoy es {TODAY}. «este mes» = desde {MONTH_START} hasta hoy. «ayer» = {YESTERDAY}.",
+    "de": "- add_entry: wird ein Beginn genannt („ab 14 Uhr“) -> startTime „HH:MM“. Wird auch ein Ende genannt -> endTime „HH:MM“; berechne die Dauer NICHT selbst. Ist es ein anderer Tag („gestern“, „Montag“) -> date „YYYY-MM-DD“.\n- Daten: heute ist {TODAY}. „diesen Monat“ = von {MONTH_START} bis heute. „gestern“ = {YESTERDAY}.",
+    "fr": "- add_entry : si un début est donné (« à partir de 14h ») -> startTime « HH:MM ». Si une fin est aussi donnée -> endTime « HH:MM » ; ne calcule PAS la durée toi-même. Si c'est un autre jour (« hier », « lundi ») -> date « YYYY-MM-DD ».\n- Dates : aujourd'hui c'est {TODAY}. « ce mois-ci » = du {MONTH_START} à aujourd'hui. « hier » = {YESTERDAY}."
+  },
+  "ai.example": {
+    "ro": "Exemplu — pentru „adaugă 2 ore jumate la Acme Studio pe Development, ieri de la 14, descriere fix login” răspunzi:\n{\"reply\":\"Adaug 2h 30m la Acme Studio · Development, ieri de la 14:00: fix login.\",\"actions\":[{\"action\":\"add_entry\",\"args\":{\"clientName\":\"Acme Studio\",\"projectHint\":\"Development\",\"desc\":\"fix login\",\"hours\":2,\"minutes\":30,\"date\":\"{YESTERDAY}\",\"startTime\":\"14:00\"}}]}",
+    "en": "Example — for “add two and a half hours to Acme Studio on Development, yesterday from 2pm, description fix login” you answer:\n{\"reply\":\"Adding 2h 30m to Acme Studio · Development, yesterday from 14:00: fix login.\",\"actions\":[{\"action\":\"add_entry\",\"args\":{\"clientName\":\"Acme Studio\",\"projectHint\":\"Development\",\"desc\":\"fix login\",\"hours\":2,\"minutes\":30,\"date\":\"{YESTERDAY}\",\"startTime\":\"14:00\"}}]}",
+    "es": "Ejemplo — para «añade dos horas y media a Acme Studio en Development, ayer desde las 14, descripción arreglar login» respondes:\n{\"reply\":\"Añado 2h 30m a Acme Studio · Development, ayer desde las 14:00: arreglar login.\",\"actions\":[{\"action\":\"add_entry\",\"args\":{\"clientName\":\"Acme Studio\",\"projectHint\":\"Development\",\"desc\":\"arreglar login\",\"hours\":2,\"minutes\":30,\"date\":\"{YESTERDAY}\",\"startTime\":\"14:00\"}}]}",
+    "de": "Beispiel — auf „füge zweieinhalb Stunden zu Acme Studio bei Development hinzu, gestern ab 14 Uhr, Beschreibung Login-Fix“ antwortest du:\n{\"reply\":\"Ich füge 2h 30m zu Acme Studio · Development hinzu, gestern ab 14:00: Login-Fix.\",\"actions\":[{\"action\":\"add_entry\",\"args\":{\"clientName\":\"Acme Studio\",\"projectHint\":\"Development\",\"desc\":\"Login-Fix\",\"hours\":2,\"minutes\":30,\"date\":\"{YESTERDAY}\",\"startTime\":\"14:00\"}}]}",
+    "fr": "Exemple — pour « ajoute deux heures et demie à Acme Studio sur Development, hier à partir de 14h, description correction du login » tu réponds :\n{\"reply\":\"J'ajoute 2h 30m à Acme Studio · Development, hier à partir de 14:00 : correction du login.\",\"actions\":[{\"action\":\"add_entry\",\"args\":{\"clientName\":\"Acme Studio\",\"projectHint\":\"Development\",\"desc\":\"correction du login\",\"hours\":2,\"minutes\":30,\"date\":\"{YESTERDAY}\",\"startTime\":\"14:00\"}}]}"
+  },
+  "ai.report_lang": {
+    "ro": "Scrie un raport în limba română, Markdown.",
+    "en": "Write a report in English, in Markdown.",
+    "es": "Escribe un informe en español, en Markdown.",
+    "de": "Schreibe einen Bericht auf Deutsch, in Markdown.",
+    "fr": "Rédige un rapport en français, en Markdown."
+  },
+  "ai.report_client": {
+    "ro": "Un raport pentru CLIENT (extern). Ton profesional, orientat spre valoarea livrată. Explică ce s-a făcut și de ce contează.",
+    "en": "A report for the CLIENT (external). Professional tone, focused on delivered value. Explain what was done and why it matters.",
+    "es": "Un informe para el CLIENTE (externo). Tono profesional, centrado en el valor entregado. Explica qué se hizo y por qué importa.",
+    "de": "Ein Bericht für den KUNDEN (extern). Professioneller Ton, auf den gelieferten Wert ausgerichtet. Erkläre, was getan wurde und warum es zählt.",
+    "fr": "Un rapport pour le CLIENT (externe). Ton professionnel, centré sur la valeur livrée. Explique ce qui a été fait et pourquoi c'est important."
+  },
+  "ai.report_internal": {
+    "ro": "Un raport INTERN. Ton direct, productivitate: cât s-a lucrat, pe ce, distribuție pe persoane, ce a consumat timpul, observații de eficiență.",
+    "en": "An INTERNAL report. Direct tone, productivity: how much was worked, on what, split per person, what consumed the time, efficiency observations.",
+    "es": "Un informe INTERNO. Tono directo, productividad: cuánto se trabajó, en qué, reparto por persona, qué consumió el tiempo, observaciones de eficiencia.",
+    "de": "Ein INTERNER Bericht. Direkter Ton, Produktivität: wie viel gearbeitet wurde, woran, Verteilung pro Person, was die Zeit gekostet hat, Effizienzhinweise.",
+    "fr": "Un rapport INTERNE. Ton direct, productivité : combien de temps travaillé, sur quoi, répartition par personne, ce qui a consommé le temps, observations d'efficacité."
+  },
+  "ai.report_struct": {
+    "ro": "Structurează cu titluri (##), rezumat la început, grupare pe teme, concluzii. Nu inventa activități. Concis.",
+    "en": "Structure it with headings (##), a summary first, grouping by theme, conclusions. Do not invent activities. Be concise.",
+    "es": "Estructúralo con títulos (##), resumen al principio, agrupación por temas, conclusiones. No inventes actividades. Sé conciso.",
+    "de": "Gliedere mit Überschriften (##), Zusammenfassung zuerst, Gruppierung nach Themen, Fazit. Erfinde keine Tätigkeiten. Knapp halten.",
+    "fr": "Structure avec des titres (##), un résumé d'abord, un regroupement par thème, des conclusions. N'invente pas d'activités. Sois concis."
+  },
+  "ai.report_total": {
+    "ro": "Total: {total} pe {n} înregistrări.",
+    "en": "Total: {total} across {n} entries.",
+    "es": "Total: {total} en {n} registros.",
+    "de": "Gesamt: {total} bei {n} Einträgen.",
+    "fr": "Total : {total} sur {n} entrées."
+  },
+  "ai.report_entries": {
+    "ro": "Înregistrări:",
+    "en": "Entries:",
+    "es": "Registros:",
+    "de": "Einträge:",
+    "fr": "Entrées :"
+  },
+  "ai.catalog": {
+    "ro": "Catalog curent:\nClienți: {clients}\nProiecte: {projects}\nPersoane: {people}",
+    "en": "Current catalogue:\nClients: {clients}\nProjects: {projects}\nPeople: {people}",
+    "es": "Catálogo actual:\nClientes: {clients}\nProyectos: {projects}\nPersonas: {people}",
+    "de": "Aktueller Katalog:\nKunden: {clients}\nProjekte: {projects}\nPersonen: {people}",
+    "fr": "Catalogue actuel :\nClients : {clients}\nProjets : {projects}\nPersonnes : {people}"
+  },
+  "pdf.retainer_rate": {
+    "ro": "Abonament / Tarif",
+    "en": "Retainer / Rate",
+    "es": "Cuota / Tarifa",
+    "de": "Pauschale / Satz",
+    "fr": "Forfait / Tarif"
+  },
+  "pdf.included": {
+    "ro": "Incluse",
+    "en": "Included",
+    "es": "Incluidas",
+    "de": "Inklusive",
+    "fr": "Incluses"
+  },
+  "pdf.worked": {
+    "ro": "Lucrate",
+    "en": "Worked",
+    "es": "Trabajadas",
+    "de": "Geleistet",
+    "fr": "Travaillées"
+  },
+  "pdf.extra_hourly": {
+    "ro": "Extra / Orar",
+    "en": "Overage / Hourly",
+    "es": "Exceso / Por hora",
+    "de": "Mehr / Stundensatz",
+    "fr": "Dépassement / Horaire"
+  },
+  "pdf.eff_rate": {
+    "ro": "Tarif efectiv/oră",
+    "en": "Effective rate/hour",
+    "es": "Tarifa efectiva/hora",
+    "de": "Effektiver Satz/Stunde",
+    "fr": "Tarif effectif/heure"
+  },
+  "pdf.hours": {
+    "ro": "Ore",
+    "en": "Hours",
+    "es": "Horas",
+    "de": "Stunden",
+    "fr": "Heures"
+  },
+  "pdf.value_hourly": {
+    "ro": "Valoare (orar)",
+    "en": "Value (hourly)",
+    "es": "Valor (por hora)",
+    "de": "Wert (stündlich)",
+    "fr": "Valeur (horaire)"
+  },
+  "pdf.per_tag": {
+    "ro": "Pe tag",
+    "en": "Per tag",
+    "es": "Por etiqueta",
+    "de": "Pro Tag",
+    "fr": "Par étiquette"
+  },
+  "pdf.tag": {
+    "ro": "Tag",
+    "en": "Tag",
+    "es": "Etiqueta",
+    "de": "Tag",
+    "fr": "Étiquette"
+  },
+  "pdf.no_tags": {
+    "ro": "Fără taguri",
+    "en": "No tags",
+    "es": "Sin etiquetas",
+    "de": "Keine Tags",
+    "fr": "Aucune étiquette"
+  },
+  "pdf.generated": {
+    "ro": "Generat",
+    "en": "Generated",
+    "es": "Generado",
+    "de": "Erstellt",
+    "fr": "Généré"
+  },
+  "pdf.total": {
+    "ro": "TOTAL",
+    "en": "TOTAL",
+    "es": "TOTAL",
+    "de": "GESAMT",
+    "fr": "TOTAL"
+  },
+  "pdf.tags_filter": {
+    "ro": "Taguri: ",
+    "en": "Tags: ",
+    "es": "Etiquetas: ",
+    "de": "Tags: ",
+    "fr": "Étiquettes : "
+  },
+  "err.unknown_action": {
+    "ro": "acțiune necunoscută",
+    "en": "unknown action",
+    "es": "acción desconocida",
+    "de": "unbekannte Aktion",
+    "fr": "action inconnue"
+  },
+  "err.empty_text": {
+    "ro": "text gol",
+    "en": "empty text",
+    "es": "texto vacío",
+    "de": "leerer Text",
+    "fr": "texte vide"
+  },
+  "err.ollama_start": {
+    "ro": "Ollama nu rulează. Pornește-l (ollama serve) și instalează un model.",
+    "en": "Ollama is not running. Start it (ollama serve) and install a model.",
+    "es": "Ollama no está en ejecución. Inícialo (ollama serve) e instala un modelo.",
+    "de": "Ollama läuft nicht. Starte es (ollama serve) und installiere ein Modell.",
+    "fr": "Ollama n'est pas lancé. Démarrez-le (ollama serve) et installez un modèle."
+  },
+  "cal.no_title": {
+    "ro": "(fără titlu)",
+    "en": "(no title)",
+    "es": "(sin título)",
+    "de": "(ohne Titel)",
+    "fr": "(sans titre)"
+  },
+  "ai.pdf_narrative": {
+    "ro": "Scrie un rezumat scurt (3-5 propoziții) în română despre {n} activități, total {total}. Fără liste, doar proză.",
+    "en": "Write a short summary (3-5 sentences) in English about {n} activities, {total} in total. No lists, prose only.",
+    "es": "Escribe un resumen breve (3-5 frases) en español sobre {n} actividades, {total} en total. Sin listas, solo prosa.",
+    "de": "Schreibe eine kurze Zusammenfassung (3-5 Sätze) auf Deutsch über {n} Tätigkeiten, insgesamt {total}. Keine Listen, nur Fließtext.",
+    "fr": "Rédige un court résumé (3-5 phrases) en français sur {n} activités, {total} au total. Pas de listes, uniquement de la prose."
+  },
+  "clients.no_billing_txt": {
+    "ro": "fără facturare",
+    "en": "not billed",
+    "es": "sin facturar",
+    "de": "ohne Abrechnung",
+    "fr": "non facturé"
+  },
+  "dash.week_total": {
+    "ro": "Total săptămână",
+    "en": "Week total",
+    "es": "Total semana",
+    "de": "Wochensumme",
+    "fr": "Total semaine"
+  },
+  "clients.none": {
+    "ro": "Fără client",
+    "en": "No client",
+    "es": "Sin cliente",
+    "de": "Ohne Kunde",
+    "fr": "Sans client"
+  },
+  "team.added": {
+    "ro": "Persoană adăugată",
+    "en": "Person added",
+    "es": "Persona añadida",
+    "de": "Person hinzugefügt",
+    "fr": "Personne ajoutée"
+  },
+  "clients.near_limit": {
+    "ro": "Aproape de limită",
+    "en": "Near the limit",
+    "es": "Cerca del límite",
+    "de": "Nahe am Limit",
+    "fr": "Proche de la limite"
+  },
+  "clients.in_package": {
+    "ro": "În pachet",
+    "en": "Within package",
+    "es": "Dentro del paquete",
+    "de": "Im Paket",
+    "fr": "Dans le forfait"
+  },
+  "clients.remaining": {
+    "ro": "rămase",
+    "en": "left",
+    "es": "restantes",
+    "de": "übrig",
+    "fr": "restantes"
+  },
+  "clients.no_package": {
+    "ro": "Fără pachet",
+    "en": "No package",
+    "es": "Sin paquete",
+    "de": "Kein Paket",
+    "fr": "Sans forfait"
+  },
+  "clients.personal_line": {
+    "ro": "Fără facturare · dezvoltare personală",
+    "en": "Not billed · personal development",
+    "es": "Sin facturar · desarrollo personal",
+    "de": "Ohne Abrechnung · persönliche Entwicklung",
+    "fr": "Non facturé · développement personnel"
+  },
+  "clients.hourly_line": {
+    "ro": "Tarif orar · fără abonament",
+    "en": "Hourly rate · no retainer",
+    "es": "Tarifa por hora · sin cuota",
+    "de": "Stundensatz · ohne Pauschale",
+    "fr": "Tarif horaire · sans forfait"
+  },
+  "cmd.done_hint": {
+    "ro": "Gata. Spune altă comandă sau închide (Esc).",
+    "en": "Done. Say another command or close (Esc).",
+    "es": "Listo. Di otro comando o cierra (Esc).",
+    "de": "Fertig. Sag einen weiteren Befehl oder schließe (Esc).",
+    "fr": "Terminé. Dictez une autre commande ou fermez (Échap)."
+  },
+  "cmd.no_action": {
+    "ro": "Nicio acțiune.",
+    "en": "No action.",
+    "es": "Ninguna acción.",
+    "de": "Keine Aktion.",
+    "fr": "Aucune action."
+  },
+  "activity.empty_period": {
+    "ro": "Nicio activitate în perioada asta. Extensia trimite date doar când browserul e folosit activ.",
+    "en": "No activity in this period. The extension only sends data while the browser is actively used.",
+    "es": "Sin actividad en este periodo. La extensión solo envía datos mientras se usa el navegador.",
+    "de": "Keine Aktivität in diesem Zeitraum. Die Erweiterung sendet nur Daten, während der Browser aktiv genutzt wird.",
+    "fr": "Aucune activité sur cette période. L'extension n'envoie des données que lorsque le navigateur est activement utilisé."
+  },
+  "team.empty": {
+    "ro": "Nicio persoană. Adaugă prima mai sus.",
+    "en": "No people yet. Add the first one above.",
+    "es": "Ninguna persona todavía. Añade la primera arriba.",
+    "de": "Noch keine Personen. Füge oben die erste hinzu.",
+    "fr": "Aucune personne. Ajoutez la première ci-dessus."
+  },
+  "clients.empty": {
+    "ro": "Niciun client. Adaugă primul mai sus.",
+    "en": "No clients yet. Add the first one above.",
+    "es": "Ningún cliente todavía. Añade el primero arriba.",
+    "de": "Noch keine Kunden. Füge oben den ersten hinzu.",
+    "fr": "Aucun client. Ajoutez le premier ci-dessus."
+  },
+  "projects.empty": {
+    "ro": "Niciun proiect. Adaugă primul mai sus.",
+    "en": "No projects yet. Add the first one above.",
+    "es": "Ningún proyecto todavía. Añade el primero arriba.",
+    "de": "Noch keine Projekte. Füge oben das erste hinzu.",
+    "fr": "Aucun projet. Ajoutez le premier ci-dessus."
+  },
+  "tags.empty": {
+    "ro": "Niciun tag. Creează primul mai sus.",
+    "en": "No tags yet. Create the first one above.",
+    "es": "Ninguna etiqueta todavía. Crea la primera arriba.",
+    "de": "Noch keine Tags. Lege oben den ersten an.",
+    "fr": "Aucune étiquette. Créez la première ci-dessus."
+  },
+  "filter.no_entries_long": {
+    "ro": "Nicio înregistrare pentru filtrul curent. Pornește cronometrul sau spune „Dă-i drumul”.",
+    "en": "No entries for the current filter. Start the timer or say “Go ahead”.",
+    "es": "No hay registros para el filtro actual. Inicia el cronómetro o di «Adelante».",
+    "de": "Keine Einträge für den aktuellen Filter. Starte den Timer oder sag „Los geht's“.",
+    "fr": "Aucune entrée pour le filtre actuel. Démarrez le chrono ou dites « C'est parti »."
+  },
+  "dash.total_week": {
+    "ro": "Total timp (săptămâna)",
+    "en": "Total time (week)",
+    "es": "Tiempo total (semana)",
+    "de": "Gesamtzeit (Woche)",
+    "fr": "Temps total (semaine)"
+  },
+  "dash.streak": {
+    "ro": "zile la rând cu ore",
+    "en": "days in a row with hours",
+    "es": "días seguidos con horas",
+    "de": "Tage in Folge mit Stunden",
+    "fr": "jours d'affilée avec des heures"
+  },
+  "dash.longest": {
+    "ro": "cea mai lungă sesiune (săpt.)",
+    "en": "longest session (week)",
+    "es": "sesión más larga (sem.)",
+    "de": "längste Sitzung (Woche)",
+    "fr": "plus longue session (sem.)"
+  },
+  "dash.avg_day": {
+    "ro": "media pe zi activă (4 săpt.)",
+    "en": "average per active day (4 weeks)",
+    "es": "media por día activo (4 sem.)",
+    "de": "Schnitt pro aktivem Tag (4 Wochen)",
+    "fr": "moyenne par jour actif (4 sem.)"
+  },
+  "dash.late": {
+    "ro": "sesiuni târzii, după 22:00 (7 zile)",
+    "en": "late sessions, after 22:00 (7 days)",
+    "es": "sesiones tardías, después de las 22:00 (7 días)",
+    "de": "späte Sitzungen, nach 22:00 (7 Tage)",
+    "fr": "sessions tardives, après 22h (7 jours)"
+  },
+  "dash.vs_last": {
+    "ro": "vs. săpt. trecută (până azi)",
+    "en": "vs. last week (up to today)",
+    "es": "vs. semana pasada (hasta hoy)",
+    "de": "vs. letzte Woche (bis heute)",
+    "fr": "vs. semaine dernière (jusqu'à aujourd'hui)"
+  },
+  "timer.no_person": {
+    "ro": "— persoană —",
+    "en": "— person —",
+    "es": "— persona —",
+    "de": "— Person —",
+    "fr": "— personne —"
+  },
+  "common.copied": {
+    "ro": "Copiat",
+    "en": "Copied",
+    "es": "Copiado",
+    "de": "Kopiert",
+    "fr": "Copié"
+  },
+  "settings.model_saved": {
+    "ro": "Model salvat",
+    "en": "Model saved",
+    "es": "Modelo guardado",
+    "de": "Modell gespeichert",
+    "fr": "Modèle enregistré"
+  },
+  "settings.gcal_on": {
+    "ro": "Google Calendar conectat",
+    "en": "Google Calendar connected",
+    "es": "Google Calendar conectado",
+    "de": "Google Kalender verbunden",
+    "fr": "Google Agenda connecté"
+  },
+  "settings.gcal_off": {
+    "ro": "Google Calendar deconectat",
+    "en": "Google Calendar disconnected",
+    "es": "Google Calendar desconectado",
+    "de": "Google Kalender getrennt",
+    "fr": "Google Agenda déconnecté"
+  },
+  "settings.ollama_ok": {
+    "ro": "✓ Ollama conectat. Modele: {models}",
+    "en": "✓ Ollama connected. Models: {models}",
+    "es": "✓ Ollama conectado. Modelos: {models}",
+    "de": "✓ Ollama verbunden. Modelle: {models}",
+    "fr": "✓ Ollama connecté. Modèles : {models}"
+  },
+  "settings.ollama_off": {
+    "ro": "Ollama nu rulează. Pornește <span class=\"kbd\">ollama serve</span> apoi <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>.",
+    "en": "Ollama is not running. Run <span class=\"kbd\">ollama serve</span> then <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>.",
+    "es": "Ollama no está en ejecución. Ejecuta <span class=\"kbd\">ollama serve</span> y luego <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>.",
+    "de": "Ollama läuft nicht. Starte <span class=\"kbd\">ollama serve</span> und dann <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>.",
+    "fr": "Ollama n'est pas lancé. Exécutez <span class=\"kbd\">ollama serve</span> puis <span class=\"kbd\">ollama pull qwen2.5:7b-instruct</span>."
+  },
+  "cmd.state.idle": {
+    "ro": "Idle",
+    "en": "Idle",
+    "es": "Inactivo",
+    "de": "Bereit",
+    "fr": "Inactif"
+  },
+  "cmd.state.listening": {
+    "ro": "Ascult…",
+    "en": "Listening…",
+    "es": "Escuchando…",
+    "de": "Höre zu…",
+    "fr": "J'écoute…"
+  },
+  "cmd.state.thinking": {
+    "ro": "Interpretez…",
+    "en": "Interpreting…",
+    "es": "Interpretando…",
+    "de": "Werte aus…",
+    "fr": "Interprétation…"
+  },
+  "cmd.state.done": {
+    "ro": "Executat",
+    "en": "Done",
+    "es": "Ejecutado",
+    "de": "Ausgeführt",
+    "fr": "Exécuté"
+  },
+  "cmd.go": {
+    "ro": "Dă-i drumul ✓",
+    "en": "Go ahead ✓",
+    "es": "Adelante ✓",
+    "de": "Los geht's ✓",
+    "fr": "C'est parti ✓"
+  },
+  "common.rename_tip": {
+    "ro": "click pentru a redenumi",
+    "en": "click to rename",
+    "es": "clic para renombrar",
+    "de": "zum Umbenennen klicken",
+    "fr": "cliquez pour renommer"
+  },
+  "dash.top_project": {
+    "ro": "Top proiect",
+    "en": "Top project",
+    "es": "Proyecto principal",
+    "de": "Top-Projekt",
+    "fr": "Projet principal"
+  },
+  "dash.extra_billed": {
+    "ro": "Extra facturat (luna)",
+    "en": "Extra billed (month)",
+    "es": "Extra facturado (mes)",
+    "de": "Zusätzlich abgerechnet (Monat)",
+    "fr": "Facturé en plus (mois)"
+  },
+  "dash.extra_sub": {
+    "ro": "ore extra + tarif orar",
+    "en": "overage hours + hourly rate",
+    "es": "horas extra + tarifa por hora",
+    "de": "Mehrstunden + Stundensatz",
+    "fr": "heures supp. + tarif horaire"
+  },
+  "seed.p1": {
+    "ro": "Mentenanță app",
+    "en": "App maintenance",
+    "es": "Mantenimiento de la app",
+    "de": "App-Wartung",
+    "fr": "Maintenance de l'app"
+  },
+  "seed.p2": {
+    "ro": "Fix-uri lunare",
+    "en": "Monthly fixes",
+    "es": "Correcciones mensuales",
+    "de": "Monatliche Fixes",
+    "fr": "Correctifs mensuels"
+  },
+  "seed.p3": {
+    "ro": "Suport & modificări",
+    "en": "Support & changes",
+    "es": "Soporte y cambios",
+    "de": "Support & Änderungen",
+    "fr": "Support et modifications"
+  },
+  "seed.e1": {
+    "ro": "Actualizare bibliotecă video + reparație notificări",
+    "en": "Video library upgrade + notification fix",
+    "es": "Actualización de la biblioteca de vídeo + arreglo de notificaciones",
+    "de": "Video-Bibliothek aktualisiert + Benachrichtigungen repariert",
+    "fr": "Mise à jour de la bibliothèque vidéo + correction des notifications"
+  },
+  "seed.e2": {
+    "ro": "Modificare flux programări la cererea clientului",
+    "en": "Booking flow change requested by the client",
+    "es": "Cambio en el flujo de reservas pedido por el cliente",
+    "de": "Buchungsablauf auf Kundenwunsch geändert",
+    "fr": "Modification du flux de réservation demandée par le client"
+  },
+  "seed.e3": {
+    "ro": "Verificare backup + update securitate",
+    "en": "Backup check + security update",
+    "es": "Revisión de copias + actualización de seguridad",
+    "de": "Backup-Prüfung + Sicherheitsupdate",
+    "fr": "Vérification des sauvegardes + mise à jour de sécurité"
+  },
+  "seed.e4": {
+    "ro": "Refactor endpoint sincronizare",
+    "en": "Sync endpoint refactor",
+    "es": "Refactor del endpoint de sincronización",
+    "de": "Refactoring des Sync-Endpunkts",
+    "fr": "Refactorisation de l'endpoint de synchronisation"
+  },
+  "seed.e5": {
+    "ro": "Suport integrare + două fix-uri raportate",
+    "en": "Integration support + two reported fixes",
+    "es": "Soporte de integración + dos correcciones reportadas",
+    "de": "Integrationssupport + zwei gemeldete Fixes",
+    "fr": "Support d'intégration + deux correctifs signalés"
+  },
+  "seed.e6": {
+    "ro": "Reparație afișare fișă pacient",
+    "en": "Patient record display fix",
+    "es": "Arreglo de la ficha de paciente",
+    "de": "Anzeige der Patientenakte repariert",
+    "fr": "Correction de l'affichage de la fiche patient"
+  },
+  "seed.e7": {
+    "ro": "Modificări panou admin + testare",
+    "en": "Admin panel changes + testing",
+    "es": "Cambios en el panel de admin + pruebas",
+    "de": "Änderungen am Admin-Panel + Tests",
+    "fr": "Modifications du panneau admin + tests"
+  },
+  "seed.e8": {
+    "ro": "Refactorizare majoră + migrare date (peste pachet)",
+    "en": "Major refactor + data migration (over package)",
+    "es": "Refactor mayor + migración de datos (sobre el paquete)",
+    "de": "Großes Refactoring + Datenmigration (über dem Paket)",
+    "fr": "Refonte majeure + migration de données (hors forfait)"
+  },
+  "seed.tag_maint": {
+    "ro": "mentenanță",
+    "en": "maintenance",
+    "es": "mantenimiento",
+    "de": "wartung",
+    "fr": "maintenance"
+  },
+  "seed.tag_changes": {
+    "ro": "modificări",
+    "en": "changes",
+    "es": "cambios",
+    "de": "änderungen",
+    "fr": "modifications"
+  },
+  "seed.tag_support": {
+    "ro": "suport",
+    "en": "support",
+    "es": "soporte",
+    "de": "support",
+    "fr": "support"
+  },
+  "timer.no_project": {
+    "ro": "— proiect —",
+    "en": "— project —",
+    "es": "— proyecto —",
+    "de": "— Projekt —",
+    "fr": "— projet —"
+  },
+  "common.renamed": {
+    "ro": "Redenumit",
+    "en": "Renamed",
+    "es": "Renombrado",
+    "de": "Umbenannt",
+    "fr": "Renommé"
+  },
+  "common.entries_n": {
+    "ro": "înregistrări",
+    "en": "entries",
+    "es": "registros",
+    "de": "Einträge",
+    "fr": "entrées"
+  }
+}

@@ -26,7 +26,7 @@ export function backupNow(reason = 'manual') {
     prune();
     return file;
   } catch (e) {
-    console.error('  ⚠️  Backup eșuat:', e.message);
+    console.error('  ⚠️  Backup failed:', e.message);
     return null;
   }
 }

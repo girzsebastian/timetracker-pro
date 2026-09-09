@@ -1,6 +1,8 @@
 // Google Calendar import via the calendar's secret iCal URL (read-only).
 // No deps: minimal ICS parser + RRULE expansion for the common cases (DAILY/WEEKLY/MONTHLY/YEARLY).
 // Events are cached 5 minutes so the calendar UI doesn't hammer Google.
+import { t, normalizeLang } from './i18n.js';
+import { getSetting } from './db.js';
 
 let cache = { url: '', at: 0, events: [] };
 
@@ -45,7 +47,7 @@ function occurrences(ev, from, to) {
   const push = (startDate) => {
     if (ev.exdates.has(+startDate)) return;
     const endD = new Date(+startDate + durMs);
-    if (startDate <= to && endD >= from) out.push({ start: startDate, end: endD, allDay: ev.start.allDay, summary: ev.summary || '(fără titlu)', uid: ev.uid });
+    if (startDate <= to && endD >= from) out.push({ start: startDate, end: endD, allDay: ev.start.allDay, summary: ev.summary || t(normalizeLang(getSetting('lang', 'ro')), 'cal.no_title'), uid: ev.uid });
   };
   if (!ev.rrule) { push(ev.start.date); return out; }
 
@@ -91,7 +93,7 @@ export async function gcalEvents(url, fromISO, toISO) {
   const now = Date.now();
   if (cache.url !== url || now - cache.at > 5 * 60000) {
     const res = await fetch(url, { redirect: 'follow' });
-    if (!res.ok) throw new Error('HTTP ' + res.status + ' la descărcarea calendarului');
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' while downloading the calendar');
     const text = await res.text();
     if (!text.includes('BEGIN:VCALENDAR')) throw new Error('Link-ul nu pare a fi un calendar iCal');
     const lines = unfold(text);

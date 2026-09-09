@@ -1,6 +1,8 @@
 // Central action registry — the ONLY place that writes data.
 // Both REST routes and the voice /api/command endpoint dispatch through here.
 import { db, getSetting } from './db.js';
+import { t, normalizeLang } from './i18n.js';
+const E = (key) => new Error(t(normalizeLang(getSetting('lang', 'ro')), key));
 
 const uid = (p) => p + Math.random().toString(36).slice(2, 9);
 const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
@@ -69,7 +71,7 @@ export function resolveProject(clientName, projectHint) {
 /* ---------- write actions (the registry) ---------- */
 export const ACTIONS = {
   create_client({ name, cost = 0, hours = 0, overage = 0, rate = 0, color = '#2f9bf0', personal = 0 }, source = 'api') {
-    if (!name?.trim()) throw new Error('Numele clientului lipsește');
+    if (!name?.trim()) throw E('err.no_client_name');
     const dup = resolveClient(name);
     if (dup && norm(dup.name) === norm(name)) return { warning: 'exists', client: dup };
     const id = uid('c');
@@ -79,21 +81,21 @@ export const ACTIONS = {
   },
   update_client({ id, name, cost, hours, overage, rate, color, personal }, source = 'api') {
     const c = db.prepare('SELECT * FROM clients WHERE id=?').get(id);
-    if (!c) throw new Error('Client inexistent');
+    if (!c) throw E('err.no_client');
     db.prepare('UPDATE clients SET name=?,cost=?,hours=?,overage=?,rate=?,color=?,personal=? WHERE id=?')
       .run(name != null ? name.trim() : c.name, cost != null ? +cost : c.cost, hours != null ? +hours : c.hours, overage != null ? +overage : c.overage, rate != null ? +rate : c.rate, color != null ? color : c.color, personal !== undefined ? (personal ? 1 : 0) : (c.personal || 0), id);
     audit(source, 'update_client', { id });
     return { client: db.prepare('SELECT * FROM clients WHERE id=?').get(id) };
   },
   create_person({ name }, source = 'api') {
-    if (!name?.trim()) throw new Error('Numele lipsește');
+    if (!name?.trim()) throw E('err.no_name');
     const id = uid('p');
     db.prepare('INSERT INTO people(id,name) VALUES(?,?)').run(id, name.trim());
     audit(source, 'create_person', { id, name });
     return { person: db.prepare('SELECT * FROM people WHERE id=?').get(id) };
   },
   create_tag({ name, color = '#2f9bf0' }, source = 'api') {
-    if (!name?.trim()) throw new Error('Numele tagului lipsește');
+    if (!name?.trim()) throw E('err.no_tag_name');
     const n = norm(name);
     const dup = db.prepare('SELECT * FROM tags').all().find(t => norm(t.name) === n);
     if (dup) return { warning: 'exists', tag: dup };
@@ -104,7 +106,7 @@ export const ACTIONS = {
   },
   update_tag({ id, name, color }, source = 'api') {
     const t = db.prepare('SELECT * FROM tags WHERE id=?').get(id);
-    if (!t) throw new Error('Tag inexistent');
+    if (!t) throw E('err.no_tag');
     db.prepare('UPDATE tags SET name=?,color=? WHERE id=?')
       .run(name != null && name.trim() ? name.trim() : t.name, color != null ? color : t.color, id);
     audit(source, 'update_tag', { id });
@@ -117,13 +119,13 @@ export const ACTIONS = {
   },
   update_person({ id, name }, source = 'api') {
     const p = db.prepare('SELECT * FROM people WHERE id=?').get(id);
-    if (!p) throw new Error('Persoană inexistentă');
+    if (!p) throw E('err.no_person');
     if (name != null && name.trim()) db.prepare('UPDATE people SET name=? WHERE id=?').run(name.trim(), id);
     audit(source, 'update_person', { id });
     return { person: db.prepare('SELECT * FROM people WHERE id=?').get(id) };
   },
   create_project({ name, clientId, clientName, color = '#6366f1', rate = 0 }, source = 'api') {
-    if (!name?.trim()) throw new Error('Numele proiectului lipsește');
+    if (!name?.trim()) throw E('err.no_project_name');
     const cid = clientId || resolveClient(clientName)?.id || null;
     const id = uid('pr');
     db.prepare('INSERT INTO projects(id,name,client_id,color,rate) VALUES(?,?,?,?,?)').run(id, name.trim(), cid, color, +rate || 0);
@@ -132,7 +134,7 @@ export const ACTIONS = {
   },
   update_project({ id, name, color, clientId, rate }, source = 'api') {
     const p = db.prepare('SELECT * FROM projects WHERE id=?').get(id);
-    if (!p) throw new Error('Proiect inexistent');
+    if (!p) throw E('err.no_project');
     db.prepare('UPDATE projects SET name=?,color=?,client_id=?,rate=? WHERE id=?')
       .run(name != null ? name.trim() : p.name, color != null ? color : p.color, clientId !== undefined ? (clientId || null) : p.client_id, rate != null ? +rate : p.rate, id);
     audit(source, 'update_project', { id });
@@ -140,7 +142,7 @@ export const ACTIONS = {
   },
   add_entry({ date, mins, hours, minutes, desc = '', projectId, personId, tags = [], startMin = null, planned = 0, recurWeeks = 0 }, source = 'api') {
     const m = mins != null ? +mins : (+hours || 0) * 60 + (+minutes || 0);
-    if (!m) throw new Error('Durata lipsește');
+    if (!m) throw E('err.no_duration');
     const baseDate = date || new Date().toISOString().slice(0, 10);
     const ins = db.prepare('INSERT INTO entries(id,date,mins,desc,project_id,person_id,tags,start_min,planned) VALUES(?,?,?,?,?,?,?,?,?)');
     const mk = (d) => {
@@ -161,11 +163,11 @@ export const ACTIONS = {
   },
   update_entry({ id, date, mins, hours, minutes, desc, projectId, personId, tags, startMin, planned }, source = 'api') {
     const e = db.prepare('SELECT * FROM entries WHERE id=?').get(id);
-    if (!e) throw new Error('Înregistrare inexistentă');
+    if (!e) throw E('err.no_entry');
     const m = mins != null ? +mins
       : (hours != null || minutes != null) ? (+hours || 0) * 60 + (+minutes || 0)
       : e.mins;
-    if (!m || m < 1) throw new Error('Durata trebuie să fie cel puțin 1 minut');
+    if (!m || m < 1) throw E('err.duration_min');
     db.prepare('UPDATE entries SET date=?,mins=?,desc=?,project_id=?,person_id=?,tags=?,start_min=?,planned=? WHERE id=?').run(
       date || e.date,
       Math.round(m),
@@ -191,7 +193,7 @@ export const ACTIONS = {
   // live-edit a running timer (project/person/tags/desc) so STOP saves the latest values
   update_timer({ id, desc, projectId, personId, tags }, source = 'api') {
     const t = db.prepare('SELECT * FROM timers WHERE id=?').get(id);
-    if (!t) throw new Error('Cronometru inexistent');
+    if (!t) throw E('err.no_timer');
     db.prepare('UPDATE timers SET desc=?,project_id=?,person_id=?,tags=? WHERE id=?').run(
       desc != null ? desc : t.desc,
       projectId !== undefined ? (projectId || null) : t.project_id,

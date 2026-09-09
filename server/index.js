@@ -9,6 +9,7 @@ import { ollamaUp, listModels, parseCommand, generateReportText } from './ollama
 import { buildReportPdf } from './pdf.js';
 import { scheduleBackup, backupNow, listBackups, backupDir } from './backup.js';
 import { gcalEvents } from './gcal.js';
+import { t, LANGS, normalizeLang, browserBundle } from './i18n.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const app = Fastify({ logger: false });
@@ -23,7 +24,7 @@ if (process.env.APP_PASSWORD) {
     const ok = given.length === expected.length && timingSafeEqual(given, expected);
     if (!ok) {
       reply.header('www-authenticate', 'Basic realm="TimeTracker"');
-      return reply.code(401).send({ error: 'autentificare necesară' });
+      return reply.code(401).send({ error: 'authentication required' });
     }
   });
 }
@@ -31,6 +32,18 @@ if (process.env.APP_PASSWORD) {
 await app.register(fastifyStatic, { root: join(here, '..', 'public'), prefix: '/' });
 
 const model = () => getSetting('model', 'qwen2.5:7b-instruct');
+// TT_LANG sets the language for a fresh install; existing instances keep
+// whatever is stored, so nobody's UI changes language on an update.
+const lang = () => normalizeLang(getSetting('lang', process.env.TT_LANG || 'ro'));
+const T = (key, vars) => t(lang(), key, vars);
+
+/* The dictionary as a plain script, so app.js has translations before it runs.
+   Generated from shared/locales.json on every request — no build step. */
+app.get('/i18n.js', async (req, reply) => {
+  reply.header('content-type', 'application/javascript; charset=utf-8');
+  reply.header('cache-control', 'no-store');
+  return browserBundle(lang());
+});
 const fmtHM = m => { const h = Math.floor(m / 60), x = m % 60; return h + 'h' + (x ? ' ' + x + 'm' : ''); };
 
 /* ---------- data ---------- */
@@ -51,7 +64,7 @@ function parseFilter(q = {}) {
 /* ---------- direct actions (REST) — same registry the voice layer uses ---------- */
 app.post('/api/action/:name', async (req, reply) => {
   const fn = ACTIONS[req.params.name];
-  if (!fn) return reply.code(404).send({ error: 'acțiune necunoscută' });
+  if (!fn) return reply.code(404).send({ error: T('err.unknown_action') });
   try { const r = fn(req.body || {}, 'ui'); scheduleBackup(req.params.name); return r; }
   catch (e) { return reply.code(400).send({ error: e.message }); }
 });
@@ -61,12 +74,13 @@ app.get('/api/backups', async () => ({ dir: backupDir, backups: listBackups() })
 app.post('/api/backups', async () => ({ ok: true, file: backupNow('manual') }));
 
 /* ---------- settings ---------- */
-app.get('/api/settings', async () => ({ model: model(), ollama: await ollamaUp(), models: await listModels(), gcalUrl: getSetting('gcalUrl', '') }));
+app.get('/api/settings', async () => ({ model: model(), ollama: await ollamaUp(), models: await listModels(), gcalUrl: getSetting('gcalUrl', ''), lang: lang(), langs: LANGS }));
 app.post('/api/settings', async (req) => {
   if (req.body.model) setSetting('model', req.body.model);
   if (req.body.gcalUrl !== undefined) setSetting('gcalUrl', String(req.body.gcalUrl).trim());
+  if (req.body.lang !== undefined) setSetting('lang', normalizeLang(String(req.body.lang)));
   if (req.body.weeklyGoal !== undefined) setSetting('weeklyGoal', Math.max(0, +req.body.weeklyGoal || 0));
-  return { ok: true, model: model() };
+  return { ok: true, model: model(), lang: lang() };
 });
 
 /* ---------- activitate browser (extensia trimite timp per domeniu, tab activ) ---------- */
@@ -113,11 +127,11 @@ app.get('/api/gcal', async (req, reply) => {
 // text -> local LLM -> resolved preview (no writes yet). Reads auto-flag; writes need confirm.
 app.post('/api/command', async (req, reply) => {
   const text = (req.body?.text || '').trim();
-  if (!text) return reply.code(400).send({ error: 'text gol' });
-  if (!(await ollamaUp())) return reply.code(503).send({ error: 'Ollama nu rulează. Pornește-l (ollama serve) și instalează un model.' });
+  if (!text) return reply.code(400).send({ error: T('err.empty_text') });
+  if (!(await ollamaUp())) return reply.code(503).send({ error: T('err.ollama_start') });
 
   let plan;
-  try { plan = await parseCommand(text, catalog(), model()); }
+  try { plan = await parseCommand(text, catalog(), model(), lang()); }
   catch (e) { return reply.code(502).send({ error: 'AI: ' + e.message }); }
 
   const resolved = [];
@@ -190,19 +204,19 @@ function resolveAction(a, sourceText = '') {
 app.post('/api/command/execute', async (req, reply) => {
   const { action, exec } = req.body || {};
   const fn = ACTIONS[action];
-  if (!fn) return reply.code(400).send({ error: 'acțiune necunoscută' });
+  if (!fn) return reply.code(400).send({ error: T('err.unknown_action') });
   try { const r = fn(exec || {}, 'voice'); scheduleBackup(action); return r; }
   catch (e) { return reply.code(400).send({ error: e.message }); }
 });
 
 /* ---------- AI REPORT (streamed narrative) ---------- */
 app.post('/api/report', async (req, reply) => {
-  if (!(await ollamaUp())) return reply.code(503).send({ error: 'Ollama nu rulează.' });
+  if (!(await ollamaUp())) return reply.code(503).send({ error: T('err.ollama_down') });
   const filter = parseFilter(req.body || {});
   filter.planned = 'exclude'; // raportul acoperă doar timp lucrat
   const tip = req.body?.tip || 'intern';
   const entries = listEntries(filter);
-  if (!entries.length) return reply.code(400).send({ error: 'Nicio înregistrare' });
+  if (!entries.length) return reply.code(400).send({ error: T('err.no_entries') });
   const { clients, projects, people } = catalog();
   const client = c => clients.find(x => x.id === c);
   const project = id => projects.find(p => p.id === id);
@@ -212,19 +226,17 @@ app.post('/api/report', async (req, reply) => {
     const pr = project(e.project_id);
     return `- ${e.date} · ${fmtHM(e.mins)} · ${person(e.person_id)?.name || '—'} · ${pr ? pr.name + ' (' + (client(pr.client_id)?.name || '') + ')' : ''} · ${e.desc}${e.tags?.length ? ' [' + e.tags.join(', ') + ']' : ''}`;
   });
-  const audience = tip === 'client'
-    ? 'Un raport pentru CLIENT (extern). Ton profesional, orientat spre valoarea livrată. Explică ce s-a făcut și de ce contează.'
-    : 'Un raport INTERN. Ton direct, productivitate: cât s-a lucrat, pe ce, distribuție pe persoane, ce a consumat timpul, observații de eficiență.';
-  const prompt = `Scrie un raport în limba română, Markdown. ${audience}
-Total: ${fmtHM(total)} pe ${entries.length} înregistrări.
-Înregistrări:
+  const audience = T(tip === 'client' ? 'ai.report_client' : 'ai.report_internal');
+  const prompt = `${T('ai.report_lang')} ${audience}
+${T('ai.report_total', { total: fmtHM(total), n: entries.length })}
+${T('ai.report_entries')}
 ${lines.join('\n')}
-Structurează cu titluri (##), rezumat la început, grupare pe teme, concluzii. Nu inventa activități. Concis.`;
+${T('ai.report_struct')}`;
 
   reply.raw.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
   try {
     await generateReportText(prompt, model(), t => reply.raw.write(t));
-  } catch (e) { reply.raw.write('\n[Eroare: ' + e.message + ']'); }
+  } catch (e) { reply.raw.write('\n[' + T('common.error') + ': ' + e.message + ']'); }
   reply.raw.end();
 });
 
@@ -238,7 +250,7 @@ app.get('/api/export.pdf', async (req, reply) => {
       const entries = listEntries(filter);
       if (entries.length) {
         const total = entries.reduce((s, e) => s + e.mins, 0);
-        narrative = await generateReportText(`Scrie un rezumat scurt (3-5 propoziții) în română despre ${entries.length} activități, total ${fmtHM(total)}. Fără liste, doar proză.`, model());
+        narrative = await generateReportText(T('ai.pdf_narrative', { n: entries.length, total: fmtHM(total) }), model());
       }
     } catch {}
   }
@@ -255,6 +267,7 @@ await app.listen({ port: PORT, host: '0.0.0.0' });
 const up = await ollamaUp();
 backupNow('startup');
 console.log(`\n  ⏱  TimeTracker Pro → http://localhost:${PORT}`);
-console.log(`  🗄  Bază de date: data/timetracker.db`);
-console.log(`  💾  Backup automat: data/backups/ (la fiecare modificare + startup)`);
-console.log(`  🤖  Ollama: ${up ? 'conectat · model ' + model() : 'NECONECTAT (pornește "ollama serve" + instalează un model)'}\n`);
+console.log(`  🗄  Database: data/timetracker.db`);
+console.log(`  🌍  Language: ${lang()}  (change it in Settings)`);
+console.log(`  💾  Auto-backup: data/backups/ (on every change + at startup)`);
+console.log(`  🤖  Ollama: ${up ? 'connected · model ' + model() : 'NOT CONNECTED (run "ollama serve" + install a model)'}\n`);

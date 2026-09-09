@@ -12,17 +12,17 @@
   <aside class="side">
     <div class="logo">⏱ TimeTracker</div>
     <nav>
-      <button class="nav-item active" data-view="cronometru"><span class="ni">⏱</span>Cronometru</button>
-      <button class="nav-item" data-view="calendar"><span class="ni">▦</span>Calendar</button>
-      <button class="nav-item" data-view="panou"><span class="ni">◈</span>Panou</button>
-      <button class="nav-item" data-view="clienti"><span class="ni">☺</span>Clienți & Pachete</button>
-      <button class="nav-item" data-view="proiecte"><span class="ni">▣</span>Proiecte</button>
-      <button class="nav-item" data-view="echipa"><span class="ni">⚑</span>Echipă</button>
-      <button class="nav-item" data-view="taguri"><span class="ni">🏷</span>Taguri</button>
-      <button class="nav-item" data-view="activitate"><span class="ni">◉</span>Activitate web</button>
-      <button class="nav-item" data-view="raport"><span class="ni">✦</span>Rapoarte</button>
-      <button class="nav-item" data-view="jurnal"><span class="ni">↻</span>Jurnal comenzi</button>
-      <button class="nav-item" data-view="setari"><span class="ni">⚙</span>Setări</button>
+      <button class="nav-item active" data-view="cronometru"><span class="ni">⏱</span><span data-i18n="nav.cronometru">Cronometru</span></button>
+      <button class="nav-item" data-view="calendar"><span class="ni">▦</span><span data-i18n="nav.calendar">Calendar</span></button>
+      <button class="nav-item" data-view="panou"><span class="ni">◈</span><span data-i18n="nav.panou">Panou</span></button>
+      <button class="nav-item" data-view="clienti"><span class="ni">☺</span><span data-i18n="nav.clienti">Clienți & Pachete</span></button>
+      <button class="nav-item" data-view="proiecte"><span class="ni">▣</span><span data-i18n="nav.proiecte">Proiecte</span></button>
+      <button class="nav-item" data-view="echipa"><span class="ni">⚑</span><span data-i18n="nav.echipa">Echipă</span></button>
+      <button class="nav-item" data-view="taguri"><span class="ni">🏷</span><span data-i18n="nav.taguri">Taguri</span></button>
+      <button class="nav-item" data-view="activitate"><span class="ni">◉</span><span data-i18n="nav.activitate">Activitate web</span></button>
+      <button class="nav-item" data-view="raport"><span class="ni">✦</span><span data-i18n="nav.raport">Rapoarte</span></button>
+      <button class="nav-item" data-view="jurnal"><span class="ni">↻</span><span data-i18n="nav.jurnal">Jurnal comenzi</span></button>
+      <button class="nav-item" data-view="setari"><span class="ni">⚙</span><span data-i18n="nav.setari">Setări</span></button>
     </nav>
     <div class="side-foot" id="sideRevenue"></div>
   </aside>
@@ -31,12 +31,12 @@
 
     <!-- TIMER BAR -->
     <div class="timerbar">
-      <input class="t-desc" id="tDesc" placeholder="La ce lucrezi?" autocomplete="off">
+      <input class="t-desc" id="tDesc" data-i18n-ph="timer.desc" placeholder="La ce lucrezi?" autocomplete="off">
       <div class="t-seg"><select id="tProject"></select></div>
       <div class="t-seg"><select id="tPerson"></select></div>
-      <div class="t-seg tags"><span class="icobtn">🏷</span><input id="tTags" placeholder="taguri" list="tagOptions" autocomplete="off"></div>
+      <div class="t-seg tags"><span class="icobtn">🏷</span><input id="tTags" data-i18n-ph="timer.tags" placeholder="taguri" list="tagOptions" autocomplete="off"></div>
       <div class="t-elapsed" id="tElapsed"></div>
-      <button class="t-start" id="tBtn">START</button>
+      <button class="t-start" id="tBtn" data-i18n="timer.start">START</button>
     </div>
 
     <!-- ACTIVE TIMERS (multiple, concurrent) -->
@@ -45,16 +45,16 @@
     <!-- CRONOMETRU -->
     <section class="view active" id="view-cronometru">
       <div class="filterbar" id="filterbar">
-        <span class="fx">Filtre</span>
+        <span class="fx" data-i18n="filter.label">Filtre</span>
         <select id="fClient"></select>
         <select id="fPerson"></select>
-        <input type="text" id="fText" placeholder="caută" style="width:140px">
-        <input type="date" id="fFrom" title="de la">
-        <input type="date" id="fTo" title="până la">
-        <input type="text" id="fTags" placeholder="taguri" style="width:110px" list="tagOptions" autocomplete="off">
-        <button class="clear" id="fClear">✕ Curăță</button>
+        <input type="text" id="fText" data-i18n-ph="filter.search" placeholder="caută" style="width:140px">
+        <input type="date" id="fFrom" data-i18n-title="filter.from" title="de la">
+        <input type="date" id="fTo" data-i18n-title="filter.to" title="până la">
+        <input type="text" id="fTags" data-i18n-ph="timer.tags" placeholder="taguri" style="width:110px" list="tagOptions" autocomplete="off">
+        <button class="clear" id="fClear" data-i18n="filter.clear">✕ Curăță</button>
         <span class="spacer" style="flex:1"></span>
-        <button class="btn" id="addManual">+ Adaugă manual</button>
+        <button class="btn" id="addManual" data-i18n="filter.add_manual">+ Adaugă manual</button>
       </div>
       <div id="entriesList" style="padding-bottom:40px"></div>
     </section>
@@ -62,14 +62,14 @@
     <!-- CALENDAR -->
     <section class="view" id="view-calendar">
       <div class="page-head">
-        <h1>Calendar</h1>
+        <h1 data-i18n="nav.calendar">Calendar</h1>
         <div class="toolbar">
           <div class="seg-switch" id="calModes">
-            <button data-mode="day">Zi</button>
-            <button data-mode="week" class="active">Săptămână</button>
-            <button data-mode="month">Lună</button>
+            <button data-mode="day" data-i18n="cal.day">Zi</button>
+            <button data-mode="week" class="active" data-i18n="cal.week">Săptămână</button>
+            <button data-mode="month" data-i18n="cal.month">Lună</button>
           </div>
-          <button class="btn-ghost" id="calToday">Azi</button>
+          <button class="btn-ghost" id="calToday" data-i18n="cal.today">Azi</button>
           <div class="date-nav">
             <button id="wPrev">‹</button>
             <span class="dlabel"><span class="ci">▦</span><span id="wLabel"></span></span>
@@ -86,7 +86,7 @@
     <!-- PANOU / DASHBOARD -->
     <section class="view" id="view-panou">
       <div class="page-head">
-        <h1>Panou</h1>
+        <h1 data-i18n="nav.panou">Panou</h1>
         <div class="toolbar">
           <select class="tb-select" id="dClient"></select>
           <select class="tb-select" id="dPerson"></select>
@@ -96,39 +96,39 @@
         <div class="dash-stats" id="dashStats"></div>
         <div class="dash-grid">
           <div class="panel">
-            <div class="panel-h">Ore pe zi <span id="dTotal" style="color:var(--ink)"></span></div>
+            <div class="panel-h"><span data-i18n="dash.hours_per_day">Ore pe zi</span> <span id="dTotal" style="color:var(--ink)"></span></div>
             <div id="dashChart"></div>
           </div>
           <div class="panel">
-            <div class="panel-h">Cele mai lucrate</div>
+            <div class="panel-h" data-i18n="dash.top">Cele mai lucrate</div>
             <div id="topActivities"></div>
           </div>
         </div>
         <div class="panel" style="margin-top:14px">
-          <div class="panel-h">Dezvoltare personală <span class="ph-goal">Obiectiv: <input type="number" id="pdGoal" min="0" style="width:48px;background:transparent;border:none;color:var(--accent);font-weight:700;text-align:right"> h/săpt</span></div>
+          <div class="panel-h"><span data-i18n="dash.personal">Dezvoltare personală</span> <span class="ph-goal"><span data-i18n="dash.goal">Obiectiv:</span> <input type="number" id="pdGoal" min="0" style="width:48px;background:transparent;border:none;color:var(--accent);font-weight:700;text-align:right"> <span data-i18n="dash.per_week">h/săpt</span></span></div>
           <div id="persoPanel"></div>
         </div>
-        <h3 class="panel-h" style="margin:22px 0 0">Clienți — ore & costuri extra</h3>
+        <h3 class="panel-h" style="margin:22px 0 0" data-i18n="dash.clients_head">Clienți — ore & costuri extra</h3>
         <div class="cli-cards" id="clientCards"></div>
       </div>
     </section>
 
     <!-- CLIENȚI -->
     <section class="view" id="view-clienti">
-      <div class="page-head"><h1>Clienți & Pachete</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.clienti">Clienți &amp; Pachete</h1></div>
       <div class="view-inner">
-        <div class="form-panel"><b>Client nou</b>
+        <div class="form-panel"><b data-i18n="clients.new">Client nou</b>
           <div class="form-row">
-            <input type="text" id="cName" placeholder="Nume client" style="flex:1;min-width:160px">
-            <input type="number" id="cCost" placeholder="abonament €/lună" style="width:150px" min="0">
-            <input type="number" id="cHours" placeholder="ore incluse/lună" style="width:150px" min="0" step="0.5">
-            <input type="number" id="cOver" placeholder="€/oră extra" style="width:130px" min="0" title="cost pe ora peste pachet">
-            <input type="number" id="cRate" placeholder="tarif €/oră" style="width:120px" min="0" title="pentru clienți fără abonament: se facturează orele lucrate × tarif">
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);cursor:pointer;white-space:nowrap"><input type="checkbox" id="cPersonal" style="width:auto">Personal</label>
-            <button type="button" class="sw-color" id="cColorTrig" data-colortrig data-ck="newclient" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare client"></button>
-            <button class="btn" id="cAdd">Adaugă</button>
+            <input type="text" id="cName" data-i18n-ph="clients.name" placeholder="Nume client" style="flex:1;min-width:160px">
+            <input type="number" id="cCost" data-i18n-ph="clients.cost" placeholder="abonament €/lună" style="width:150px" min="0">
+            <input type="number" id="cHours" data-i18n-ph="clients.hours" placeholder="ore incluse/lună" style="width:150px" min="0" step="0.5">
+            <input type="number" id="cOver" data-i18n-ph="clients.over" placeholder="€/oră extra" style="width:130px" min="0" data-i18n-title="clients.over_tip" title="cost pe ora peste pachet">
+            <input type="number" id="cRate" data-i18n-ph="clients.rate" placeholder="tarif €/oră" style="width:120px" min="0" data-i18n-title="clients.rate_tip" title="pentru clienți fără abonament: se facturează orele lucrate × tarif">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);cursor:pointer;white-space:nowrap"><input type="checkbox" id="cPersonal" style="width:auto"><span data-i18n="clients.personal">Personal</span></label>
+            <button type="button" class="sw-color" id="cColorTrig" data-colortrig data-ck="newclient" data-color="#2f9bf0" style="background:#2f9bf0" data-i18n-title="clients.color_tip" title="culoare client"></button>
+            <button class="btn" id="cAdd" data-i18n="common.add">Adaugă</button>
           </div>
-          <p class="hint">„€/oră extra" = cât factori pentru fiecare oră lucrată peste pachetul inclus. „Personal" = fără facturare (fitness, învățare, proiecte proprii) — orele apar la Dezvoltare personală pe Panou.</p>
+          <p class="hint" data-i18n-html="clients.hint">„€/oră extra" = cât factori pentru fiecare oră lucrată peste pachetul inclus. „Personal" = fără facturare (fitness, învățare, proiecte proprii) — orele apar la Dezvoltare personală pe Panou.</p>
         </div>
         <div id="clientList"></div>
       </div>
@@ -136,15 +136,15 @@
 
     <!-- PROIECTE -->
     <section class="view" id="view-proiecte">
-      <div class="page-head"><h1>Proiecte</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.proiecte">Proiecte</h1></div>
       <div class="view-inner">
-        <div class="form-panel"><b>Proiect nou</b>
+        <div class="form-panel"><b data-i18n="projects.new">Proiect nou</b>
           <div class="form-row">
-            <input type="text" id="pName" placeholder="Nume proiect" style="flex:1;min-width:160px">
+            <input type="text" id="pName" data-i18n-ph="projects.name" placeholder="Nume proiect" style="flex:1;min-width:160px">
             <select id="pClient"></select>
-            <input type="number" id="pRate" placeholder="tarif €/oră" style="width:120px" min="0" title="cost per oră pentru acest proiect; dacă lipsește, se folosește tariful clientului">
-            <button type="button" class="sw-color" id="pColorTrig" data-colortrig data-ck="newproject" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare proiect"></button>
-            <button class="btn" id="pAdd">Adaugă</button>
+            <input type="number" id="pRate" data-i18n-ph="clients.rate" placeholder="tarif €/oră" style="width:120px" min="0" data-i18n-title="projects.rate_tip" title="cost per oră pentru acest proiect; dacă lipsește, se folosește tariful clientului">
+            <button type="button" class="sw-color" id="pColorTrig" data-colortrig data-ck="newproject" data-color="#2f9bf0" style="background:#2f9bf0" data-i18n-title="projects.color_tip" title="culoare proiect"></button>
+            <button class="btn" id="pAdd" data-i18n="common.add">Adaugă</button>
           </div>
         </div>
         <div id="projectList"></div>
@@ -153,10 +153,10 @@
 
     <!-- ECHIPĂ -->
     <section class="view" id="view-echipa">
-      <div class="page-head"><h1>Echipă</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.echipa">Echipă</h1></div>
       <div class="view-inner">
-        <div class="form-panel"><b>Persoană nouă</b>
-          <div class="form-row"><input type="text" id="eName" placeholder="Nume" style="flex:1"><button class="btn" id="eAdd">Adaugă</button></div>
+        <div class="form-panel"><b data-i18n="team.new">Persoană nouă</b>
+          <div class="form-row"><input type="text" id="eName" data-i18n-ph="team.name" placeholder="Nume" style="flex:1"><button class="btn" id="eAdd" data-i18n="common.add">Adaugă</button></div>
         </div>
         <div id="peopleList"></div>
       </div>
@@ -164,15 +164,15 @@
 
     <!-- TAGURI -->
     <section class="view" id="view-taguri">
-      <div class="page-head"><h1>Taguri</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.taguri">Taguri</h1></div>
       <div class="view-inner">
-        <div class="form-panel"><b>Tag nou</b>
+        <div class="form-panel"><b data-i18n="tags.new">Tag nou</b>
           <div class="form-row">
-            <input type="text" id="tgName" placeholder="Nume tag (ex: bug, research, urgent)" style="flex:1;min-width:180px">
-            <button type="button" class="sw-color" id="tgColorTrig" data-colortrig data-ck="newtag" data-color="#2f9bf0" style="background:#2f9bf0" title="culoare tag"></button>
-            <button class="btn" id="tgAdd">Adaugă</button>
+            <input type="text" id="tgName" data-i18n-ph="tags.name" placeholder="Nume tag (ex: bug, research, urgent)" style="flex:1;min-width:180px">
+            <button type="button" class="sw-color" id="tgColorTrig" data-colortrig data-ck="newtag" data-color="#2f9bf0" style="background:#2f9bf0" data-i18n-title="tags.color_tip" title="culoare tag"></button>
+            <button class="btn" id="tgAdd" data-i18n="common.add">Adaugă</button>
           </div>
-          <p class="hint">Tagurile create aici apar ca sugestii peste tot (cronometru, editare) și le poți folosi ca să filtrezi rapoartele.</p>
+          <p class="hint" data-i18n="tags.hint">Tagurile create aici apar ca sugestii peste tot (cronometru, editare) și le poți folosi ca să filtrezi rapoartele.</p>
         </div>
         <div id="tagList"></div>
       </div>
@@ -180,34 +180,34 @@
 
     <!-- RAPORT AI -->
     <section class="view" id="view-raport">
-      <div class="page-head"><h1>Rapoarte</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.raport">Rapoarte</h1></div>
       <div class="view-inner">
         <div class="filterbar" style="padding:0 0 10px">
-          <span class="fx">Perioadă</span>
-          <button class="btn-ghost rp-preset" data-preset="saptamana">Săptămâna asta</button>
-          <button class="btn-ghost rp-preset" data-preset="saptamana-1">Săptămâna trecută</button>
-          <button class="btn-ghost rp-preset" data-preset="luna">Luna asta</button>
-          <button class="btn-ghost rp-preset" data-preset="luna-1">Luna trecută</button>
-          <button class="btn-ghost rp-preset" data-preset="tot">Tot</button>
+          <span class="fx" data-i18n="report.period">Perioadă</span>
+          <button class="btn-ghost rp-preset" data-preset="saptamana" data-i18n="report.this_week">Săptămâna asta</button>
+          <button class="btn-ghost rp-preset" data-preset="saptamana-1" data-i18n="report.last_week">Săptămâna trecută</button>
+          <button class="btn-ghost rp-preset" data-preset="luna" data-i18n="report.this_month">Luna asta</button>
+          <button class="btn-ghost rp-preset" data-preset="luna-1" data-i18n="report.last_month">Luna trecută</button>
+          <button class="btn-ghost rp-preset" data-preset="tot" data-i18n="report.all">Tot</button>
         </div>
         <div class="filterbar" style="padding:0 0 14px">
-          <span class="fx">Filtre</span>
+          <span class="fx" data-i18n="filter.label">Filtre</span>
           <select id="rClient"></select><select id="rPerson"></select><select id="rTags"></select>
           <input type="date" id="rFrom"><input type="date" id="rTo">
           <span class="spacer"></span>
           <button class="btn-ghost" id="rPdf">⬇ PDF</button>
           <button class="btn-ghost" id="rCsv">⬇ CSV</button>
         </div>
-        <div class="form-panel" id="repTables"><div class="empty">Se încarcă…</div></div>
-        <div class="form-panel"><b>Rezumat AI (opțional) <span class="ai-dot off" id="aiDot2"></span></b>
+        <div class="form-panel" id="repTables"><div class="empty" data-i18n="report.loading">Se încarcă…</div></div>
+        <div class="form-panel"><b><span data-i18n="report.ai_summary">Rezumat AI (opțional)</span> <span class="ai-dot off" id="aiDot2"></span></b>
           <div class="form-row">
-            <select id="rTip"><option value="client">Raport pentru client (extern)</option><option value="intern">Raport intern (echipă)</option></select>
-            <button class="btn" id="rGen">✦ Generează</button>
+            <select id="rTip"><option value="client" data-i18n="report.for_client">Raport pentru client (extern)</option><option value="intern" data-i18n="report.internal">Raport intern (echipă)</option></select>
+            <button class="btn" id="rGen" data-i18n="report.generate">✦ Generează</button>
           </div>
-          <p class="hint">Rulează local prin Ollama, gratuit. Folosește aceleași filtre de mai sus.</p>
+          <p class="hint" data-i18n="report.ai_hint">Rulează local prin Ollama, gratuit. Folosește aceleași filtre de mai sus.</p>
         </div>
         <div class="form-panel report-panel" id="reportOut" style="display:none">
-          <div class="report-tools"><button class="btn-ghost" id="rCopy">Copiază</button></div>
+          <div class="report-tools"><button class="btn-ghost" id="rCopy" data-i18n="report.copy">Copiază</button></div>
           <div id="reportBody"></div>
         </div>
       </div>
@@ -215,46 +215,50 @@
 
     <!-- ACTIVITATE WEB -->
     <section class="view" id="view-activitate">
-      <div class="page-head"><h1>Activitate web</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.activitate">Activitate web</h1></div>
       <div class="view-inner">
         <div class="filterbar" style="padding:0 0 14px">
-          <span class="fx">Perioadă</span>
-          <button class="btn-ghost av-preset active" data-days="0">Azi</button>
-          <button class="btn-ghost av-preset" data-days="7">7 zile</button>
-          <button class="btn-ghost av-preset" data-days="30">30 zile</button>
+          <span class="fx" data-i18n="report.period">Perioadă</span>
+          <button class="btn-ghost av-preset active" data-days="0" data-i18n="activity.today">Azi</button>
+          <button class="btn-ghost av-preset" data-days="7" data-i18n="activity.7days">7 zile</button>
+          <button class="btn-ghost av-preset" data-days="30" data-i18n="activity.30days">30 zile</button>
         </div>
         <div id="actSummary" class="rep-kpis"></div>
         <div class="form-panel">
-          <div id="actList"><div class="empty">Nicio activitate încă. Instalează extensia de browser (vezi mai jos).</div></div>
-          <p class="hint">Timpul e contorizat de extensie doar pentru <b>tab-ul activ din fereastra focusată</b> (pauzele și inactivitatea nu se pun). Tu decizi categoria fiecărui domeniu — „Ignoră" îl ascunde din totaluri.</p>
+          <div id="actList"><div class="empty" data-i18n="activity.empty">Nicio activitate încă. Instalează extensia de browser (vezi mai jos).</div></div>
+          <p class="hint" data-i18n-html="activity.hint">Timpul e contorizat de extensie doar pentru <b>tab-ul activ din fereastra focusată</b> (pauzele și inactivitatea nu se pun). Tu decizi categoria fiecărui domeniu — „Ignoră" îl ascunde din totaluri.</p>
         </div>
-        <div class="form-panel"><b>Extensia de browser</b>
-          <p class="hint" style="margin-top:8px">Chrome / Brave / Edge: deschide <span class="kbd">chrome://extensions</span> → activează <b>Developer mode</b> → <b>Load unpacked</b> → alege folderul <span class="kbd">extension/</span> din proiect. Extensia trimite datele doar către aplicația ta locală (localhost:8888).</p>
+        <div class="form-panel"><b data-i18n="activity.ext_title">Extensia de browser</b>
+          <p class="hint" style="margin-top:8px" data-i18n-html="activity.ext_hint">Chrome / Brave / Edge: deschide <span class="kbd">chrome://extensions</span> → activează <b>Developer mode</b> → <b>Load unpacked</b> → alege folderul <span class="kbd">extension/</span> din proiect. Extensia trimite datele doar către aplicația ta locală (localhost:8888).</p>
         </div>
       </div>
     </section>
 
     <!-- JURNAL -->
     <section class="view" id="view-jurnal">
-      <div class="page-head"><h1>Jurnal comenzi</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.jurnal">Jurnal comenzi</h1></div>
       <div class="view-inner"><div class="form-panel"><div id="auditList"></div></div></div>
     </section>
 
     <!-- SETĂRI -->
     <section class="view" id="view-setari">
-      <div class="page-head"><h1>Setări</h1></div>
+      <div class="page-head"><h1 data-i18n="nav.setari">Setări</h1></div>
       <div class="view-inner">
-        <div class="form-panel"><b>AI local (Ollama) <span class="ai-dot off" id="aiDot"></span></b>
-          <div class="form-row"><select id="sModel" style="flex:1"></select><button class="btn" id="sSave">Salvează model</button><button class="btn-ghost" id="sRefresh">↻ Reîncarcă</button></div>
-          <p class="hint" id="aiHint">Rulează <span class="kbd">ollama serve</span> și instalează un model: <span class="kbd">ollama pull qwen2.5:7b-instruct</span>. Local, fără costuri.</p>
+        <div class="form-panel"><b><span data-i18n="settings.ai">AI local (Ollama)</span> <span class="ai-dot off" id="aiDot"></span></b>
+          <div class="form-row"><select id="sModel" style="flex:1"></select><button class="btn" id="sSave" data-i18n="settings.save_model">Salvează model</button><button class="btn-ghost" id="sRefresh" data-i18n="settings.reload">↻ Reîncarcă</button></div>
+          <p class="hint" id="aiHint" data-i18n-html="settings.ai_hint">Rulează <span class="kbd">ollama serve</span> și instalează un model: <span class="kbd">ollama pull qwen2.5:7b-instruct</span>. Local, fără costuri.</p>
         </div>
-        <div class="form-panel"><b>Google Calendar (import)</b>
-          <div class="form-row"><input type="text" id="sGcal" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" style="flex:1"><button class="btn" id="sGcalSave">Salvează</button></div>
-          <p class="hint">Google Calendar → Setări → calendarul tău → <b>Adresa secretă în format iCal</b> — copiază link-ul aici. Evenimentele apar în Calendar (doar citire) și pot fi transformate în înregistrări dintr-un click.</p>
+        <div class="form-panel"><b data-i18n="settings.gcal">Google Calendar (import)</b>
+          <div class="form-row"><input type="text" id="sGcal" placeholder="https://calendar.google.com/calendar/ical/…/basic.ics" style="flex:1"><button class="btn" id="sGcalSave" data-i18n="settings.save">Salvează</button></div>
+          <p class="hint" data-i18n-html="settings.gcal_hint">Google Calendar → Setări → calendarul tău → <b>Adresa secretă în format iCal</b> — copiază link-ul aici. Evenimentele apar în Calendar (doar citire) și pot fi transformate în înregistrări dintr-un click.</p>
         </div>
-        <div class="form-panel"><b>Date</b>
-          <div class="form-row"><button class="btn-ghost" id="sExport">⬇ Backup JSON</button><a class="btn-ghost" href="/api/export.pdf" style="text-decoration:none">⬇ PDF (tot)</a></div>
-          <p class="hint">Bază de date reală: <span class="kbd">data/timetracker.db</span> — backup = copiază fișierul.</p>
+        <div class="form-panel"><b data-i18n="settings.language">Limbă</b>
+          <div class="form-row"><select id="sLang" style="flex:1;max-width:240px"></select></div>
+          <p class="hint" data-i18n="settings.lang_hint">Schimbă limba interfeței, a exportului PDF, a mesajelor de eroare și a comenzilor AI. Se aplică imediat, pentru toată instanța.</p>
+        </div>
+        <div class="form-panel"><b data-i18n="settings.data">Date</b>
+          <div class="form-row"><button class="btn-ghost" id="sExport" data-i18n="settings.backup">⬇ Backup JSON</button><a class="btn-ghost" href="/api/export.pdf" style="text-decoration:none" data-i18n="settings.pdf_all">⬇ PDF (tot)</a></div>
+          <p class="hint" data-i18n-html="settings.data_hint">Bază de date reală: <span class="kbd">data/timetracker.db</span> — backup = copiază fișierul.</p>
         </div>
       </div>
     </section>
@@ -264,54 +268,54 @@
   <!-- ENTRY MODAL (add / edit) -->
   <div class="modal-veil" id="entryVeil">
     <div class="modal">
-      <div class="modal-head"><b id="emTitle">Adaugă înregistrare</b><button class="modal-x" id="emClose">✕</button></div>
+      <div class="modal-head"><b id="emTitle" data-i18n="modal.add">Adaugă înregistrare</b><button class="modal-x" id="emClose">✕</button></div>
       <div class="modal-body">
-        <label class="fld"><span>Descriere</span><input type="text" id="emDesc" placeholder="La ce ai lucrat?"></label>
+        <label class="fld"><span data-i18n="modal.desc">Descriere</span><input type="text" id="emDesc" data-i18n-ph="modal.desc_ph" placeholder="La ce ai lucrat?"></label>
         <div class="fld-row">
-          <label class="fld"><span>Proiect</span><select id="emProject"></select></label>
-          <label class="fld"><span>Persoană</span><select id="emPerson"></select></label>
+          <label class="fld"><span data-i18n="common.project">Proiect</span><select id="emProject"></select></label>
+          <label class="fld"><span data-i18n="common.person">Persoană</span><select id="emPerson"></select></label>
         </div>
         <div class="fld-row">
-          <label class="fld"><span>Data</span><input type="date" id="emDate"></label>
-          <label class="fld"><span>Ora început <em>(opțional)</em></span><input type="time" id="emStart"></label>
+          <label class="fld"><span data-i18n="modal.date">Data</span><input type="date" id="emDate"></label>
+          <label class="fld"><span><span data-i18n="modal.start">Ora început</span> <em data-i18n="modal.optional">(opțional)</em></span><input type="time" id="emStart"></label>
         </div>
         <div class="fld-row">
-          <label class="fld dur"><span>Durată</span>
+          <label class="fld dur"><span data-i18n="modal.duration">Durată</span>
             <div class="dur-in"><input type="number" id="emHours" min="0" max="24" placeholder="0"><em>h</em><input type="number" id="emMins" min="0" max="59" placeholder="00"><em>m</em></div>
           </label>
-          <label class="fld"><span>Taguri</span><input type="text" id="emTags" placeholder="separate prin virgulă" list="tagOptions" autocomplete="off"></label>
+          <label class="fld"><span data-i18n="nav.taguri">Taguri</span><input type="text" id="emTags" data-i18n-ph="modal.tags_ph" placeholder="separate prin virgulă" list="tagOptions" autocomplete="off"></label>
         </div>
         <div class="fld-row">
-          <label class="fld" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="emPlanned" style="width:auto"><span style="margin:0">Planificat — nu intră la facturare până nu e realizat</span></label>
-          <label class="fld" id="emRecurWrap"><span>Repetă săptămânal</span><select id="emRecur"><option value="0">Nu se repetă</option><option value="4">4 săptămâni</option><option value="8">8 săptămâni</option><option value="12">12 săptămâni</option></select></label>
+          <label class="fld" style="flex-direction:row;align-items:center;gap:8px;cursor:pointer"><input type="checkbox" id="emPlanned" style="width:auto"><span style="margin:0" data-i18n="modal.planned">Planificat — nu intră la facturare până nu e realizat</span></label>
+          <label class="fld" id="emRecurWrap"><span data-i18n="modal.recur">Repetă săptămânal</span><select id="emRecur"><option value="0" data-i18n="modal.recur_no">Nu se repetă</option><option value="4" data-i18n="modal.recur_n" data-i18n-n="4">4 săptămâni</option><option value="8" data-i18n="modal.recur_n" data-i18n-n="8">8 săptămâni</option><option value="12" data-i18n="modal.recur_n" data-i18n-n="12">12 săptămâni</option></select></label>
         </div>
       </div>
       <div class="modal-foot">
-        <button class="btn-danger" id="emDelete" style="display:none">Șterge</button>
-        <button class="btn" id="emDone" style="display:none;background:var(--green)">✓ Marchează ca lucrat</button>
+        <button class="btn-danger" id="emDelete" style="display:none" data-i18n="common.delete">Șterge</button>
+        <button class="btn" id="emDone" style="display:none;background:var(--green)" data-i18n="modal.mark_done">✓ Marchează ca lucrat</button>
         <span class="spacer"></span>
-        <button class="btn-ghost" id="emCancel">Anulează</button>
-        <button class="btn" id="emSave">Salvează</button>
+        <button class="btn-ghost" id="emCancel" data-i18n="common.cancel">Anulează</button>
+        <button class="btn" id="emSave" data-i18n="common.save">Salvează</button>
       </div>
     </div>
   </div>
 
   <!-- COMMAND CONSOLE -->
-  <button class="cmd-launch" id="cmdLaunch">🎙 Dă-i drumul <span class="kbd" style="background:rgba(255,255,255,.15);border-color:transparent;color:#fff">⌘K</span></button>
+  <button class="cmd-launch" id="cmdLaunch"><span data-i18n="cmd.launch">🎙 Dă-i drumul</span> <span class="kbd" style="background:rgba(255,255,255,.15);border-color:transparent;color:#fff">⌘K</span></button>
   <div class="cmd-veil" id="cmdVeil">
     <div class="cmd">
       <div class="cmd-top">
         <button class="cmd-mic" id="cmdMic">🎙</button>
-        <input class="cmd-input" id="cmdInput" placeholder="Spune sau scrie o comandă…">
+        <input class="cmd-input" id="cmdInput" data-i18n-ph="cmd.placeholder" placeholder="Spune sau scrie o comandă…">
         <span class="cmd-state" id="cmdState">Idle</span>
       </div>
       <div class="cmd-body" id="cmdBody">
-        <div class="cmd-hint">Exemple: <b>„pornește cronometru pentru mentenanță la Acme Studio, persoana Ana, tag bug"</b> · <b>„adaugă 2 ore la Lumen, fix login"</b> · <b>„filtrează pe Clinica Vega luna asta"</b> · <b>„exportă PDF"</b> · <b>„du-te la calendar"</b></div>
+        <div class="cmd-hint" id="cmdExamples"></div>
       </div>
       <div class="cmd-foot">
-        <button class="go" id="cmdGo">Interpretează</button>
+        <button class="go" id="cmdGo" data-i18n="cmd.interpret">Interpretează</button>
         <span class="spacer"></span><span class="fyi" id="cmdFyi"></span>
-        <button class="cancel" id="cmdCancel">Închide (Esc)</button>
+        <button class="cancel" id="cmdCancel" data-i18n="cmd.close">Închide (Esc)</button>
       </div>
     </div>
   </div>
@@ -324,6 +328,7 @@
     <label class="cp-custom">Custom <input type="color" id="cpCustom"></label>
   </div>
 </div>
-<script src="app.js?v=3"></script>
+<script src="/i18n.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

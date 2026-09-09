@@ -3,6 +3,8 @@ import PdfPrinter from 'pdfmake';
 import * as vfsModule from 'pdfmake/build/vfs_fonts.js';
 import { db } from './db.js';
 import { listEntries, catalog } from './actions.js';
+import { getSetting } from './db.js';
+import { t, normalizeLang, LOCALES } from './i18n.js';
 
 // Roboto (bundled with pdfmake, full Romanian diacritics) embedded via vfs Buffers.
 const vfs = vfsModule.default?.pdfMake?.vfs || vfsModule.default?.vfs || vfsModule.default || vfsModule.vfs;
@@ -14,9 +16,14 @@ const fonts = { Roboto: {
 const printer = new PdfPrinter(fonts);
 const GOLD = '#b9902a', INK = '#1e2230', SUB = '#6b7280', LINE = '#e5e7eb', GREEN = '#16a34a', RED = '#dc2626';
 const fmtHM = m => { const h = Math.floor(m / 60), x = m % 60; return h + 'h' + (x ? ' ' + x + 'm' : ''); };
-const MON = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
 
 export function buildReportPdf(filter = {}, narrative = '') {
+  // language + locale come from the instance setting: dates, month names and
+  // number grouping follow the same choice as the labels
+  const LG = normalizeLang(getSetting('lang', 'ro'));
+  const LC = LOCALES[LG] || 'ro-RO';
+  const T = (key, vars) => t(LG, key, vars);
+  const monthName = (dt) => dt.toLocaleDateString(LC, { month: 'long' });
   const { clients, projects, people } = catalog();
   const entries = listEntries(filter);
   const client = c => clients.find(x => x.id === c);
@@ -26,14 +33,14 @@ export function buildReportPdf(filter = {}, narrative = '') {
 
   // filter label
   const parts = [];
-  if (filter.clientId) parts.push('Client: ' + (client(filter.clientId)?.name || ''));
-  if (filter.personId) parts.push('Persoană: ' + (person(filter.personId)?.name || ''));
-  if (filter.from || filter.to) parts.push('Perioadă: ' + (filter.from || '…') + ' → ' + (filter.to || '…'));
-  if (filter.tags?.length) parts.push('Taguri: ' + filter.tags.join(', '));
+  if (filter.clientId) parts.push(T('pdf.client') + (client(filter.clientId)?.name || ''));
+  if (filter.personId) parts.push(T('pdf.person') + (person(filter.personId)?.name || ''));
+  if (filter.from || filter.to) parts.push(T('pdf.period') + (filter.from || '…') + ' → ' + (filter.to || '…'));
+  if (filter.tags?.length) parts.push(T('pdf.tags_filter') + filter.tags.join(', '));
   const now = new Date();
 
   // per-client hours vs package + overage billing
-  const eur = n => Math.round(n).toLocaleString('ro-RO') + ' €';
+  const eur = n => Math.round(n).toLocaleString(LC) + ' €';
   let totExtra = 0, totBilled = 0;
   const clientRows = clients.filter(c => !c.personal).map(c => {
     const cprojects = projects.filter(p => p.client_id === c.id);
@@ -64,7 +71,7 @@ export function buildReportPdf(filter = {}, narrative = '') {
     const sub = c && ((c.cost || 0) > 0 || (c.hours || 0) > 0);
     const rate = pr && !c?.personal ? ((pr.rate || 0) || (c?.rate || 0)) : 0;
     const val = !sub && rate ? (m / 60) * rate : null;
-    return [pr?.name || '(fără proiect)', (c?.name || '—') + (c?.personal ? ' ☆' : ''), { text: fmtHM(m), alignment: 'right' },
+    return [pr?.name || T('projects.no_project_paren'), (c?.name || '—') + (c?.personal ? ' ☆' : ''), { text: fmtHM(m), alignment: 'right' },
       { text: val != null ? eur(val) : '—', alignment: 'right', color: val != null ? INK : SUB, bold: val != null }];
   });
 
@@ -81,7 +88,7 @@ export function buildReportPdf(filter = {}, narrative = '') {
   const logStack = Object.keys(groups).sort((a, b) => b.localeCompare(a)).map(date => {
     const d = new Date(date), tot = groups[date].reduce((s, e) => s + e.mins, 0);
     return [
-      { text: d.toLocaleDateString('ro-RO', { weekday: 'long', day: 'numeric', month: 'long' }) + '  ·  ' + fmtHM(tot), style: 'dayHead', margin: [0, 8, 0, 3] },
+      { text: d.toLocaleDateString(LC, { weekday: 'long', day: 'numeric', month: 'long' }) + '  ·  ' + fmtHM(tot), style: 'dayHead', margin: [0, 8, 0, 3] },
       { table: { widths: ['*', 90, 60], body: groups[date].map(e => {
         const pr = project(e.project_id);
         return [
@@ -105,56 +112,56 @@ export function buildReportPdf(filter = {}, narrative = '') {
       margin: [40, 24, 40, 0],
       columns: [
         { text: '⏱ TimeTracker', bold: true, fontSize: 14, color: INK },
-        { text: 'Raport de activitate', alignment: 'right', color: SUB, margin: [0, 3, 0, 0] },
+        { text: T('pdf.title'), alignment: 'right', color: SUB, margin: [0, 3, 0, 0] },
       ],
     },
     footer: (cur, tot) => ({ margin: [40, 0, 40, 0], columns: [
-      { text: 'Generat ' + now.toLocaleDateString('ro-RO') + ' ' + now.toLocaleTimeString('ro-RO', { hour: '2-digit', minute: '2-digit' }), color: SUB, fontSize: 8 },
+      { text: T('pdf.generated') + ' ' + now.toLocaleDateString(LC) + ' ' + now.toLocaleTimeString(LC, { hour: '2-digit', minute: '2-digit' }), color: SUB, fontSize: 8 },
       { text: cur + ' / ' + tot, alignment: 'right', color: SUB, fontSize: 8 },
     ] }),
     content: [
-      { text: MON[now.getMonth()] + ' ' + now.getFullYear(), style: 'h1' },
+      { text: monthName(now) + ' ' + now.getFullYear(), style: 'h1' },
       parts.length ? { text: parts.join('   ·   '), color: SUB, margin: [0, 2, 0, 0] } : {},
       { canvas: [{ type: 'line', x1: 0, y1: 8, x2: 515, y2: 8, lineWidth: 1, lineColor: LINE }] },
 
       // KPIs
       { columns: [
-        kpi(fmtHM(total), 'Total lucrat'),
-        kpi(clients.reduce((s, c) => s + (c.cost || 0), 0).toLocaleString('ro-RO') + ' €', 'Venit recurent/lună'),
-        kpi(String(entries.length), 'Înregistrări'),
-        kpi(total ? (clients.reduce((s, c) => s + (c.cost || 0), 0) / (total / 60)).toFixed(0) + ' €' : '—', 'Tarif efectiv/oră'),
+        kpi(fmtHM(total), T('pdf.total_worked')),
+        kpi(clients.reduce((s, c) => s + (c.cost || 0), 0).toLocaleString(LC) + ' €', T('pdf.mrr')),
+        kpi(String(entries.length), T('pdf.entries')),
+        kpi(total ? (clients.reduce((s, c) => s + (c.cost || 0), 0) / (total / 60)).toFixed(0) + ' €' : '—', T('pdf.eff_rate')),
       ], columnGap: 10, margin: [0, 14, 0, 0] },
 
-      { text: 'Clienți — ore, pachet & costuri extra', style: 'h2', margin: [0, 18, 0, 6] },
+      { text: T('pdf.clients_head'), style: 'h2', margin: [0, 18, 0, 6] },
       { table: { headerRows: 1, widths: ['*', 60, 55, 55, 65, 65], body: [
-        ['Client', 'Abonament / Tarif', 'Incluse', 'Lucrate', 'Extra / Orar', 'Total facturat'].map(t => ({ text: t, style: 'th' })),
+        [T('common.client'), T('pdf.retainer_rate'), T('pdf.included'), T('pdf.worked'), T('pdf.extra_hourly'), T('pdf.total_billed')].map(t => ({ text: t, style: 'th' })),
         ...clientRows,
-        [{ text: 'TOTAL', bold: true, colSpan: 4, alignment: 'right' }, {}, {}, {}, { text: totExtra ? '+' + eur(totExtra) : '—', bold: true, color: totExtra ? RED : SUB }, { text: eur(totBilled), bold: true, color: GOLD }],
+        [{ text: T('pdf.total'), bold: true, colSpan: 4, alignment: 'right' }, {}, {}, {}, { text: totExtra ? '+' + eur(totExtra) : '—', bold: true, color: totExtra ? RED : SUB }, { text: eur(totBilled), bold: true, color: GOLD }],
       ] }, layout: tableLayout() },
 
-      { text: 'Proiecte — ore lucrate', style: 'h2', margin: [0, 18, 0, 6] },
+      { text: T('projects.hours_head'), style: 'h2', margin: [0, 18, 0, 6] },
       { table: { headerRows: 1, widths: ['*', 130, 60, 70], body: [
-        ['Proiect', 'Client', 'Ore', 'Valoare (orar)'].map(t => ({ text: t, style: 'th' })),
+        [T('common.project'), T('common.client'), T('pdf.hours'), T('pdf.value_hourly')].map(t => ({ text: t, style: 'th' })),
         ...projRows,
       ] }, layout: tableLayout() },
 
       { columns: [
         { width: '48%', stack: [
-          { text: 'Pe persoană', style: 'h2', margin: [0, 18, 0, 6] },
-          { table: { widths: ['*', 70], body: [['Persoană', 'Ore'].map(t => ({ text: t, style: 'th' })), ...personRows] }, layout: tableLayout() },
+          { text: T('pdf.per_person'), style: 'h2', margin: [0, 18, 0, 6] },
+          { table: { widths: ['*', 70], body: [[T('common.person'), T('pdf.hours')].map(t => ({ text: t, style: 'th' })), ...personRows] }, layout: tableLayout() },
         ] },
         { width: '4%', text: '' },
         { width: '48%', stack: [
-          { text: 'Pe tag', style: 'h2', margin: [0, 18, 0, 6] },
-          tagRows.length ? { table: { widths: ['*', 70], body: [['Tag', 'Ore'].map(t => ({ text: t, style: 'th' })), ...tagRows] }, layout: tableLayout() } : { text: 'Fără taguri', color: SUB },
+          { text: T('pdf.per_tag'), style: 'h2', margin: [0, 18, 0, 6] },
+          tagRows.length ? { table: { widths: ['*', 70], body: [[T('pdf.tag'), T('pdf.hours')].map(t => ({ text: t, style: 'th' })), ...tagRows] }, layout: tableLayout() } : { text: T('pdf.no_tags'), color: SUB },
         ] },
       ] },
 
       ...narrStack,
 
-      { text: 'Jurnal complet', style: 'h2', margin: [0, 18, 0, 8] },
+      { text: T('pdf.log'), style: 'h2', margin: [0, 18, 0, 8] },
       ...logStack,
-      entries.length === 0 ? { text: 'Nicio înregistrare pentru filtrul selectat.', color: SUB } : {},
+      entries.length === 0 ? { text: T('pdf.empty'), color: SUB } : {},
     ],
     styles: {
       h1: { fontSize: 22, bold: true, color: INK },

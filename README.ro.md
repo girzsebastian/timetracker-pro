@@ -4,6 +4,8 @@
 
 Pornești câte cronometre ai contexte. Unul pentru refactor, unul pentru bug-ul în care ai fost tras, unul pentru review-ul pe care îl faci cât rulează build-ul. Fiecare își ține proiectul, persoana și tagurile lui, și fiecare se salvează ca înregistrare separată când îl oprești. Datele stau într-un fișier SQLite pe calculatorul tău, AI-ul rulează local prin Ollama, și nu există cont, cloud sau abonament.
 
+Disponibil în **română, engleză, spaniolă, germană și franceză** — se comută din Setări, fără restart.
+
 <p align="center">
   <img src="docs/media/01-concurrent-timers.jpg" alt="Trei cronometre pornite simultan, fiecare pe proiectul lui" width="820">
 </p>
@@ -45,6 +47,14 @@ Citirile rulează direct; **scrierile cer confirmare vizuală, iar ștergerile c
 
 **Activitate web (opțional).** O extensie de browser din `extension/` contorizează timpul pe tab-ul activ din fereastra focusată (idle = pauză) și îl trimite doar către instanța ta locală. Cataloghezi tu fiecare domeniu; nimic nu e etichetat automat și nimic nu pleacă de pe calculator.
 
+**Limbi.** Română, engleză, spaniolă, germană și franceză. Comutarea din Setări schimbă interfața, exportul PDF, mesajele de eroare *și* limba în care AI-ul îți așteaptă comenzile ⌘K — imediat, fără reîncărcare, deci un cronometru pornit continuă să meargă. Datele, numele lunilor și formatarea numerelor urmează locale-ul ales, nu sunt hardcodate.
+
+<p align="center">
+  <img src="docs/media/07-language-setting.jpg" alt="Setarea de limbă" width="720">
+</p>
+
+Toate textele stau într-un singur fișier, [`shared/locales.json`](shared/locales.json) — serverul îl trimite browserului și îl importă pentru PDF și erori, deci nu există o a doua copie care să rămână în urmă. O limbă nouă înseamnă să-i adaugi codul în `_meta.langs` și să completezi valorile; codul nu se atinge.
+
 **Lucrări planificate.** Bifezi „Planificat" și înregistrarea apare hașurat în calendar, fără să intre la facturare până nu o marchezi ca lucrată. Opțional se repetă săptămânal.
 
 ---
@@ -75,6 +85,8 @@ Ca să-l încerci cu date demo, fără să atingi o bază reală:
 DATA_DIR=/tmp/tt-demo SEED_DEMO=1 PORT=5599 npm start
 ```
 
+`TT_LANG` setează limba unei instalări **noi** (și a datelor demo) — `TT_LANG=en npm start`. Instanțele existente păstrează ce au salvat, deci un update nu schimbă limba nimănui. După prima pornire, folosești Setările.
+
 ### AI local (opțional, gratuit)
 
 1. Instalează [Ollama](https://ollama.com)
@@ -96,10 +108,12 @@ server/
   index.js    Fastify — servește UI-ul și API-ul REST
   db.js       SQLite (better-sqlite3, WAL) + schema + seed demo opțional
   actions.js  registry central de acțiuni — singurul care scrie — plus resolver fuzzy
+  i18n.js     dicționarul: t(lang, key) și bundle-ul de browser servit la /i18n.js
   ollama.js   AI local: parsare de comenzi cu JSON constrâns, rapoarte streaming
   pdf.js      export PDF (pdfmake, Roboto cu diacritice)
 public/       UI vanilla — fără framework, fără build
 extension/    extensia de browser pentru activitate web
+shared/       locales.json — toate textele către utilizator, în toate limbile
 data/         baza ta de date (gitignored)
 ```
 
@@ -107,13 +121,13 @@ data/         baza ta de date (gitignored)
 
 Regula cea mai importantă: **orice scriere trece prin `actions.js`.** API-ul REST, UI-ul și AI-ul apelează același registry — de aceea AI-ul nu poate face nimic ce nu poate face API-ul, și de aceea orice acțiune ajunge în jurnalul de audit.
 
-Limba interfeței e româna. Deciziile de arhitectură și UX au fost dezbătute de un consiliu de agenți AI — vezi [DECISION-RECORD.md](./DECISION-RECORD.md).
+Deciziile de arhitectură și UX au fost dezbătute de un consiliu de agenți AI — vezi [DECISION-RECORD.md](./DECISION-RECORD.md).
 
 ---
 
 ## Contribuții
 
-Issue-urile și pull request-urile sunt binevenite. Direcții utile: texte de interfață în engleză lângă cele românești, alte backend-uri de model local, și importatoare din exporturile Clockify/Toggl.
+Issue-urile și pull request-urile sunt binevenite. Direcții utile: limbi noi (adaugi un bloc în `shared/locales.json` — fără schimbări de cod), alte backend-uri de model local, și importatoare din exporturile Clockify/Toggl.
 
 ## Licență
 
