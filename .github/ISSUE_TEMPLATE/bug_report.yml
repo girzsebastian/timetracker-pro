@@ -1,0 +1,81 @@
+name: Bug report
+description: Something in TimeTracker Pro does not work
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please do not paste exports or database contents
+        with real client names or rates — TimeTracker Pro exists so that data
+        stays yours.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Start a timer on ...
+        2. Open Reports and filter by ...
+        3. Click Export PDF
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part
+      options:
+        - Timers (start, stop, concurrent, persistence)
+        - Clients, packages and billing
+        - Reports, PDF or CSV export
+        - Calendar and Google Calendar import
+        - ⌘K text or voice commands (Ollama)
+        - Languages and translations
+        - Chrome extension
+        - Install, Docker or upgrade
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: how-run
+    attributes:
+      label: How you run it
+      options:
+        - Docker (README command)
+        - Node directly (npm start)
+        - Other (describe below)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: The git tag, or the commit SHA if you built from main.
+      placeholder: "1.0.0, or 766c380"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Node version, OS and browser
+      placeholder: "Node 22.11, macOS 26.4, Chrome 140"
+    validations:
+      required: true
+  - type: dropdown
+    id: ollama
+    attributes:
+      label: Was Ollama running
+      options:
+        - "Yes"
+        - "No"
+        - Not relevant
+  - type: textarea
+    id: logs
+    attributes:
+      label: Anything else
+      description: Server output, browser console, screenshots. Optional.

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Question or idea
+    url: https://github.com/girzsebastian/timetracker-pro/discussions
+    about: Ask how something works, share how you track your day, or float an idea before opening an issue.
+  - name: Security vulnerability
+    url: https://github.com/girzsebastian/timetracker-pro/security/advisories/new
+    about: Report privately. Please do not open a public issue for security problems.

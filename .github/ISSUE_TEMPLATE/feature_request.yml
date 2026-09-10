@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest something TimeTracker Pro should do
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: Describe the situation, not the solution. What does your day look like and where does tracking break down?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you would like TimeTracker Pro to do
+    validations:
+      required: true
+  - type: checkboxes
+    id: local-first
+    attributes:
+      label: Local-first check
+      description: >
+        TimeTracker Pro's core promise is that your data stays in a SQLite file
+        on your machine, with no account and no cloud.
+      options:
+        - label: This can work without sending data off the machine, or it is opt-in and clearly marked.
+          required: true
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Would you like to build it?
+      options:
+        - label: I would be willing to open a pull request for this.

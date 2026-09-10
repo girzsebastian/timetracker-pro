@@ -4,17 +4,34 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   smoke:
+    name: Boot and answer
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          # Matches the Dockerfile base image.
+          node-version: 22
           cache: npm
+
       - run: npm ci
+
+      # No unit suite yet (see CONTRIBUTING.md). What this proves is that a
+      # fresh clone starts, migrates an empty database, seeds the demo data and
+      # serves both the API and the front page — which is the whole first-run
+      # experience for a new user.
       - name: Boot the server on a throwaway database and check it answers
         run: |
           DATA_DIR="$RUNNER_TEMP/tt" SEED_DEMO=1 PORT=5599 node server/index.js &
@@ -23,4 +40,47 @@ jobs:
             sleep 1
           done
           curl -sf http://localhost:5599/api/state | head -c 200
+          echo
           curl -sf http://localhost:5599/ >/dev/null
+
+      # locales.json is the one file a non-developer contributor edits. A
+      # missing comma there breaks startup for everyone, so fail loudly here.
+      - name: Locales are valid JSON and every string has every language
+        run: |
+          node --input-type=module -e '
+            import { readFileSync } from "node:fs";
+            const l = JSON.parse(readFileSync("shared/locales.json", "utf8"));
+            const langs = Object.keys(l._meta.langs);
+            let bad = 0, n = 0;
+            for (const [key, entry] of Object.entries(l)) {
+              if (key === "_meta") continue;
+              n++;
+              for (const lang of langs) if (!(lang in entry)) { console.error(`${key}: missing ${lang}`); bad++; }
+              for (const lang of Object.keys(entry)) if (!langs.includes(lang)) { console.error(`${key}: unknown language ${lang}`); bad++; }
+            }
+            console.log(`${n} strings x ${langs.length} languages (${langs.join(", ")})`);
+            process.exit(bad ? 1 : 0);
+          '
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The README's install path is the Docker one, so a Dockerfile that no
+      # longer builds is a broken install for most users. Build only; nothing
+      # is pushed.
+      - name: Build
+        run: docker build -t timetracker-pro:ci .
+
+      - name: Container starts and answers
+        run: |
+          docker run -d --name tt -e SEED_DEMO=1 -p 127.0.0.1:5599:5555 timetracker-pro:ci
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:5599/api/state >/dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:5599/api/state | head -c 200
+          echo
+          docker logs tt | tail -5

@@ -1,0 +1,41 @@
+name: CodeQL
+
+# Static analysis of the JavaScript on both sides of the wire.
+#
+# The server takes free text from the ⌘K command bar, writes SQL, renders PDFs
+# and CSVs from user data, proxies to Ollama, and optionally sits behind basic
+# auth — which is exactly the surface CodeQL is useful on. The front end and the
+# Chrome extension are plain JavaScript with no build step, so there is nothing
+# to compile first.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Weekly, so newly published queries reach existing code without a push.
+    - cron: "31 4 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze JavaScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          queries: security-and-quality
+
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript-typescript"

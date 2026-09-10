@@ -1,0 +1,45 @@
+version: 2
+
+# Two supply chains to watch here.
+#
+# npm: the runtime is deliberately small (Fastify, better-sqlite3, pdfmake), so
+# a bump is usually one line and worth taking promptly — better-sqlite3 in
+# particular tracks Node releases and a stale pin is what breaks `npm install`
+# for a new contributor.
+#
+# GitHub Actions: the workflows run with a token that can write CLA signatures
+# and security events, so a stale or compromised action pin matters more than a
+# transitive library would.
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+    commit-message:
+      prefix: "deps"
+    groups:
+      # One pull request for routine bumps rather than several.
+      npm:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [build]
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: weekly
+    labels: [build]
+    commit-message:
+      prefix: "docker"
