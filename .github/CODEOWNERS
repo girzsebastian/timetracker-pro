@@ -1,0 +1,4 @@
+# Every pull request requests a review from the maintainer, and the branch
+# ruleset requires a code-owner approval before merge. One line on purpose:
+# a single maintainer owns the whole tree.
+* @girzsebastian
