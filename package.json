@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@fastify/static": "^7.0.4",
-    "better-sqlite3": "^11.3.0",
+    "better-sqlite3": "^13.0.3",
     "fastify": "^4.28.1",
     "pdfmake": "^0.2.10"
   }
