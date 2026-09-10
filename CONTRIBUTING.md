@@ -127,9 +127,9 @@ Do not open a public issue for a security problem. See [SECURITY.md](SECURITY.md
 TimeTracker Pro is [MIT](LICENSE) and the self-hosted application stays free
 and open.
 
-Before your first pull request is merged you will be asked to sign
-[CLA.md](CLA.md), by posting one comment that a bot gives you. You sign once and
-it covers everything you contribute afterwards.
+**By opening a pull request you accept [CLA.md](CLA.md).** There is nothing to
+sign and no bot to answer — the pull request template asks you to confirm you
+have read it, and that is all.
 
 **You keep the copyright to everything you write.** The agreement grants the
 project a licence, including the right to distribute contributions under terms
@@ -142,8 +142,8 @@ years and twenty contributors later it is not collectable at all.
 Nothing you contribute can be removed from the MIT-licensed version. What is
 public stays public under MIT, permanently.
 
-**Note for the maintainer:** the bot only sees pull requests. A patch applied by
-hand from an issue, an email or a fork bypasses it entirely and lands unsigned
-code in the history — which is exactly the hole the agreement exists to close.
-Route contributions through pull requests, or collect the signature before
-committing.
+**Note for the maintainer:** acceptance happens only through pull requests. A
+patch applied by hand from an issue, an email or a fork bypasses it entirely and
+lands unlicensed code in the history — which is exactly the hole the agreement
+exists to close. Route contributions through pull requests, or get the
+contributor's written acceptance before committing.

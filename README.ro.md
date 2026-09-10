@@ -129,7 +129,7 @@ Deciziile de arhitectură și UX au fost dezbătute de un consiliu de agenți AI
 
 Issue-urile și pull request-urile sunt binevenite. Direcții utile: limbi noi (adaugi un bloc în `shared/locales.json` — fără schimbări de cod), alte backend-uri de model local, și importatoare din exporturile Clockify/Toggl.
 
-Citește [CONTRIBUTING.md](CONTRIBUTING.md) pentru instalare, reguli de bază și unde merge codul. Înainte ca primul tău pull request să fie acceptat, un bot îți va cere să semnezi [CLA-ul](CLA.md); îți păstrezi drepturile de autor și semnezi o singură dată. Toți participanții respectă [Codul de conduită](CODE_OF_CONDUCT.md). Problemele de securitate se raportează prin [SECURITY.md](SECURITY.md), nu prin issue-uri publice.
+Citește [CONTRIBUTING.md](CONTRIBUTING.md) pentru instalare, reguli de bază și unde merge codul. Deschizând un pull request accepți [CLA-ul](CLA.md); îți păstrezi drepturile de autor și nu există niciun bot căruia să-i răspunzi. Toți participanții respectă [Codul de conduită](CODE_OF_CONDUCT.md). Problemele de securitate se raportează prin [SECURITY.md](SECURITY.md), nu prin issue-uri publice.
 
 ## Licență
 

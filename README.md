@@ -129,7 +129,7 @@ Architecture and UX decisions were argued out by a council of AI agents — the 
 
 Issues and pull requests are welcome. Useful directions: more languages (add a block to `shared/locales.json` — no code changes needed), other local model backends, and importers from Clockify/Toggl exports.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, ground rules and where code goes. Before your first pull request is merged a bot will ask you to sign the [CLA](CLA.md); you keep your copyright, and you sign once. Everyone participating is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems go through [SECURITY.md](SECURITY.md), not public issues.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for setup, ground rules and where code goes. By opening a pull request you accept the [CLA](CLA.md); you keep your copyright, and there is no bot to answer. Everyone participating is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security problems go through [SECURITY.md](SECURITY.md), not public issues.
 
 ## License
 

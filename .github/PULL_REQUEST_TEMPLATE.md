@@ -11,7 +11,7 @@
 <!-- Be specific and be honest about what you did NOT check. -->
 
 - [ ] Booted on a throwaway database (`DATA_DIR=$(mktemp -d) SEED_DEMO=1 PORT=5599 npm start`) and clicked through what I changed
-- [ ] [CLA](../CLA.md) signed (a bot will ask on your first pull request)
+- [ ] I have read [CLA.md](../CLA.md) and I accept it for this and my future contributions
 - Node version and browser:
 - Manually verified:
 
