@@ -6,7 +6,10 @@ import { dirname, join } from 'path';
 import { mkdirSync, readdirSync, statSync, unlinkSync } from 'fs';
 
 const here = dirname(fileURLToPath(import.meta.url));
-export const backupDir = join(here, '..', 'data', 'backups');
+// Same DATA_DIR switch db.js uses, so a throwaway instance backs itself up next
+// to its own database instead of dropping test copies into the real backups.
+const dataDir = process.env.DATA_DIR || join(here, '..', 'data');
+export const backupDir = join(dataDir, 'backups');
 mkdirSync(backupDir, { recursive: true });
 
 const KEEP = 40;                 // how many backup files to retain

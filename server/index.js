@@ -262,7 +262,8 @@ app.get('/api/export.pdf', async (req, reply) => {
 });
 
 /* ---------- boot ---------- */
-const PORT = process.env.PORT || 5555;
+// Fastify 5 wants a number here; process.env.PORT arrives as a string.
+const PORT = Number(process.env.PORT) || 5555;
 await app.listen({ port: PORT, host: '0.0.0.0' });
 const up = await ollamaUp();
 backupNow('startup');
