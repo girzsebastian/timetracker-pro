@@ -36,9 +36,14 @@ jobs:
           path-to-signatures: .github/cla-signatures.json
           path-to-document: https://github.com/girzsebastian/timetracker-pro/blob/main/CLA.md
           branch: main
-          # Dependabot bumps version strings and github-actions writes the
-          # signature file itself; neither carries authorship to license.
-          allowlist: girzsebastian,dependabot[bot],github-actions[bot]
+          # The maintainer is matched by GitHub login when the commit email is
+          # linked to the account, and by the raw commit name when it is not —
+          # commits made from a machine with no git identity configured carry a
+          # local address GitHub cannot attribute. All of his name variants are
+          # listed so his own pull requests never wait on a signature he cannot
+          # record. Dependabot bumps version strings and github-actions writes
+          # the signature file itself; neither carries authorship to license.
+          allowlist: girzsebastian,Girz Sebastian,Sebastian Girz,Sebastian | xbyseb,dependabot[bot],github-actions[bot],*[bot]
           custom-notsigned-prcomment: >
             Thanks for the pull request. Before it can be merged, please read
             [CLA.md](https://github.com/girzsebastian/timetracker-pro/blob/main/CLA.md)
